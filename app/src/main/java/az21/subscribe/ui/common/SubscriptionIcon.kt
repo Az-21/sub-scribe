@@ -18,6 +18,9 @@ import androidx.compose.ui.graphics.luminance
  * Renders a subscription's icon glyph from the combined Simple Icons and Material Icons catalog,
  * falling back to a monogram when the stored key has no matching icon. [iconColor] overrides the
  * icon's default color; when null the icon's brand color (or the theme for Material Icons) is used.
+ *
+ * The tint is inverted at draw time when it would otherwise be too close to the surface. This is a
+ * display-only adjustment: the stored color is never modified.
  */
 @Composable
 fun SubscriptionIcon(
@@ -34,7 +37,7 @@ fun SubscriptionIcon(
     Icon(
       imageVector = vector,
       contentDescription = null,
-      tint = customColor ?: MaterialTheme.colorScheme.primary,
+      tint = readableOnSurface(customColor ?: MaterialTheme.colorScheme.primary),
       modifier = modifier,
     )
   } else {
@@ -52,8 +55,18 @@ fun SubscriptionIcon(
   }
 }
 
+/** Keeps [color] when it contrasts with the surface, otherwise flips it so the glyph stays visible. */
+@Composable
+private fun readableOnSurface(color: Color): Color =
+  if (hasSufficientContrast(color, MaterialTheme.colorScheme.surface, MIN_ICON_CONTRAST)) {
+    color
+  } else {
+    color.inverted()
+  }
+
 /** Picks a readable foreground for [background]: black on light colors, white on dark ones. */
 private fun onContentColorFor(background: Color): Color =
   if (background.luminance() > LIGHT_LUMINANCE_THRESHOLD) Color.Black else Color.White
 
 private const val LIGHT_LUMINANCE_THRESHOLD = 0.5f
+private const val MIN_ICON_CONTRAST = 3.0f
