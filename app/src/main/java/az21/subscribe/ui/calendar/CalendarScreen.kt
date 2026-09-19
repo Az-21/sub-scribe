@@ -153,7 +153,10 @@ private fun CalendarGrid(
   selectedDate: LocalDate?,
   onDaySelected: (LocalDate) -> Unit,
 ) {
-  val cells: List<CalendarDay?> = List(firstDayOffset) { null } + days
+  val leading = List(firstDayOffset) { null }
+  val leadingAndDays: List<CalendarDay?> = leading + days
+  val trailing = List((DAYS_PER_WEEK - leadingAndDays.size % DAYS_PER_WEEK) % DAYS_PER_WEEK) { null }
+  val cells: List<CalendarDay?> = leadingAndDays + trailing
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
     cells.chunked(DAYS_PER_WEEK).forEach { week ->
       Row(
