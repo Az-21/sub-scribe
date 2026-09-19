@@ -32,6 +32,8 @@
   <string name="form_price_warning_multiple_in_one_day">More than one price change is set for %1$s. Only the most recently added one applies.</string>
   <string name="form_price_warning_in_future_title">Future date</string>
   <string name="form_price_warning_in_future">This price takes effect in the future (%1$s). It won\'t be applied until then.</string>
+  <string name="form_price_warning_uncovered_start_title">Uncovered from start</string>
+  <string name="form_price_warning_uncovered_start">No price applies from the subscription start date (%1$s) until this price takes effect (%2$s). Billings in that period have no price.</string>
   <string name="form_tags">Tags</string>
   <string name="form_payment_method">Payment method</string>
   <string name="form_notes">Notes</string>

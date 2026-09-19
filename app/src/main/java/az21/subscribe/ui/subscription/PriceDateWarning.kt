@@ -15,6 +15,12 @@ enum class PriceDateWarning {
 
   /** The price takes effect after today, so it is not applied yet. */
   IN_FUTURE,
+
+  /**
+   * This is the earliest price and it starts after the subscription's start date, so billings
+   * between the start date and this price have no value.
+   */
+  UNCOVERED_FROM_START,
 }
 
 /**
@@ -41,5 +47,12 @@ fun priceDateWarnings(
     }
     if (effectiveFromDate.isAfter(today)) {
       add(PriceDateWarning.IN_FUTURE)
+    }
+    if (
+      startDate != null &&
+      effectiveFromDate.isAfter(startDate) &&
+      effectiveFromDate == allEffectiveDates.minOrNull()
+    ) {
+      add(PriceDateWarning.UNCOVERED_FROM_START)
     }
   }

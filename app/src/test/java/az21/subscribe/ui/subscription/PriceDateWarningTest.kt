@@ -13,7 +13,10 @@ class PriceDateWarningTest {
   @Test
   fun noWarnings_whenDateIsWithinRangeAndNotInFuture() {
     assertEquals(emptyList<PriceDateWarning>(), priceDateWarnings(startDate, startDate, endDate, today, emptyList()))
-    assertEquals(emptyList<PriceDateWarning>(), priceDateWarnings(today, startDate, endDate, today, listOf(today)))
+    assertEquals(
+      emptyList<PriceDateWarning>(),
+      priceDateWarnings(startDate, startDate, endDate, today, listOf(startDate)),
+    )
   }
 
   @Test
@@ -33,7 +36,7 @@ class PriceDateWarningTest {
 
   @Test
   fun flagsMultipleInOneDay() {
-    val date = LocalDate.of(2024, 5, 1)
+    val date = startDate
     val warnings = priceDateWarnings(date, startDate, endDate, today, listOf(date, date))
 
     assertEquals(listOf(PriceDateWarning.MULTIPLE_IN_ONE_DAY), warnings)
@@ -69,5 +72,45 @@ class PriceDateWarningTest {
   @Test
   fun doesNotFlagAfterEnd_whenEndDateIsUnknown() {
     assertEquals(emptyList<PriceDateWarning>(), priceDateWarnings(today, startDate, null, today, emptyList()))
+  }
+
+  @Test
+  fun flagsUncoveredStart_forGapBetweenStartAndFirstPrice() {
+    val start = LocalDate.of(2025, 9, 1)
+    val earliest = LocalDate.of(2025, 11, 1)
+    val laterToday = LocalDate.of(2025, 12, 1)
+
+    val warnings = priceDateWarnings(earliest, start, null, laterToday, listOf(earliest))
+
+    assertEquals(listOf(PriceDateWarning.UNCOVERED_FROM_START), warnings)
+  }
+
+  @Test
+  fun doesNotFlagUncoveredStart_whenFirstPriceIsAtStartDate() {
+    assertEquals(
+      emptyList<PriceDateWarning>(),
+      priceDateWarnings(startDate, startDate, endDate, today, listOf(startDate)),
+    )
+  }
+
+  @Test
+  fun doesNotFlagUncoveredStart_forLaterEntries() {
+    val first = LocalDate.of(2024, 1, 1)
+    val second = LocalDate.of(2024, 3, 1)
+
+    assertEquals(
+      emptyList<PriceDateWarning>(),
+      priceDateWarnings(second, first, null, today, listOf(first, second)),
+    )
+  }
+
+  @Test
+  fun doesNotFlagUncoveredStart_whenStartDateIsUnknown() {
+    val earliest = LocalDate.of(2024, 3, 1)
+
+    assertEquals(
+      emptyList<PriceDateWarning>(),
+      priceDateWarnings(earliest, null, null, today, listOf(earliest)),
+    )
   }
 }

@@ -765,6 +765,10 @@ private fun PriceDateWarningItem(
       PriceDateWarning.IN_FUTURE -> {
         stringResource(R.string.form_price_warning_in_future_title)
       }
+
+      PriceDateWarning.UNCOVERED_FROM_START -> {
+        stringResource(R.string.form_price_warning_uncovered_start_title)
+      }
     }
   val subtitle =
     when (warning) {
@@ -782,6 +786,14 @@ private fun PriceDateWarningItem(
 
       PriceDateWarning.IN_FUTURE -> {
         stringResource(R.string.form_price_warning_in_future, effectiveFromDate.format(DATE_FORMATTER))
+      }
+
+      PriceDateWarning.UNCOVERED_FROM_START -> {
+        stringResource(
+          R.string.form_price_warning_uncovered_start,
+          startDate?.format(DATE_FORMATTER).orEmpty(),
+          effectiveFromDate.format(DATE_FORMATTER),
+        )
       }
     }
   SegmentedListItem(
