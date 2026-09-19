@@ -1,0 +1,42 @@
+config:
+  validation: true
+  warningsAsErrors: false
+  checkExhaustiveness: false
+
+complexity:
+  LongMethod:
+    allowedLines: 60
+  LongParameterList:
+    allowedFunctionParameters: 8
+    allowedConstructorParameters: 8
+  CyclomaticComplexMethod:
+    allowedComplexity: 15
+  TooManyFunctions:
+    ignorePrivate: true
+    ignoreOverridden: true
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated:
+      - 'Composable'
+  PackageNaming:
+    packagePattern: '[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*'
+  TopLevelPropertyNaming:
+    constantPattern: '[A-Z][_A-Z0-9]*'
+
+style:
+  MagicNumber:
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignoreEnums: true
+    ignoreAnnotated:
+      - 'Composable'
+  NewLineAtEndOfFile:
+    active: false
+  WildcardImport:
+    active: false
+  UnusedPrivateFunction:
+    ignoreAnnotated:
+      - 'Preview'
+  MaxLineLength:
+    maxLineLength: 120

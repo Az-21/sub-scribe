@@ -1,0 +1,15 @@
+# Normalize all text files to LF in the repository and working tree.
+# .editorconfig requires `end_of_line = lf`, and ktlint fails on CRLF.
+* text=auto eol=lf
+
+# Windows scripts must keep CRLF line endings.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binaries
+*.jar binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
