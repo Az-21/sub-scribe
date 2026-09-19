@@ -23,6 +23,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -53,8 +54,8 @@ import az21.subscribe.domain.model.ThemeVariant
 import az21.subscribe.ui.common.ColorPickerDialog
 import az21.subscribe.ui.common.PresetColors
 import az21.subscribe.ui.common.SubScribeTopAppBar
-import az21.subscribe.ui.navigation.SettingsRoute
-import az21.subscribe.ui.navigation.SubScribeBottomBar
+import az21.subscribe.ui.navigation.SubScribeFloatingToolbar
+import az21.subscribe.ui.navigation.TopLevelDestination
 import az21.subscribe.ui.theme.AppTheme
 import az21.subscribe.ui.theme.FallbackSeedColor
 
@@ -105,7 +106,13 @@ fun SettingsContent(
     topBar = {
       SubScribeTopAppBar(title = stringResource(R.string.settings_title), scrollBehavior = scrollBehavior)
     },
-    bottomBar = { SubScribeBottomBar(currentRoute = SettingsRoute, onSelect = onNavigateTopLevel) },
+    floatingActionButtonPosition = FabPosition.Center,
+    floatingActionButton = {
+      SubScribeFloatingToolbar(
+        selectedDestination = TopLevelDestination.SETTINGS,
+        onNavigateTopLevel = onNavigateTopLevel,
+      )
+    },
   ) { innerPadding ->
     Column(
       modifier =

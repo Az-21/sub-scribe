@@ -18,6 +18,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
@@ -40,8 +41,8 @@ import az21.subscribe.R
 import az21.subscribe.ui.common.SubScribeTopAppBar
 import az21.subscribe.ui.common.SubscriptionIcon
 import az21.subscribe.ui.common.formatMoney
-import az21.subscribe.ui.navigation.CalendarRoute
-import az21.subscribe.ui.navigation.SubScribeBottomBar
+import az21.subscribe.ui.navigation.SubScribeFloatingToolbar
+import az21.subscribe.ui.navigation.TopLevelDestination
 import az21.subscribe.ui.theme.AppTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -80,7 +81,13 @@ fun CalendarContent(
   Scaffold(
     modifier = modifier.fillMaxSize(),
     topBar = { SubScribeTopAppBar(title = stringResource(R.string.calendar_title)) },
-    bottomBar = { SubScribeBottomBar(currentRoute = CalendarRoute, onSelect = onNavigateTopLevel) },
+    floatingActionButtonPosition = FabPosition.Center,
+    floatingActionButton = {
+      SubScribeFloatingToolbar(
+        selectedDestination = TopLevelDestination.CALENDAR,
+        onNavigateTopLevel = onNavigateTopLevel,
+      )
+    },
   ) { innerPadding ->
     if (uiState.isLoading) {
       Box(modifier = Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center) {

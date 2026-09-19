@@ -33,7 +33,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation3.runtime.NavKey
 import az21.subscribe.R
 import az21.subscribe.domain.model.Currency
 import az21.subscribe.domain.model.SubscriptionStatus
@@ -43,15 +42,13 @@ import az21.subscribe.ui.common.SubScribeTopAppBar
 import az21.subscribe.ui.common.SubscriptionIcon
 import az21.subscribe.ui.common.SubscriptionSummary
 import az21.subscribe.ui.common.formatMoney
-import az21.subscribe.ui.navigation.ArchiveRoute
-import az21.subscribe.ui.navigation.SubScribeBottomBar
 import az21.subscribe.ui.theme.AppTheme
 import java.util.UUID
 
 @Composable
 fun ArchiveScreen(
   onOpenSubscription: (String) -> Unit,
-  onNavigateTopLevel: (NavKey) -> Unit,
+  onBack: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: ArchiveViewModel = hiltViewModel(),
 ) {
@@ -63,7 +60,7 @@ fun ArchiveScreen(
     onRequestDelete = viewModel::requestDelete,
     onCancelDelete = viewModel::cancelDelete,
     onConfirmDelete = viewModel::confirmDelete,
-    onNavigateTopLevel = onNavigateTopLevel,
+    onBack = onBack,
     modifier = modifier,
   )
 }
@@ -77,16 +74,19 @@ fun ArchiveContent(
   onRequestDelete: (SubscriptionSummary) -> Unit,
   onCancelDelete: () -> Unit,
   onConfirmDelete: () -> Unit,
-  onNavigateTopLevel: (NavKey) -> Unit,
+  onBack: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
   Scaffold(
     modifier = modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
-      SubScribeTopAppBar(title = stringResource(R.string.archive_title), scrollBehavior = scrollBehavior)
+      SubScribeTopAppBar(
+        title = stringResource(R.string.archive_title),
+        onNavigateUp = onBack,
+        scrollBehavior = scrollBehavior,
+      )
     },
-    bottomBar = { SubScribeBottomBar(currentRoute = ArchiveRoute, onSelect = onNavigateTopLevel) },
   ) { innerPadding ->
     when {
       uiState.isLoading -> {
@@ -205,7 +205,7 @@ private fun ArchiveContentPreview() {
       onRequestDelete = {},
       onCancelDelete = {},
       onConfirmDelete = {},
-      onNavigateTopLevel = {},
+      onBack = {},
     )
   }
 }

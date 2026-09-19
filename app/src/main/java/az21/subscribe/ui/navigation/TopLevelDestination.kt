@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
 import az21.subscribe.R
 
-/** The destinations reachable from the bottom navigation bar. */
+/** The destinations reachable from the shared floating toolbar. */
 enum class TopLevelDestination(
   @param:StringRes val labelRes: Int,
   val icon: ImageVector,

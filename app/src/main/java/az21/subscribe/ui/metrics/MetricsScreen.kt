@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
@@ -41,8 +42,8 @@ import az21.subscribe.domain.metrics.MonthlySpend
 import az21.subscribe.domain.model.Currency
 import az21.subscribe.ui.common.SubScribeTopAppBar
 import az21.subscribe.ui.common.formatMoney
-import az21.subscribe.ui.navigation.MetricsRoute
-import az21.subscribe.ui.navigation.SubScribeBottomBar
+import az21.subscribe.ui.navigation.SubScribeFloatingToolbar
+import az21.subscribe.ui.navigation.TopLevelDestination
 import az21.subscribe.ui.theme.AppTheme
 import java.math.BigDecimal
 import java.time.Month
@@ -83,7 +84,13 @@ fun MetricsContent(
     topBar = {
       SubScribeTopAppBar(title = stringResource(R.string.metrics_title), scrollBehavior = scrollBehavior)
     },
-    bottomBar = { SubScribeBottomBar(currentRoute = MetricsRoute, onSelect = onNavigateTopLevel) },
+    floatingActionButtonPosition = FabPosition.Center,
+    floatingActionButton = {
+      SubScribeFloatingToolbar(
+        selectedDestination = TopLevelDestination.METRICS,
+        onNavigateTopLevel = onNavigateTopLevel,
+      )
+    },
   ) { innerPadding ->
     if (uiState.isLoading) {
       Box(

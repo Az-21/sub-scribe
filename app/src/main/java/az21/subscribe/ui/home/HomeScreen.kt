@@ -18,7 +18,6 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -28,8 +27,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExpandedDockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -67,8 +66,8 @@ import az21.subscribe.ui.common.SubScribeTopAppBar
 import az21.subscribe.ui.common.SubscriptionIcon
 import az21.subscribe.ui.common.SubscriptionSummary
 import az21.subscribe.ui.common.formatMoney
-import az21.subscribe.ui.navigation.HomeRoute
-import az21.subscribe.ui.navigation.SubScribeBottomBar
+import az21.subscribe.ui.navigation.SubScribeFloatingToolbar
+import az21.subscribe.ui.navigation.TopLevelDestination
 import az21.subscribe.ui.theme.AppTheme
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
@@ -125,11 +124,13 @@ fun HomeContent(
         actions = { HomeTopBarActions(onSortChange = onSortChange, onOpenArchive = onOpenArchive) },
       )
     },
-    bottomBar = { SubScribeBottomBar(currentRoute = HomeRoute, onSelect = onNavigateTopLevel) },
+    floatingActionButtonPosition = FabPosition.Center,
     floatingActionButton = {
-      FloatingActionButton(onClick = onAddSubscription) {
-        Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(R.string.home_add))
-      }
+      SubScribeFloatingToolbar(
+        selectedDestination = TopLevelDestination.HOME,
+        onNavigateTopLevel = onNavigateTopLevel,
+        onCreateSubscription = onAddSubscription,
+      )
     },
   ) { innerPadding ->
     HomeBody(

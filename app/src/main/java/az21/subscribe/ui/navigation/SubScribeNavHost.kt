@@ -79,7 +79,7 @@ private fun subScribeEntryProvider(
     entry<ArchiveRoute> {
       ArchiveScreen(
         onOpenSubscription = { id -> backStack.add(SubscriptionDetailRoute(id)) },
-        onNavigateTopLevel = navigateTopLevel,
+        onBack = popBackStack,
       )
     }
     entry<SettingsRoute> {
