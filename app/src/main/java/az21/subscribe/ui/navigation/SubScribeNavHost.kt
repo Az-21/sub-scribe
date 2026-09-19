@@ -6,6 +6,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import az21.subscribe.ui.home.HomeScreen
+import az21.subscribe.ui.metrics.MetricsScreen
 
 @Composable
 fun SubScribeNavHost(modifier: Modifier = Modifier) {
@@ -17,7 +18,8 @@ fun SubScribeNavHost(modifier: Modifier = Modifier) {
     onBack = { backStack.removeLastOrNull() },
     entryProvider =
       entryProvider {
-        entry<HomeRoute> { HomeScreen() }
+        entry<HomeRoute> { HomeScreen(onOpenMetrics = { backStack.add(MetricsRoute) }) }
+        entry<MetricsRoute> { MetricsScreen(onBack = { backStack.removeLastOrNull() }) }
       },
   )
 }

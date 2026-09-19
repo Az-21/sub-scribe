@@ -1,0 +1,10 @@
+<resources>
+  <string name="metrics_title">Metrics</string>
+  <string name="metrics_back">Back</string>
+  <string name="metrics_previous_year">Previous</string>
+  <string name="metrics_next_year">Next</string>
+  <string name="metrics_total_spend">Total spent</string>
+  <string name="metrics_divvied_annual">Divvied annual</string>
+  <string name="metrics_charges">Charges: %1$s</string>
+  <string name="metrics_divvied">Divvied annual: %1$s</string>
+</resources>
