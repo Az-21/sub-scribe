@@ -1,0 +1,63 @@
+package az21.subscribe.domain.billing
+
+import az21.subscribe.domain.model.BillingCycle
+import az21.subscribe.domain.model.Subscription
+import az21.subscribe.domain.model.SubscriptionStatus
+import java.time.LocalDate
+
+/**
+ * Pure helpers for working out when a subscription is actually charged.
+ *
+ * The first charge lands at [Subscription.startDate] plus any free-trial months. Cancelled and
+ * archived subscriptions have no next billing date.
+ */
+object BillingSchedule {
+  /** The date of the first real charge, after any free trial. */
+  fun billingStartDate(subscription: Subscription): LocalDate =
+    subscription.startDate.plusMonths((subscription.freeTrialMonths ?: 0).toLong())
+
+  /**
+   * The earliest charge date on or after [from], or null when the subscription is no longer active.
+   */
+  fun nextBillingDate(
+    subscription: Subscription,
+    from: LocalDate,
+  ): LocalDate? {
+    if (subscription.status != SubscriptionStatus.ACTIVE) return null
+    return firstOnOrAfter(subscription, from)
+  }
+
+  /** All charge dates in the inclusive range [from]..[toInclusive]. */
+  fun billingDatesBetween(
+    subscription: Subscription,
+    from: LocalDate,
+    toInclusive: LocalDate,
+  ): List<LocalDate> {
+    if (toInclusive.isBefore(from)) return emptyList()
+
+    val dates = mutableListOf<LocalDate>()
+    var date = firstOnOrAfter(subscription, from)
+    while (!date.isAfter(toInclusive)) {
+      dates += date
+      date = date.advance(subscription.billingCycle)
+    }
+    return dates
+  }
+
+  private fun firstOnOrAfter(
+    subscription: Subscription,
+    from: LocalDate,
+  ): LocalDate {
+    var date = billingStartDate(subscription)
+    while (date.isBefore(from)) {
+      date = date.advance(subscription.billingCycle)
+    }
+    return date
+  }
+
+  private fun LocalDate.advance(cycle: BillingCycle): LocalDate =
+    when (cycle) {
+      BillingCycle.MONTHLY -> plusMonths(1)
+      BillingCycle.ANNUAL -> plusYears(1)
+    }
+}
