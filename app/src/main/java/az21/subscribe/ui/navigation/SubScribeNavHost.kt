@@ -11,6 +11,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import az21.subscribe.ui.archive.ArchiveScreen
 import az21.subscribe.ui.calendar.CalendarScreen
+import az21.subscribe.ui.datatransfer.DataTransferScreen
 import az21.subscribe.ui.home.HomeScreen
 import az21.subscribe.ui.metrics.MetricsScreen
 import az21.subscribe.ui.paymentmethods.PaymentMethodsScreen
@@ -78,6 +79,7 @@ private fun subScribeEntryProvider(
       SettingsScreen(
         onOpenTags = { backStack.add(TagsRoute) },
         onOpenPaymentMethods = { backStack.add(PaymentMethodsRoute) },
+        onOpenDataTransfer = { backStack.add(DataTransferRoute) },
         onNavigateTopLevel = navigateTopLevel,
       )
     }
@@ -97,4 +99,5 @@ private fun subScribeEntryProvider(
     }
     entry<TagsRoute> { TagsScreen(onBack = popBackStack) }
     entry<PaymentMethodsRoute> { PaymentMethodsScreen(onBack = popBackStack) }
+    entry<DataTransferRoute> { DataTransferScreen(onBack = popBackStack) }
   }

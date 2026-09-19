@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import az21.subscribe.data.local.entity.SubscriptionTagRow
 import az21.subscribe.data.local.entity.TagEntity
 import kotlinx.coroutines.flow.Flow
@@ -34,11 +35,17 @@ interface TagDao {
   )
   fun observeForSubscription(subscriptionId: UUID): Flow<List<TagEntity>>
 
+  @Query("SELECT * FROM tags ORDER BY name COLLATE NOCASE ASC")
+  suspend fun getAll(): List<TagEntity>
+
   @Query("SELECT * FROM tags WHERE id = :id")
   suspend fun getById(id: UUID): TagEntity?
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun upsert(entity: TagEntity)
+
+  @Upsert
+  suspend fun upsertAll(items: List<TagEntity>)
 
   @Query("DELETE FROM tags WHERE id = :id")
   suspend fun deleteById(id: UUID)

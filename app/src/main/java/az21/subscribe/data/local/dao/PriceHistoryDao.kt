@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import az21.subscribe.data.local.entity.PriceHistoryEntity
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -22,6 +23,9 @@ interface PriceHistoryDao {
 
   @Query("SELECT * FROM price_history")
   fun observeAll(): Flow<List<PriceHistoryEntity>>
+
+  @Query("SELECT * FROM price_history")
+  suspend fun getAll(): List<PriceHistoryEntity>
 
   @Query(
     """
@@ -47,6 +51,9 @@ interface PriceHistoryDao {
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun upsert(entity: PriceHistoryEntity)
+
+  @Upsert
+  suspend fun upsertAll(items: List<PriceHistoryEntity>)
 
   @Query("DELETE FROM price_history WHERE id = :id")
   suspend fun deleteById(id: UUID)

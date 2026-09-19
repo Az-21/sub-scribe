@@ -13,9 +13,6 @@
   <string name="settings_theme_mode_dark">Dark</string>
   <string name="settings_tags">Tags</string>
   <string name="settings_payment_methods">Payment methods</string>
-  <string name="settings_export">Export data</string>
-  <string name="settings_import">Import data</string>
-  <string name="settings_coming_soon">Coming soon</string>
   <string name="variant_tonal_spot">Tonal spot</string>
   <string name="variant_neutral">Neutral</string>
   <string name="variant_vibrant">Vibrant</string>

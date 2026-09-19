@@ -66,6 +66,17 @@ class SettingsRepositoryImpl
       context.settingsDataStore.edit { it[Keys.MODE] = mode.name }
     }
 
+    override suspend fun updateSettings(settings: AppSettings) {
+      context.settingsDataStore.edit { preferences ->
+        preferences[Keys.CURRENCY] = settings.currency.code
+        preferences[Keys.SEED_SOURCE] = settings.themeSeedSource.name
+        val seedColor = settings.themeSeedColor
+        if (seedColor == null) preferences.remove(Keys.SEED_COLOR) else preferences[Keys.SEED_COLOR] = seedColor
+        preferences[Keys.VARIANT] = settings.themeVariant.name
+        preferences[Keys.MODE] = settings.themeMode.name
+      }
+    }
+
     private object Keys {
       val CURRENCY = stringPreferencesKey("currency_code")
       val SEED_SOURCE = stringPreferencesKey("theme_seed_source")

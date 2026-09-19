@@ -1,0 +1,24 @@
+<resources>
+  <string name="transfer_title">Export and import</string>
+  <string name="transfer_export_section">Export</string>
+  <string name="transfer_export_description">Save a copy of all your data. JSON keeps everything exactly; CSV is a zip of spreadsheet-friendly tables.</string>
+  <string name="transfer_export_json">Export as JSON</string>
+  <string name="transfer_export_csv">Export as CSV (zip)</string>
+  <string name="transfer_export_succeeded">Export saved.</string>
+  <string name="transfer_export_failed">Export failed.</string>
+  <string name="transfer_import_section">Import</string>
+  <string name="transfer_import_description">Restore from a JSON or CSV export. Records with the same id are updated; everything else is left alone.</string>
+  <string name="transfer_import_button">Choose a file to import</string>
+  <string name="transfer_import_succeeded">Imported %1$d subscriptions, %2$d price entries, %3$d tags and %4$d payment methods.</string>
+  <string name="transfer_import_failed">Import failed.</string>
+  <string name="transfer_import_failed_title">Could not import this file</string>
+  <string name="transfer_preview_title">Import preview</string>
+  <string name="transfer_preview_counts">Subscriptions: %1$d\nPrice entries: %2$d\nTags: %3$d\nPayment methods: %4$d</string>
+  <string name="transfer_issues_title">Warnings</string>
+  <string name="transfer_import_confirm">Import</string>
+  <string name="transfer_issue_unsupported_version">unsupported file version</string>
+  <string name="transfer_issue_malformed_file">malformed file</string>
+  <string name="transfer_issue_missing_file">missing section</string>
+  <string name="transfer_issue_row_skipped">row skipped</string>
+  <string name="transfer_issue_reference_cleared">missing linked item, link cleared</string>
+</resources>

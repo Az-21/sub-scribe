@@ -36,4 +36,8 @@ class FakeSettingsRepository(
   override suspend fun setThemeMode(mode: ThemeMode) {
     state.value = state.value.copy(themeMode = mode)
   }
+
+  override suspend fun updateSettings(settings: AppSettings) {
+    state.value = settings
+  }
 }

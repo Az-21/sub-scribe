@@ -14,10 +14,17 @@ class FakePaymentMethodDao : PaymentMethodDao {
   override fun observeAll(): Flow<List<PaymentMethodEntity>> =
     entities.map { it.values.sortedBy { entity -> entity.label.lowercase() } }
 
+  override suspend fun getAll(): List<PaymentMethodEntity> =
+    entities.value.values.sortedBy { entity -> entity.label.lowercase() }
+
   override suspend fun getById(id: UUID): PaymentMethodEntity? = entities.value[id]
 
   override suspend fun upsert(entity: PaymentMethodEntity) {
     entities.value = entities.value + (entity.id to entity)
+  }
+
+  override suspend fun upsertAll(items: List<PaymentMethodEntity>) {
+    entities.value = entities.value + items.associateBy { entity -> entity.id }
   }
 
   override suspend fun deleteById(id: UUID) {

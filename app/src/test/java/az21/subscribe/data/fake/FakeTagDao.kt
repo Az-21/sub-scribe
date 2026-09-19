@@ -41,10 +41,16 @@ class FakeTagDao : TagDao {
       (links[subscriptionId] ?: emptySet()).mapNotNull { tags[it] }.sortedBy { it.name.lowercase() }
     }
 
+  override suspend fun getAll(): List<TagEntity> = entities.value.values.sortedBy { entity -> entity.name.lowercase() }
+
   override suspend fun getById(id: UUID): TagEntity? = entities.value[id]
 
   override suspend fun upsert(entity: TagEntity) {
     entities.value = entities.value + (entity.id to entity)
+  }
+
+  override suspend fun upsertAll(items: List<TagEntity>) {
+    entities.value = entities.value + items.associateBy { entity -> entity.id }
   }
 
   override suspend fun deleteById(id: UUID) {

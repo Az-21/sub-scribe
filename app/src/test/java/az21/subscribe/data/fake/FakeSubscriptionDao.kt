@@ -26,8 +26,14 @@ class FakeSubscriptionDao : SubscriptionDao {
 
   override suspend fun getById(id: UUID): SubscriptionEntity? = entities.value[id]
 
+  override suspend fun getAll(): List<SubscriptionEntity> = entities.value.values.toList()
+
   override suspend fun upsert(entity: SubscriptionEntity) {
     entities.value = entities.value + (entity.id to entity)
+  }
+
+  override suspend fun upsertAll(items: List<SubscriptionEntity>) {
+    entities.value = entities.value + items.associateBy { entity -> entity.id }
   }
 
   override suspend fun deleteById(id: UUID) {
@@ -38,8 +44,17 @@ class FakeSubscriptionDao : SubscriptionDao {
   override fun observeTagIds(subscriptionId: UUID): Flow<List<UUID>> =
     tagLinks.map { (it[subscriptionId] ?: emptySet()).toList() }
 
+  override suspend fun getAllTagAssignments(): List<SubscriptionTagEntity> =
+    tagLinks.value.flatMap { (subscriptionId, tagIds) ->
+      tagIds.map { tagId -> SubscriptionTagEntity(subscriptionId = subscriptionId, tagId = tagId) }
+    }
+
   override suspend fun clearTags(subscriptionId: UUID) {
     tagLinks.value = tagLinks.value - subscriptionId
+  }
+
+  override suspend fun clearTagsFor(subscriptionIds: List<UUID>) {
+    tagLinks.value = tagLinks.value - subscriptionIds.toSet()
   }
 
   override suspend fun insertTags(rows: List<SubscriptionTagEntity>) {

@@ -17,6 +17,8 @@ class FakePriceHistoryDao : PriceHistoryDao {
 
   override fun observeAll(): Flow<List<PriceHistoryEntity>> = entities.map { it.values.toList() }
 
+  override suspend fun getAll(): List<PriceHistoryEntity> = entities.value.values.toList()
+
   override suspend fun getForSubscription(subscriptionId: UUID): List<PriceHistoryEntity> =
     timeline(entities.value.values, subscriptionId)
 
@@ -28,6 +30,10 @@ class FakePriceHistoryDao : PriceHistoryDao {
 
   override suspend fun upsert(entity: PriceHistoryEntity) {
     entities.value = entities.value + (entity.id to entity)
+  }
+
+  override suspend fun upsertAll(items: List<PriceHistoryEntity>) {
+    entities.value = entities.value + items.associateBy { entity -> entity.id }
   }
 
   override suspend fun deleteById(id: UUID) {

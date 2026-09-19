@@ -20,4 +20,7 @@ interface SettingsRepository {
   suspend fun setThemeVariant(variant: ThemeVariant)
 
   suspend fun setThemeMode(mode: ThemeMode)
+
+  /** Applies a full settings snapshot at once, used when importing a backup. */
+  suspend fun updateSettings(settings: AppSettings)
 }

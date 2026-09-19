@@ -60,6 +60,7 @@ import az21.subscribe.ui.theme.FallbackSeedColor
 fun SettingsScreen(
   onOpenTags: () -> Unit,
   onOpenPaymentMethods: () -> Unit,
+  onOpenDataTransfer: () -> Unit,
   onNavigateTopLevel: (NavKey) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: SettingsViewModel = hiltViewModel(),
@@ -74,6 +75,7 @@ fun SettingsScreen(
     onModeChange = viewModel::setThemeMode,
     onOpenTags = onOpenTags,
     onOpenPaymentMethods = onOpenPaymentMethods,
+    onOpenDataTransfer = onOpenDataTransfer,
     onNavigateTopLevel = onNavigateTopLevel,
     modifier = modifier,
   )
@@ -90,6 +92,7 @@ fun SettingsContent(
   onModeChange: (ThemeMode) -> Unit,
   onOpenTags: () -> Unit,
   onOpenPaymentMethods: () -> Unit,
+  onOpenDataTransfer: () -> Unit,
   onNavigateTopLevel: (NavKey) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -134,18 +137,11 @@ fun SettingsContent(
       }
 
       Card(modifier = Modifier.fillMaxWidth()) {
-        Column {
-          ListItem(
-            headlineContent = { Text(stringResource(R.string.settings_export)) },
-            supportingContent = { Text(stringResource(R.string.settings_coming_soon)) },
-            modifier = Modifier.clickable(enabled = false) {},
-          )
-          ListItem(
-            headlineContent = { Text(stringResource(R.string.settings_import)) },
-            supportingContent = { Text(stringResource(R.string.settings_coming_soon)) },
-            modifier = Modifier.clickable(enabled = false) {},
-          )
-        }
+        ListItem(
+          headlineContent = { Text(stringResource(R.string.transfer_title)) },
+          supportingContent = { Text(stringResource(R.string.transfer_export_description)) },
+          modifier = Modifier.clickable(onClick = onOpenDataTransfer),
+        )
       }
     }
   }
@@ -340,6 +336,7 @@ private fun SettingsContentPreview() {
       onModeChange = {},
       onOpenTags = {},
       onOpenPaymentMethods = {},
+      onOpenDataTransfer = {},
       onNavigateTopLevel = {},
     )
   }
