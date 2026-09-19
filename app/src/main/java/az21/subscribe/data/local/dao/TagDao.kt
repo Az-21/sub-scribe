@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import az21.subscribe.data.local.entity.SubscriptionTagRow
 import az21.subscribe.data.local.entity.TagEntity
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
@@ -12,6 +13,16 @@ import java.util.UUID
 interface TagDao {
   @Query("SELECT * FROM tags ORDER BY name COLLATE NOCASE ASC")
   fun observeAll(): Flow<List<TagEntity>>
+
+  @Query(
+    """
+    SELECT st.subscription_id AS subscription_id, t.id AS tag_id, t.name AS name, t.color AS color
+    FROM subscription_tags st
+    INNER JOIN tags t ON t.id = st.tag_id
+    ORDER BY t.name COLLATE NOCASE ASC
+    """,
+  )
+  fun observeAssignments(): Flow<List<SubscriptionTagRow>>
 
   @Query(
     """

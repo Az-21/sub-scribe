@@ -11,6 +11,9 @@ interface PriceHistoryRepository {
   /** The full timeline for a subscription, newest effective date first. */
   fun observeTimeline(subscriptionId: UUID): Flow<List<PriceHistory>>
 
+  /** Every subscription's timeline, keyed by subscription id, for list screens. */
+  fun observeAllTimelines(): Flow<Map<UUID, List<PriceHistory>>>
+
   suspend fun getTimeline(subscriptionId: UUID): List<PriceHistory>
 
   /** The price in force on [date], or null when no entry is effective yet. */

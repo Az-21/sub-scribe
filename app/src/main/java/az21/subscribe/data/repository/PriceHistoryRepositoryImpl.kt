@@ -26,6 +26,19 @@ class PriceHistoryRepositoryImpl
         entries.map(PriceHistoryEntity::toDomain)
       }
 
+    override fun observeAllTimelines(): Flow<Map<UUID, List<PriceHistory>>> =
+      priceHistoryDao.observeAll().map { entries ->
+        entries
+          .groupBy { entity -> entity.subscriptionId }
+          .mapValues { (_, timeline) ->
+            timeline
+              .sortedWith(
+                compareByDescending<PriceHistoryEntity> { entity -> entity.effectiveFromDate }
+                  .thenByDescending { entity -> entity.createdAt },
+              ).map(PriceHistoryEntity::toDomain)
+          }
+      }
+
     override suspend fun getTimeline(subscriptionId: UUID): List<PriceHistory> =
       priceHistoryDao.getForSubscription(subscriptionId).map(PriceHistoryEntity::toDomain)
 

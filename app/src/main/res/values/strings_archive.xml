@@ -1,0 +1,8 @@
+<resources>
+  <string name="archive_title">Archive</string>
+  <string name="archive_empty">Nothing here yet. Cancelled subscriptions appear in this list.</string>
+  <string name="archive_cancelled">Cancelled</string>
+  <string name="archive_archived">Archived</string>
+  <string name="archive_archive_action">Archive</string>
+  <string name="archive_delete_action">Delete</string>
+</resources>

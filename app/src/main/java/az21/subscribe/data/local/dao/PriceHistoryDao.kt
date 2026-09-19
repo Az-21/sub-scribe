@@ -20,6 +20,9 @@ interface PriceHistoryDao {
   )
   fun observeForSubscription(subscriptionId: UUID): Flow<List<PriceHistoryEntity>>
 
+  @Query("SELECT * FROM price_history")
+  fun observeAll(): Flow<List<PriceHistoryEntity>>
+
   @Query(
     """
     SELECT * FROM price_history

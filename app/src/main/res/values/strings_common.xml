@@ -1,0 +1,12 @@
+<resources>
+  <string name="action_add">Add</string>
+  <string name="action_back">Back</string>
+  <string name="action_cancel">Cancel</string>
+  <string name="action_close">Close</string>
+  <string name="action_confirm">Confirm</string>
+  <string name="action_delete">Delete</string>
+  <string name="action_edit">Edit</string>
+  <string name="action_save">Save</string>
+  <string name="delete_dialog_title">Delete subscription?</string>
+  <string name="delete_dialog_message">This permanently removes %1$s and its price history from your metrics. If you care about historic accuracy, archive it instead.</string>
+</resources>

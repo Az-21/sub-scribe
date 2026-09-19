@@ -1,6 +1,5 @@
 <resources>
   <string name="metrics_title">Metrics</string>
-  <string name="metrics_back">Back</string>
   <string name="metrics_previous_year">Previous</string>
   <string name="metrics_next_year">Next</string>
   <string name="metrics_total_spend">Total spent</string>

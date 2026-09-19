@@ -1,4 +1,4 @@
-package az21.subscribe.ui.metrics
+package az21.subscribe.ui.common
 
 import az21.subscribe.domain.model.Currency
 import java.math.BigDecimal

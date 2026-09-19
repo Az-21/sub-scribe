@@ -24,6 +24,15 @@ class TagRepositoryImpl
     override fun observeTagsForSubscription(subscriptionId: UUID): Flow<List<Tag>> =
       tagDao.observeForSubscription(subscriptionId).map { entities -> entities.map(TagEntity::toDomain) }
 
+    override fun observeTagsBySubscription(): Flow<Map<UUID, List<Tag>>> =
+      tagDao.observeAssignments().map { rows ->
+        rows
+          .groupBy { row -> row.subscriptionId }
+          .mapValues { (_, assignments) ->
+            assignments.map { row -> Tag(id = row.tagId, name = row.name, color = row.color) }
+          }
+      }
+
     override suspend fun getTag(id: UUID): Tag? = tagDao.getById(id)?.toDomain()
 
     override suspend fun createTag(

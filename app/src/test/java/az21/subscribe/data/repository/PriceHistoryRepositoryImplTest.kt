@@ -1,6 +1,7 @@
 package az21.subscribe.data.repository
 
 import az21.subscribe.data.fake.FakePriceHistoryDao
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -71,6 +72,23 @@ class PriceHistoryRepositoryImplTest {
         listOf(BigDecimal("12.99"), BigDecimal("9.99")),
         timeline.map { it.price },
       )
+    }
+
+  @Test
+  fun observeAllTimelines_groupsBySubscriptionNewestFirst() =
+    runTest {
+      val otherId = UUID.randomUUID()
+      repository.addPriceChange(subscriptionId, BigDecimal("9.99"), LocalDate.of(2023, 1, 1))
+      repository.addPriceChange(subscriptionId, BigDecimal("12.99"), LocalDate.of(2024, 1, 1))
+      repository.addPriceChange(otherId, BigDecimal("4.99"), LocalDate.of(2024, 2, 1))
+
+      val timelines = repository.observeAllTimelines().first()
+
+      assertEquals(
+        listOf(BigDecimal("12.99"), BigDecimal("9.99")),
+        timelines.getValue(subscriptionId).map { it.price },
+      )
+      assertEquals(listOf(BigDecimal("4.99")), timelines.getValue(otherId).map { it.price })
     }
 
   @Test

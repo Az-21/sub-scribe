@@ -10,6 +10,9 @@ interface TagRepository {
 
   fun observeTagsForSubscription(subscriptionId: UUID): Flow<List<Tag>>
 
+  /** Every subscription's attached tags, keyed by subscription id, for list screens. */
+  fun observeTagsBySubscription(): Flow<Map<UUID, List<Tag>>>
+
   suspend fun getTag(id: UUID): Tag?
 
   suspend fun createTag(

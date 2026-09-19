@@ -1,0 +1,8 @@
+<resources>
+  <string name="calendar_title">Upcoming</string>
+  <string name="calendar_previous_month">Previous</string>
+  <string name="calendar_next_month">Next</string>
+  <string name="calendar_empty_day">No charges on this day.</string>
+  <string name="calendar_charge_count">%1$d charges</string>
+  <string name="calendar_month_spend">Month total: %1$s</string>
+</resources>

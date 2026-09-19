@@ -1,0 +1,9 @@
+<resources>
+  <string name="payment_methods_title">Payment methods</string>
+  <string name="payment_methods_add">Add payment method</string>
+  <string name="payment_methods_edit">Edit payment method</string>
+  <string name="payment_methods_delete">Delete payment method</string>
+  <string name="payment_methods_label">Label</string>
+  <string name="payment_methods_empty">No payment methods yet.</string>
+  <string name="payment_methods_delete_message">Delete \"%1$s\"? Subscriptions using it will keep their other details.</string>
+</resources>

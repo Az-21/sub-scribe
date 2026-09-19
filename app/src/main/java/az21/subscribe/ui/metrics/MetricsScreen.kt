@@ -29,9 +29,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavKey
 import az21.subscribe.R
 import az21.subscribe.domain.metrics.MonthlySpend
 import az21.subscribe.domain.model.Currency
+import az21.subscribe.ui.common.formatMoney
+import az21.subscribe.ui.navigation.MetricsRoute
+import az21.subscribe.ui.navigation.SubScribeBottomBar
 import az21.subscribe.ui.theme.SubScribeTheme
 import java.math.BigDecimal
 import java.time.Month
@@ -41,7 +45,7 @@ private const val MONTHS_PER_ROW = 3
 
 @Composable
 fun MetricsScreen(
-  onBack: () -> Unit,
+  onNavigateTopLevel: (NavKey) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: MetricsViewModel = hiltViewModel(),
 ) {
@@ -51,7 +55,7 @@ fun MetricsScreen(
     onPreviousYear = viewModel::onPreviousYear,
     onNextYear = viewModel::onNextYear,
     onMonthSelected = viewModel::onMonthSelected,
-    onBack = onBack,
+    onNavigateTopLevel = onNavigateTopLevel,
     modifier = modifier,
   )
 }
@@ -63,19 +67,13 @@ fun MetricsContent(
   onPreviousYear: () -> Unit,
   onNextYear: () -> Unit,
   onMonthSelected: (Month) -> Unit,
-  onBack: () -> Unit,
+  onNavigateTopLevel: (NavKey) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Scaffold(
     modifier = modifier.fillMaxSize(),
-    topBar = {
-      TopAppBar(
-        title = { Text(stringResource(R.string.metrics_title)) },
-        navigationIcon = {
-          TextButton(onClick = onBack) { Text(stringResource(R.string.metrics_back)) }
-        },
-      )
-    },
+    topBar = { TopAppBar(title = { Text(stringResource(R.string.metrics_title)) }) },
+    bottomBar = { SubScribeBottomBar(currentRoute = MetricsRoute, onSelect = onNavigateTopLevel) },
   ) { innerPadding ->
     if (uiState.isLoading) {
       Box(
@@ -288,7 +286,7 @@ private fun MetricsContentPreview() {
       onPreviousYear = {},
       onNextYear = {},
       onMonthSelected = {},
-      onBack = {},
+      onNavigateTopLevel = {},
     )
   }
 }

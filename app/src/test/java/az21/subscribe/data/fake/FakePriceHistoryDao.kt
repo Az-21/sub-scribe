@@ -15,6 +15,8 @@ class FakePriceHistoryDao : PriceHistoryDao {
   override fun observeForSubscription(subscriptionId: UUID): Flow<List<PriceHistoryEntity>> =
     entities.map { timeline(it.values, subscriptionId) }
 
+  override fun observeAll(): Flow<List<PriceHistoryEntity>> = entities.map { it.values.toList() }
+
   override suspend fun getForSubscription(subscriptionId: UUID): List<PriceHistoryEntity> =
     timeline(entities.value.values, subscriptionId)
 

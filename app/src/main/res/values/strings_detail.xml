@@ -1,0 +1,30 @@
+<resources>
+  <string name="detail_title">Subscription</string>
+  <string name="detail_status">Status</string>
+  <string name="detail_next_billing">Next billing</string>
+  <string name="detail_current_price">Current price</string>
+  <string name="detail_start_date">Start date</string>
+  <string name="detail_billing_cycle">Billing cycle</string>
+  <string name="detail_free_trial">Free trial</string>
+  <string name="detail_free_trial_months">%1$d months</string>
+  <string name="detail_trial_end">Trial ends</string>
+  <string name="detail_reminder">Reminder</string>
+  <string name="detail_reminder_days">%1$d days before</string>
+  <string name="detail_payment_method">Payment method</string>
+  <string name="detail_tags">Tags</string>
+  <string name="detail_notes">Notes</string>
+  <string name="detail_price_history">Price history</string>
+  <string name="detail_add_price_change">Add price change</string>
+  <string name="detail_price_change_title">New price</string>
+  <string name="detail_price_change_effective">Effective from: %1$s</string>
+  <string name="detail_cancel">Cancel subscription</string>
+  <string name="detail_cancel_with_date">Cancel with end date</string>
+  <string name="detail_archive">Archive</string>
+  <string name="detail_delete">Delete permanently</string>
+  <string name="detail_none">None</string>
+  <string name="detail_no_tags">No tags</string>
+  <string name="detail_no_notes">No notes</string>
+  <string name="detail_end_date">Ended %1$s</string>
+  <string name="detail_price_no_history">No price history yet.</string>
+  <string name="detail_error">That action could not be completed.</string>
+</resources>

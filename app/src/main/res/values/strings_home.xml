@@ -1,3 +1,19 @@
 <resources>
-  <string name="home_open_metrics">Metrics</string>
+  <string name="home_title">Subscriptions</string>
+  <string name="home_search_hint">Search subscriptions</string>
+  <string name="home_add">Add subscription</string>
+  <string name="home_open_archive">Archive</string>
+  <string name="home_empty">No subscriptions yet. Add one to start tracking.</string>
+  <string name="home_no_results">No subscriptions match your filters.</string>
+  <string name="home_sort">Sort</string>
+  <string name="home_sort_name">Name</string>
+  <string name="home_sort_price">Price</string>
+  <string name="home_sort_next_billing">Next billing</string>
+  <string name="home_filter_status">Status</string>
+  <string name="home_filter_tag">Tag</string>
+  <string name="home_filter_payment">Payment method</string>
+  <string name="home_filter_all">All</string>
+  <string name="home_status_active">Active</string>
+  <string name="home_status_cancelled">Cancelled</string>
+  <string name="home_status_archived">Archived</string>
 </resources>
