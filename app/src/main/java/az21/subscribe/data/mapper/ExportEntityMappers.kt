@@ -44,4 +44,5 @@ fun PriceHistoryExport.toEntity(): PriceHistoryEntity =
 
 fun TagExport.toEntity(): TagEntity = TagEntity(id = UUID.fromString(id), name = name, color = color)
 
-fun PaymentMethodExport.toEntity(): PaymentMethodEntity = PaymentMethodEntity(id = UUID.fromString(id), label = label)
+fun PaymentMethodExport.toEntity(): PaymentMethodEntity =
+  PaymentMethodEntity(id = UUID.fromString(id), label = label, color = color)

@@ -13,7 +13,7 @@ fun sampleExportDocument(): ExportDocument =
     priceHistory = samplePriceHistory(),
     tags = listOf(TagExport(id = TAG_ID, name = "Entertainment", color = -16776961)),
     subscriptionTags = listOf(SubscriptionTagExport(subscriptionId = STREAMING_ID, tagId = TAG_ID)),
-    paymentMethods = listOf(PaymentMethodExport(id = PAYMENT_ID, label = "Visa ...1234")),
+    paymentMethods = listOf(PaymentMethodExport(id = PAYMENT_ID, label = "Visa ...1234", color = -65536)),
     settings = sampleSettings(),
   )
 

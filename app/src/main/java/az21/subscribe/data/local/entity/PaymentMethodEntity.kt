@@ -9,4 +9,5 @@ import java.util.UUID
 data class PaymentMethodEntity(
   @PrimaryKey @ColumnInfo(name = "id") val id: UUID,
   @ColumnInfo(name = "label") val label: String,
+  @ColumnInfo(name = "color") val color: Int? = null,
 )

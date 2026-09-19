@@ -6,4 +6,5 @@ import java.util.UUID
 data class PaymentMethod(
   val id: UUID,
   val label: String,
+  val color: Int? = null,
 )

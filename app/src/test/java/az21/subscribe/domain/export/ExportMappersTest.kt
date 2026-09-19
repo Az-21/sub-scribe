@@ -146,11 +146,17 @@ class ExportMappersTest {
   @Test
   fun tagAndPaymentMethodToExport_mapFields() {
     val tag = Tag(id = UUID.fromString("33333333-3333-3333-3333-333333333333"), name = "Work", color = 0x00FF00)
-    val paymentMethod = PaymentMethod(id = UUID.fromString("44444444-4444-4444-4444-444444444444"), label = "PayPal")
+    val paymentMethod =
+      PaymentMethod(
+        id = UUID.fromString("44444444-4444-4444-4444-444444444444"),
+        label = "PayPal",
+        color = 0x0000FF,
+      )
 
     assertEquals("33333333-3333-3333-3333-333333333333", tag.toExport().id)
     assertEquals(0x00FF00, tag.toExport().color)
     assertEquals("PayPal", paymentMethod.toExport().label)
+    assertEquals(0x0000FF, paymentMethod.toExport().color)
   }
 
   private fun subscriptionExport(id: String): SubscriptionExport =

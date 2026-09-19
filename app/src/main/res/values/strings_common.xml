@@ -7,6 +7,14 @@
   <string name="action_delete">Delete</string>
   <string name="action_edit">Edit</string>
   <string name="action_save">Save</string>
+  <string name="color_picker_title">Select a color</string>
+  <string name="color_picker_hue">Hue</string>
+  <string name="color_picker_saturation">Saturation</string>
+  <string name="color_picker_brightness">Brightness</string>
+  <string name="color_picker_hex">Hex</string>
+  <string name="color_picker_confirm">Select</string>
+  <string name="color_picker_cancel">Cancel</string>
+  <string name="color_picker_custom">Custom color…</string>
   <string name="delete_dialog_title">Delete subscription?</string>
   <string name="delete_dialog_message">This permanently removes %1$s and its price history from your metrics. If you care about historic accuracy, archive it instead.</string>
 </resources>

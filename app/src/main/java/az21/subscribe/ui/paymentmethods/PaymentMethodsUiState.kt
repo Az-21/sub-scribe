@@ -7,6 +7,7 @@ import java.util.UUID
 data class PaymentMethodEditorState(
   val id: UUID? = null,
   val label: String = "",
+  val color: Int? = null,
 )
 
 /** Immutable state for the payment method management screen. */

@@ -39,7 +39,8 @@ fun PriceHistory.toExport(): PriceHistoryExport =
 
 fun Tag.toExport(): TagExport = TagExport(id = id.toString(), name = name, color = color)
 
-fun PaymentMethod.toExport(): PaymentMethodExport = PaymentMethodExport(id = id.toString(), label = label)
+fun PaymentMethod.toExport(): PaymentMethodExport =
+  PaymentMethodExport(id = id.toString(), label = label, color = color)
 
 fun AppSettings.toExport(): SettingsExport =
   SettingsExport(

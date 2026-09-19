@@ -42,6 +42,14 @@ class PaymentMethodRepositoryRoomTest {
     }
 
   @Test
+  fun create_persistsColor() =
+    runTest {
+      val created = repository.createPaymentMethod("Visa ...1234", color = 0xFF4FC3F7.toInt())
+
+      assertEquals(0xFF4FC3F7.toInt(), repository.getPaymentMethod(created.id)?.color)
+    }
+
+  @Test
   fun delete_removesPaymentMethod() =
     runTest {
       val created = repository.createPaymentMethod("PayPal")

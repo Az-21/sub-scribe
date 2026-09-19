@@ -23,8 +23,11 @@ class PaymentMethodRepositoryImpl
 
     override suspend fun getPaymentMethod(id: UUID): PaymentMethod? = paymentMethodDao.getById(id)?.toDomain()
 
-    override suspend fun createPaymentMethod(label: String): PaymentMethod {
-      val entity = PaymentMethodEntity(id = UUID.randomUUID(), label = label)
+    override suspend fun createPaymentMethod(
+      label: String,
+      color: Int?,
+    ): PaymentMethod {
+      val entity = PaymentMethodEntity(id = UUID.randomUUID(), label = label, color = color)
       paymentMethodDao.upsert(entity)
       return entity.toDomain()
     }

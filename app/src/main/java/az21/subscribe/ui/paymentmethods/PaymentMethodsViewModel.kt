@@ -42,7 +42,14 @@ class PaymentMethodsViewModel
 
     fun startEdit(paymentMethod: PaymentMethod) {
       dialogs.value =
-        dialogs.value.copy(editor = PaymentMethodEditorState(id = paymentMethod.id, label = paymentMethod.label))
+        dialogs.value.copy(
+          editor =
+            PaymentMethodEditorState(
+              id = paymentMethod.id,
+              label = paymentMethod.label,
+              color = paymentMethod.color,
+            ),
+        )
     }
 
     fun dismissEditor() {
@@ -53,6 +60,10 @@ class PaymentMethodsViewModel
       dialogs.value = dialogs.value.copy(editor = dialogs.value.editor?.copy(label = label))
     }
 
+    fun onColorChange(color: Int?) {
+      dialogs.value = dialogs.value.copy(editor = dialogs.value.editor?.copy(color = color))
+    }
+
     fun save() {
       val editor = dialogs.value.editor ?: return
       val label = editor.label.trim()
@@ -60,9 +71,9 @@ class PaymentMethodsViewModel
       viewModelScope.launch {
         val id = editor.id
         if (id == null) {
-          paymentMethodRepository.createPaymentMethod(label)
+          paymentMethodRepository.createPaymentMethod(label, editor.color)
         } else {
-          paymentMethodRepository.updatePaymentMethod(PaymentMethod(id = id, label = label))
+          paymentMethodRepository.updatePaymentMethod(PaymentMethod(id = id, label = label, color = editor.color))
         }
         dialogs.value = dialogs.value.copy(editor = null)
       }

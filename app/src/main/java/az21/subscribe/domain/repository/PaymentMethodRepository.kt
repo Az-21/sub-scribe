@@ -10,7 +10,10 @@ interface PaymentMethodRepository {
 
   suspend fun getPaymentMethod(id: UUID): PaymentMethod?
 
-  suspend fun createPaymentMethod(label: String): PaymentMethod
+  suspend fun createPaymentMethod(
+    label: String,
+    color: Int? = null,
+  ): PaymentMethod
 
   suspend fun updatePaymentMethod(paymentMethod: PaymentMethod)
 

@@ -70,6 +70,7 @@ data class SubscriptionTagExport(
 data class PaymentMethodExport(
   val id: String,
   val label: String,
+  val color: Int? = null,
 )
 
 @Serializable

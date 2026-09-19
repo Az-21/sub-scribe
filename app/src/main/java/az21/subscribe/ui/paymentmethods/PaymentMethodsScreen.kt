@@ -1,5 +1,6 @@
 package az21.subscribe.ui.paymentmethods
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,8 +9,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -32,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,10 +44,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import az21.subscribe.R
 import az21.subscribe.domain.model.PaymentMethod
+import az21.subscribe.ui.common.ColorPicker
 import az21.subscribe.ui.common.IconActionButton
 import az21.subscribe.ui.common.SubScribeTopAppBar
 import az21.subscribe.ui.common.segmentedListItemColors
 import az21.subscribe.ui.theme.AppTheme
+import az21.subscribe.ui.theme.FallbackSeedColor
 
 @Composable
 fun PaymentMethodsScreen(
@@ -61,6 +67,7 @@ fun PaymentMethodsScreen(
     onCancelDelete = viewModel::cancelDelete,
     onConfirmDelete = viewModel::confirmDelete,
     onLabelChange = viewModel::onLabelChange,
+    onColorChange = viewModel::onColorChange,
     onSaveEditor = viewModel::save,
     onDismissEditor = viewModel::dismissEditor,
     modifier = modifier,
@@ -78,6 +85,7 @@ fun PaymentMethodsContent(
   onCancelDelete: () -> Unit,
   onConfirmDelete: () -> Unit,
   onLabelChange: (String) -> Unit,
+  onColorChange: (Int?) -> Unit,
   onSaveEditor: () -> Unit,
   onDismissEditor: () -> Unit,
   modifier: Modifier = Modifier,
@@ -111,6 +119,7 @@ fun PaymentMethodsContent(
   PaymentMethodDialogs(
     uiState = uiState,
     onLabelChange = onLabelChange,
+    onColorChange = onColorChange,
     onSaveEditor = onSaveEditor,
     onDismissEditor = onDismissEditor,
     onCancelDelete = onCancelDelete,
@@ -170,6 +179,7 @@ private fun PaymentMethodRow(
     shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
     colors = segmentedListItemColors(),
     modifier = Modifier.fillMaxWidth(),
+    leadingContent = { PaymentMethodColorDot(color = method.color) },
     content = { Text(text = method.label, style = MaterialTheme.typography.bodyLarge) },
     trailingContent = {
       Row {
@@ -189,9 +199,16 @@ private fun PaymentMethodRow(
 }
 
 @Composable
+private fun PaymentMethodColorDot(color: Int?) {
+  if (color == null) return
+  Box(modifier = Modifier.size(16.dp).background(Color(color), CircleShape))
+}
+
+@Composable
 private fun PaymentMethodDialogs(
   uiState: PaymentMethodsUiState,
   onLabelChange: (String) -> Unit,
+  onColorChange: (Int?) -> Unit,
   onSaveEditor: () -> Unit,
   onDismissEditor: () -> Unit,
   onCancelDelete: () -> Unit,
@@ -201,6 +218,7 @@ private fun PaymentMethodDialogs(
     PaymentMethodEditorDialog(
       editor = editor,
       onLabelChange = onLabelChange,
+      onColorChange = onColorChange,
       onSave = onSaveEditor,
       onDismiss = onDismissEditor,
     )
@@ -227,6 +245,7 @@ private fun PaymentMethodDialogs(
 private fun PaymentMethodEditorDialog(
   editor: PaymentMethodEditorState,
   onLabelChange: (String) -> Unit,
+  onColorChange: (Int?) -> Unit,
   onSave: () -> Unit,
   onDismiss: () -> Unit,
 ) {
@@ -240,12 +259,19 @@ private fun PaymentMethodEditorDialog(
       )
     },
     text = {
-      Column {
+      Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         OutlinedTextField(
           value = editor.label,
           onValueChange = onLabelChange,
           label = { Text(stringResource(R.string.payment_methods_label)) },
           singleLine = true,
+        )
+        ColorPicker(
+          selected = editor.color,
+          fallbackColor = FallbackSeedColor,
+          customContentDescription = stringResource(R.string.color_picker_custom),
+          presetContentDescription = stringResource(R.string.payment_methods_color),
+          onColorChange = onColorChange,
         )
       }
     },
@@ -267,6 +293,7 @@ private fun PaymentMethodsContentPreview() {
       onCancelDelete = {},
       onConfirmDelete = {},
       onLabelChange = {},
+      onColorChange = {},
       onSaveEditor = {},
       onDismissEditor = {},
     )

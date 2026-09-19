@@ -1,8 +1,6 @@
 package az21.subscribe.ui.tags
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,11 +44,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import az21.subscribe.R
 import az21.subscribe.domain.model.Tag
+import az21.subscribe.ui.common.ColorPicker
 import az21.subscribe.ui.common.IconActionButton
-import az21.subscribe.ui.common.PresetColors
 import az21.subscribe.ui.common.SubScribeTopAppBar
 import az21.subscribe.ui.common.segmentedListItemColors
 import az21.subscribe.ui.theme.AppTheme
+import az21.subscribe.ui.theme.FallbackSeedColor
 
 @Composable
 fun TagsScreen(
@@ -263,34 +262,17 @@ private fun TagEditorDialog(
           label = { Text(stringResource(R.string.tags_name)) },
           singleLine = true,
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-          PresetColors.forEach { color ->
-            ColorSwatch(selected = editor.color == color, color = color, onClick = { onColorChange(color) })
-          }
-        }
+        ColorPicker(
+          selected = editor.color,
+          fallbackColor = FallbackSeedColor,
+          customContentDescription = stringResource(R.string.color_picker_custom),
+          presetContentDescription = stringResource(R.string.tags_color),
+          onColorChange = onColorChange,
+        )
       }
     },
     confirmButton = { TextButton(onClick = onSave) { Text(stringResource(R.string.action_save)) } },
     dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
-  )
-}
-
-@Composable
-private fun ColorSwatch(
-  selected: Boolean,
-  color: Int,
-  onClick: () -> Unit,
-) {
-  Box(
-    modifier =
-      Modifier
-        .size(32.dp)
-        .background(Color(color), CircleShape)
-        .border(
-          width = if (selected) 3.dp else 0.dp,
-          color = MaterialTheme.colorScheme.onSurface,
-          shape = CircleShape,
-        ).clickable(onClick = onClick),
   )
 }
 
