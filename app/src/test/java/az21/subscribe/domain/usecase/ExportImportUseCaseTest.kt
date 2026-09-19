@@ -95,6 +95,14 @@ class ExportImportUseCaseTest {
   }
 
   @Test
+  fun parse_unknownFormat_isMalformed() {
+    val result = importData.parse(byteArrayOf(0x01, 0x02, 0x03))
+
+    val failure = result as ImportParseResult.Failure
+    assertTrue(failure.issues.any { it.reason == ImportIssueReason.MALFORMED_FILE })
+  }
+
+  @Test
   fun exportFile_usesFormatMetadata() =
     runTest {
       repository.merge(sampleExportDocument())

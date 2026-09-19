@@ -15,6 +15,7 @@ import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
+import java.util.UUID
 
 class SubscriptionLifecycleUseCasesTest {
   private val today = LocalDate.of(2024, 5, 20)
@@ -84,6 +85,50 @@ class SubscriptionLifecycleUseCasesTest {
       delete(created.id)
 
       assertNull(repository.getSubscription(created.id))
+    }
+
+  @Test
+  fun cancel_rejectsArchivedSubscription() =
+    runTest {
+      val created = repository.createSubscription(draft())
+      cancel(created.id)
+      archive(created.id)
+
+      val error = runCatching { cancel(created.id) }.exceptionOrNull()
+
+      assertTrue(error is SubscriptionTransitionException.CannotCancel)
+    }
+
+  @Test
+  fun archive_rejectsAlreadyArchivedSubscription() =
+    runTest {
+      val created = repository.createSubscription(draft())
+      cancel(created.id)
+      archive(created.id)
+
+      val error = runCatching { archive(created.id) }.exceptionOrNull()
+
+      assertTrue(error is SubscriptionTransitionException.CannotArchive)
+    }
+
+  @Test
+  fun delete_rejectsActiveSubscription() =
+    runTest {
+      val created = repository.createSubscription(draft())
+
+      val error = runCatching { delete(created.id) }.exceptionOrNull()
+
+      assertTrue(error is SubscriptionTransitionException.CannotDelete)
+    }
+
+  @Test
+  fun transitions_failForUnknownSubscription() =
+    runTest {
+      val missing = UUID.randomUUID()
+
+      assertTrue(runCatching { cancel(missing) }.exceptionOrNull() is SubscriptionTransitionException.NotFound)
+      assertTrue(runCatching { archive(missing) }.exceptionOrNull() is SubscriptionTransitionException.NotFound)
+      assertTrue(runCatching { delete(missing) }.exceptionOrNull() is SubscriptionTransitionException.NotFound)
     }
 
   private fun draft(): SubscriptionDraft =

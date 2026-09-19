@@ -67,6 +67,36 @@ class MapperTest {
   }
 
   @Test
+  fun subscription_withNullOptionals_roundTrips() {
+    val subscription =
+      Subscription(
+        id = UUID.randomUUID(),
+        name = "Bare",
+        iconId = "bare",
+        startDate = LocalDate.of(2024, 1, 1),
+        billingCycle = BillingCycle.MONTHLY,
+        freeTrialMonths = null,
+        status = SubscriptionStatus.ACTIVE,
+        endDate = null,
+        reminderDaysBefore = null,
+        trialReminderEnabled = false,
+        paymentMethodId = null,
+        notes = null,
+        createdAt = Instant.EPOCH,
+        updatedAt = Instant.EPOCH,
+      )
+
+    val mapped = subscription.toEntity().toDomain()
+
+    assertEquals(subscription, mapped)
+    assertEquals(null, mapped.freeTrialMonths)
+    assertEquals(null, mapped.endDate)
+    assertEquals(null, mapped.reminderDaysBefore)
+    assertEquals(null, mapped.paymentMethodId)
+    assertEquals(null, mapped.notes)
+  }
+
+  @Test
   fun subscriptionEntity_exposesExpectedColumns() {
     val entity =
       SubscriptionEntity(

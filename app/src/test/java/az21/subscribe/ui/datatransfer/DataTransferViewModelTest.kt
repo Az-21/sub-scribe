@@ -1,5 +1,7 @@
 package az21.subscribe.ui.datatransfer
 
+import app.cash.turbine.ReceiveTurbine
+import app.cash.turbine.test
 import az21.subscribe.MainDispatcherRule
 import az21.subscribe.data.export.CsvExportCodec
 import az21.subscribe.data.export.JsonExportCodec
@@ -17,11 +19,8 @@ import az21.subscribe.domain.export.sampleExportDocument
 import az21.subscribe.domain.usecase.ExportDataUseCase
 import az21.subscribe.domain.usecase.ImportDataUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -58,11 +57,14 @@ class DataTransferViewModelTest {
     runTest(mainDispatcherRule.testDispatcher) {
       repository.merge(sampleExportDocument())
 
-      viewModel.exportTo(URI, ExportFormat.JSON)
-      advanceUntilIdle()
+      viewModel.uiState.test {
+        viewModel.exportTo(URI, ExportFormat.JSON)
 
-      assertTrue(fileStore.files.containsKey(URI))
-      assertEquals(TransferFeedback.ExportSucceeded, viewModel.uiState.value.feedback)
+        val state = await { it.feedback == TransferFeedback.ExportSucceeded }
+        assertTrue(fileStore.files.containsKey(URI))
+        assertEquals(TransferFeedback.ExportSucceeded, state.feedback)
+        cancelAndIgnoreRemainingEvents()
+      }
     }
 
   @Test
@@ -71,10 +73,12 @@ class DataTransferViewModelTest {
       repository.merge(sampleExportDocument())
       fileStore.failWrite = true
 
-      viewModel.exportTo(URI, ExportFormat.JSON)
-      advanceUntilIdle()
+      viewModel.uiState.test {
+        viewModel.exportTo(URI, ExportFormat.JSON)
 
-      assertEquals(TransferFeedback.ExportFailed, viewModel.uiState.value.feedback)
+        await { it.feedback == TransferFeedback.ExportFailed }
+        cancelAndIgnoreRemainingEvents()
+      }
     }
 
   @Test
@@ -84,12 +88,13 @@ class DataTransferViewModelTest {
       val file = ExportDataUseCase(repository, codecs, Clock.systemUTC())(ExportFormat.JSON)
       fileStore.files[URI] = file.bytes
 
-      viewModel.importFrom(URI)
-      advanceUntilIdle()
+      viewModel.uiState.test {
+        viewModel.importFrom(URI)
 
-      val preview = viewModel.uiState.value.preview
-      assertNotNull(preview)
-      assertEquals(2, preview?.summary?.subscriptions)
+        val state = await { it.preview != null }
+        assertEquals(2, state.preview?.summary?.subscriptions)
+        cancelAndIgnoreRemainingEvents()
+      }
     }
 
   @Test
@@ -98,14 +103,17 @@ class DataTransferViewModelTest {
       repository.merge(sampleExportDocument())
       val file = ExportDataUseCase(repository, codecs, Clock.systemUTC())(ExportFormat.JSON)
       fileStore.files[URI] = file.bytes
-      viewModel.importFrom(URI)
-      advanceUntilIdle()
 
-      viewModel.confirmImport()
-      advanceUntilIdle()
+      viewModel.uiState.test {
+        viewModel.importFrom(URI)
+        await { it.preview != null }
 
-      assertNull(viewModel.uiState.value.preview)
-      assertTrue(viewModel.uiState.value.feedback is TransferFeedback.ImportSucceeded)
+        viewModel.confirmImport()
+
+        val state = await { it.preview == null && it.feedback is TransferFeedback.ImportSucceeded }
+        assertTrue(state.feedback is TransferFeedback.ImportSucceeded)
+        cancelAndIgnoreRemainingEvents()
+      }
     }
 
   @Test
@@ -113,11 +121,23 @@ class DataTransferViewModelTest {
     runTest(mainDispatcherRule.testDispatcher) {
       fileStore.failRead = true
 
-      viewModel.importFrom(URI)
-      advanceUntilIdle()
+      viewModel.uiState.test {
+        viewModel.importFrom(URI)
 
-      assertEquals(TransferFeedback.ImportFailed, viewModel.uiState.value.feedback)
+        await { it.feedback == TransferFeedback.ImportFailed }
+        cancelAndIgnoreRemainingEvents()
+      }
     }
+
+  private suspend fun ReceiveTurbine<DataTransferUiState>.await(
+    predicate: (DataTransferUiState) -> Boolean,
+  ): DataTransferUiState {
+    var state = awaitItem()
+    while (!predicate(state)) {
+      state = awaitItem()
+    }
+    return state
+  }
 
   private companion object {
     const val URI = "content://export"

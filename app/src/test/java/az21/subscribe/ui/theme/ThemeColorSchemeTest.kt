@@ -47,6 +47,25 @@ class ThemeColorSchemeTest {
     assertNotEquals(fallback.primary, manual.primary)
   }
 
+  @Test
+  fun everyRoleIsOpaqueAcrossVariantsAndBrightness() {
+    ThemeVariant.entries.forEach { variant ->
+      listOf(false, true).forEach { isDark ->
+        val scheme = themeColorScheme(seedColor, variant, isDark)
+        listOf(
+          scheme.primary,
+          scheme.onPrimary,
+          scheme.surface,
+          scheme.onSurface,
+          scheme.error,
+          scheme.outline,
+        ).forEach { color ->
+          assertEquals(1f, color.alpha, 0f)
+        }
+      }
+    }
+  }
+
   private companion object {
     val seedColor = 0xFF006A6A.toInt()
     val manualSeedColor = 0xFFB3261E.toInt()

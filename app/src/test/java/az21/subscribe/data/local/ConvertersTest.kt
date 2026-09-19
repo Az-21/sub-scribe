@@ -4,10 +4,12 @@ import az21.subscribe.domain.model.BillingCycle
 import az21.subscribe.domain.model.SubscriptionStatus
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
+import java.time.format.DateTimeParseException
 import java.util.UUID
 
 class ConvertersTest {
@@ -62,5 +64,14 @@ class ConvertersTest {
     assertNull(converters.toBigDecimal(null))
     assertNull(converters.toBillingCycle(null))
     assertNull(converters.toSubscriptionStatus(null))
+  }
+
+  @Test
+  fun malformedValues_throw() {
+    assertThrows(IllegalArgumentException::class.java) { converters.toUuid("not-a-uuid") }
+    assertThrows(DateTimeParseException::class.java) { converters.toLocalDate("2024-13-01") }
+    assertThrows(IllegalArgumentException::class.java) { converters.toBillingCycle("WEEKLY") }
+    assertThrows(IllegalArgumentException::class.java) { converters.toSubscriptionStatus("PAUSED") }
+    assertThrows(NumberFormatException::class.java) { converters.toBigDecimal("free") }
   }
 }

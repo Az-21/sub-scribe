@@ -1,5 +1,7 @@
 package az21.subscribe.ui.subscription
 
+import app.cash.turbine.ReceiveTurbine
+import app.cash.turbine.test
 import az21.subscribe.MainDispatcherRule
 import az21.subscribe.data.fake.FakePaymentMethodDao
 import az21.subscribe.data.fake.FakePriceHistoryDao
@@ -16,9 +18,6 @@ import az21.subscribe.domain.usecase.AddPriceChangeUseCase
 import az21.subscribe.domain.usecase.ScheduleReminderUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -57,56 +56,64 @@ class SubscriptionFormViewModelTest {
   fun initializeWithoutId_startsInAddMode() =
     runTest(mainDispatcherRule.testDispatcher) {
       val viewModel = createViewModel()
-      collectUiState(viewModel)
-      viewModel.initialize(null)
-      advanceUntilIdle()
 
-      assertEquals(false, viewModel.uiState.value.isLoading)
-      assertEquals(false, viewModel.uiState.value.isEditing)
+      viewModel.uiState.test {
+        val state = awaitLoaded()
+        viewModel.initialize(null)
+
+        assertEquals(false, state.isLoading)
+        assertEquals(false, state.isEditing)
+        cancelAndIgnoreRemainingEvents()
+      }
     }
 
   @Test
   fun save_createsSubscriptionWithInitialPrice() =
     runTest(mainDispatcherRule.testDispatcher) {
       val viewModel = createViewModel()
-      collectUiState(viewModel)
-      viewModel.initialize(null)
-      viewModel.onNameChange("Netflix")
-      viewModel.onIconChange("netflix")
-      viewModel.onPriceChange("15.99")
-      viewModel.onBillingCycleChange(BillingCycle.MONTHLY)
 
-      viewModel.save()
-      advanceUntilIdle()
+      viewModel.uiState.test {
+        awaitLoaded()
+        viewModel.initialize(null)
+        viewModel.onNameChange("Netflix")
+        viewModel.onIconChange("netflix")
+        viewModel.onPriceChange("15.99")
+        viewModel.onBillingCycleChange(BillingCycle.MONTHLY)
 
-      val created = subscriptionRepository.observeSubscriptions().first().single()
-      assertEquals("Netflix", created.name)
-      assertEquals("netflix", created.iconId)
-      assertEquals(BigDecimal("15.99"), priceHistoryRepository.getTimeline(created.id).single().price)
-      assertEquals(listOf(created.id), reminderScheduler.scheduled.map { it.id })
-      assertTrue(viewModel.uiState.value.saved)
+        viewModel.save()
+
+        await { it.saved }
+        val created = subscriptionRepository.observeSubscriptions().first().single()
+        assertEquals("Netflix", created.name)
+        assertEquals("netflix", created.iconId)
+        assertEquals(BigDecimal("15.99"), priceHistoryRepository.getTimeline(created.id).single().price)
+        assertEquals(listOf(created.id), reminderScheduler.scheduled.map { it.id })
+        cancelAndIgnoreRemainingEvents()
+      }
     }
 
   @Test
   fun save_withBlankName_requiresNameAndCreatesNothing() =
     runTest(mainDispatcherRule.testDispatcher) {
       val viewModel = createViewModel()
-      collectUiState(viewModel)
-      viewModel.initialize(null)
-      viewModel.onPriceChange("9.99")
 
-      viewModel.save()
-      advanceUntilIdle()
+      viewModel.uiState.test {
+        awaitLoaded()
+        viewModel.initialize(null)
+        viewModel.onPriceChange("9.99")
 
-      assertTrue(viewModel.uiState.value.errors.name)
-      assertTrue(subscriptionRepository.observeSubscriptions().first().isEmpty())
+        viewModel.save()
+
+        val state = await { it.errors.name }
+        assertTrue(state.errors.name)
+        assertTrue(subscriptionRepository.observeSubscriptions().first().isEmpty())
+        cancelAndIgnoreRemainingEvents()
+      }
     }
 
   @Test
   fun initializeWithId_loadsExistingValues() =
     runTest(mainDispatcherRule.testDispatcher) {
-      val viewModel = createViewModel()
-      collectUiState(viewModel)
       val existing =
         subscriptionRepository.createSubscription(
           SubscriptionDraft(
@@ -117,22 +124,21 @@ class SubscriptionFormViewModelTest {
           ),
         )
       priceHistoryRepository.addPriceChange(existing.id, BigDecimal("99.00"), LocalDate.of(2024, 1, 1))
+      val viewModel = createViewModel()
 
-      viewModel.initialize(existing.id.toString())
-      advanceUntilIdle()
+      viewModel.uiState.test {
+        awaitLoaded()
+        viewModel.initialize(existing.id.toString())
 
-      val state = viewModel.uiState.value
-      assertEquals(false, state.isLoading)
-      assertEquals(true, state.isEditing)
-      assertEquals("Spotify", state.name)
-      assertEquals("99", state.price)
+        val state = await { !it.isLoading && it.isEditing && it.name == "Spotify" }
+        assertEquals("99", state.price)
+        cancelAndIgnoreRemainingEvents()
+      }
     }
 
   @Test
   fun save_whenPriceChanged_addsNewPriceEntry() =
     runTest(mainDispatcherRule.testDispatcher) {
-      val viewModel = createViewModel()
-      collectUiState(viewModel)
       val existing =
         subscriptionRepository.createSubscription(
           SubscriptionDraft(
@@ -143,20 +149,35 @@ class SubscriptionFormViewModelTest {
           ),
         )
       priceHistoryRepository.addPriceChange(existing.id, BigDecimal("99.00"), LocalDate.of(2024, 1, 1))
-      viewModel.initialize(existing.id.toString())
-      advanceUntilIdle()
-      viewModel.onPriceChange("109.00")
+      val viewModel = createViewModel()
 
-      viewModel.save()
-      advanceUntilIdle()
+      viewModel.uiState.test {
+        awaitLoaded()
+        viewModel.initialize(existing.id.toString())
+        await { !it.isLoading && it.name == "Spotify" }
 
-      assertEquals(
-        listOf(BigDecimal("109.00"), BigDecimal("99.00")),
-        priceHistoryRepository.getTimeline(existing.id).map { it.price },
-      )
+        viewModel.onPriceChange("109.00")
+        viewModel.save()
+
+        await { it.saved }
+        assertEquals(
+          listOf(BigDecimal("109.00"), BigDecimal("99.00")),
+          priceHistoryRepository.getTimeline(existing.id).map { it.price },
+        )
+        cancelAndIgnoreRemainingEvents()
+      }
     }
 
-  private fun TestScope.collectUiState(viewModel: SubscriptionFormViewModel) {
-    backgroundScope.launch { viewModel.uiState.collect {} }
+  private suspend fun ReceiveTurbine<SubscriptionFormUiState>.awaitLoaded(): SubscriptionFormUiState =
+    await { !it.isLoading }
+
+  private suspend fun ReceiveTurbine<SubscriptionFormUiState>.await(
+    predicate: (SubscriptionFormUiState) -> Boolean,
+  ): SubscriptionFormUiState {
+    var state = awaitItem()
+    while (!predicate(state)) {
+      state = awaitItem()
+    }
+    return state
   }
 }

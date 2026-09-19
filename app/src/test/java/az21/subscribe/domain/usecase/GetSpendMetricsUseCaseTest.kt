@@ -60,6 +60,16 @@ class GetSpendMetricsUseCaseTest {
       assertEquals(BigDecimal.ZERO, result.divviedAnnualSpend)
     }
 
+  @Test
+  fun subscriptionWithoutPrice_contributesNothing() =
+    runTest {
+      subscriptionRepository.createSubscription(draft(BillingCycle.MONTHLY, LocalDate.of(2024, 1, 15)))
+
+      val result = useCase(2024)
+
+      assertEquals(BigDecimal.ZERO, result.trueAnnualSpend)
+    }
+
   private fun draft(
     billingCycle: BillingCycle,
     startDate: LocalDate,

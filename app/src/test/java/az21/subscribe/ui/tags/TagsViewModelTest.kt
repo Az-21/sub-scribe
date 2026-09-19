@@ -1,16 +1,13 @@
 package az21.subscribe.ui.tags
 
+import app.cash.turbine.ReceiveTurbine
+import app.cash.turbine.test
 import az21.subscribe.MainDispatcherRule
 import az21.subscribe.data.fake.FakeTagDao
 import az21.subscribe.data.repository.TagRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -21,67 +18,77 @@ class TagsViewModelTest {
 
   private val tagRepository = TagRepositoryImpl(FakeTagDao())
 
+  private fun createViewModel() = TagsViewModel(tagRepository)
+
   @Test
-  fun createTag_addsItToList() =
+  fun startCreate_exposesEmptyEditorAndSaveAddsTag() =
     runTest(mainDispatcherRule.testDispatcher) {
-      val viewModel = TagsViewModel(tagRepository)
-      collectUiState(viewModel)
-      viewModel.startCreate()
-      viewModel.onNameChange("Streaming")
-      viewModel.onColorChange(0xFF81C784.toInt())
+      val viewModel = createViewModel()
 
-      viewModel.save()
-      advanceUntilIdle()
+      viewModel.uiState.test {
+        awaitLoaded()
+        viewModel.startCreate()
+        assertEquals("", awaitEditor().editor?.name)
 
-      val tag = tagRepository.observeTags().first().single()
-      assertEquals("Streaming", tag.name)
-      assertEquals(0xFF81C784.toInt(), tag.color)
+        viewModel.onNameChange("Streaming")
+        viewModel.onColorChange(0xFF81C784.toInt())
+        viewModel.save()
+
+        val state = await { current -> current.editor == null && current.tags.singleOrNull()?.name == "Streaming" }
+        assertEquals(0xFF81C784.toInt(), state.tags.single().color)
+        cancelAndIgnoreRemainingEvents()
+      }
     }
 
   @Test
   fun startEdit_prefillsEditorAndSaveUpdates() =
     runTest(mainDispatcherRule.testDispatcher) {
-      val viewModel = TagsViewModel(tagRepository)
-      collectUiState(viewModel)
+      val viewModel = createViewModel()
       val created = tagRepository.createTag("Streaming")
 
-      viewModel.startEdit(created)
-      advanceUntilIdle()
-      assertEquals(
-        "Streaming",
-        viewModel.uiState.value.editor
-          ?.name,
-      )
+      viewModel.uiState.test {
+        await { it.tags.any { tag -> tag.id == created.id } }
 
-      viewModel.onNameChange("Media")
-      viewModel.save()
-      advanceUntilIdle()
+        viewModel.startEdit(created)
+        assertEquals("Streaming", awaitEditor().editor?.name)
 
-      assertEquals(
-        "Media",
-        tagRepository
-          .observeTags()
-          .first()
-          .single()
-          .name,
-      )
+        viewModel.onNameChange("Media")
+        viewModel.save()
+
+        val state = await { current -> current.editor == null && current.tags.singleOrNull()?.name == "Media" }
+        assertEquals(created.id, state.tags.single().id)
+        cancelAndIgnoreRemainingEvents()
+      }
     }
 
   @Test
-  fun confirmDelete_removesTag() =
+  fun confirmDelete_removesTagAfterPendingState() =
     runTest(mainDispatcherRule.testDispatcher) {
-      val viewModel = TagsViewModel(tagRepository)
-      collectUiState(viewModel)
+      val viewModel = createViewModel()
       val created = tagRepository.createTag("Streaming")
 
-      viewModel.requestDelete(created)
-      viewModel.confirmDelete()
-      advanceUntilIdle()
+      viewModel.uiState.test {
+        await { it.tags.any { tag -> tag.id == created.id } }
 
-      assertTrue(tagRepository.observeTags().first().isEmpty())
+        viewModel.requestDelete(created)
+        assertEquals(created, await { it.pendingDelete != null }.pendingDelete)
+
+        viewModel.confirmDelete()
+
+        await { it.pendingDelete == null && it.tags.isEmpty() }
+        cancelAndIgnoreRemainingEvents()
+      }
     }
 
-  private fun TestScope.collectUiState(viewModel: TagsViewModel) {
-    backgroundScope.launch { viewModel.uiState.collect {} }
+  private suspend fun ReceiveTurbine<TagsUiState>.awaitLoaded(): TagsUiState = await { !it.isLoading }
+
+  private suspend fun ReceiveTurbine<TagsUiState>.awaitEditor(): TagsUiState = await { it.editor != null }
+
+  private suspend fun ReceiveTurbine<TagsUiState>.await(predicate: (TagsUiState) -> Boolean): TagsUiState {
+    var state = awaitItem()
+    while (!predicate(state)) {
+      state = awaitItem()
+    }
+    return state
   }
 }

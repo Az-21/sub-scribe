@@ -91,8 +91,10 @@ dependencies {
   implementation(libs.material.kolor.utilities)
 
   testImplementation(libs.androidx.room.testing)
+  testImplementation(libs.androidx.test.core)
   testImplementation(libs.junit)
   testImplementation(libs.kotlinx.coroutines.test)
+  testImplementation(libs.robolectric)
   testImplementation(libs.turbine)
 
   androidTestImplementation(platform(libs.androidx.compose.bom))
