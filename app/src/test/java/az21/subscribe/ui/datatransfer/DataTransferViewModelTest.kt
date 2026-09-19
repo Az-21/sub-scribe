@@ -3,7 +3,6 @@ package az21.subscribe.ui.datatransfer
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import az21.subscribe.MainDispatcherRule
-import az21.subscribe.data.export.CsvExportCodec
 import az21.subscribe.data.export.JsonExportCodec
 import az21.subscribe.data.fake.FakeExportFileStore
 import az21.subscribe.data.fake.FakePaymentMethodDao
@@ -43,7 +42,7 @@ class DataTransferViewModelTest {
       transactionRunner = FakeTransactionRunner(),
       clock = Clock.fixed(Instant.parse("2026-02-03T04:05:06Z"), ZoneOffset.UTC),
     )
-  private val codecs: Set<ExportCodec> = setOf(JsonExportCodec(), CsvExportCodec())
+  private val codecs: Set<ExportCodec> = setOf(JsonExportCodec())
   private val fileStore = FakeExportFileStore()
   private val viewModel =
     DataTransferViewModel(

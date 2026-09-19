@@ -1,6 +1,5 @@
 package az21.subscribe.di
 
-import az21.subscribe.data.export.CsvExportCodec
 import az21.subscribe.data.export.JsonExportCodec
 import az21.subscribe.data.local.RoomTransactionRunner
 import az21.subscribe.data.local.TransactionRunner
@@ -34,8 +33,4 @@ abstract class DataTransferModule {
   @Binds
   @IntoSet
   abstract fun bindJsonExportCodec(impl: JsonExportCodec): ExportCodec
-
-  @Binds
-  @IntoSet
-  abstract fun bindCsvExportCodec(impl: CsvExportCodec): ExportCodec
 }

@@ -23,7 +23,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -63,10 +62,6 @@ fun DataTransferScreen(
     rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(ExportFormat.JSON.mimeType)) { uri ->
       uri?.let { viewModel.exportTo(it.toString(), ExportFormat.JSON) }
     }
-  val csvExportLauncher =
-    rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(ExportFormat.CSV.mimeType)) { uri ->
-      uri?.let { viewModel.exportTo(it.toString(), ExportFormat.CSV) }
-    }
   val importLauncher =
     rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
       uri?.let { viewModel.importFrom(it.toString()) }
@@ -76,7 +71,6 @@ fun DataTransferScreen(
     uiState = uiState,
     onBack = onBack,
     onExportJson = { jsonExportLauncher.launch(suggestedFileName(ExportFormat.JSON)) },
-    onExportCsv = { csvExportLauncher.launch(suggestedFileName(ExportFormat.CSV)) },
     onImport = { importLauncher.launch(ImportMimeTypes) },
     onConfirmImport = viewModel::confirmImport,
     onCancelImport = viewModel::cancelImport,
@@ -92,7 +86,6 @@ fun DataTransferContent(
   uiState: DataTransferUiState,
   onBack: () -> Unit,
   onExportJson: () -> Unit,
-  onExportCsv: () -> Unit,
   onImport: () -> Unit,
   onConfirmImport: () -> Unit,
   onCancelImport: () -> Unit,
@@ -125,7 +118,6 @@ fun DataTransferContent(
     DataTransferBody(
       uiState = uiState,
       onExportJson = onExportJson,
-      onExportCsv = onExportCsv,
       onImport = onImport,
       modifier = Modifier.fillMaxSize().padding(innerPadding),
     )
@@ -144,7 +136,6 @@ fun DataTransferContent(
 private fun DataTransferBody(
   uiState: DataTransferUiState,
   onExportJson: () -> Unit,
-  onExportCsv: () -> Unit,
   onImport: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -155,7 +146,7 @@ private fun DataTransferBody(
     if (uiState.isBusy) {
       LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth())
     }
-    ExportCard(enabled = !uiState.isBusy, onExportJson = onExportJson, onExportCsv = onExportCsv)
+    ExportCard(enabled = !uiState.isBusy, onExportJson = onExportJson)
     ImportCard(enabled = !uiState.isBusy, onImport = onImport)
   }
 }
@@ -164,7 +155,6 @@ private fun DataTransferBody(
 private fun ExportCard(
   enabled: Boolean,
   onExportJson: () -> Unit,
-  onExportCsv: () -> Unit,
 ) {
   Card(modifier = Modifier.fillMaxWidth()) {
     Column(
@@ -185,15 +175,6 @@ private fun ExportCard(
       ) {
         ButtonLeadingIcon(imageVector = Icons.Default.Share)
         Text(stringResource(R.string.transfer_export_json))
-      }
-      OutlinedButton(
-        onClick = onExportCsv,
-        enabled = enabled,
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = ButtonDefaults.contentPaddingFor(ButtonDefaults.MinHeight, hasStartIcon = true),
-      ) {
-        ButtonLeadingIcon(imageVector = Icons.Default.Share)
-        Text(stringResource(R.string.transfer_export_csv))
       }
     }
   }
@@ -356,11 +337,7 @@ private fun suggestedFileName(format: ExportFormat): String =
 private val ImportMimeTypes =
   arrayOf(
     "application/json",
-    "application/zip",
-    "application/x-zip-compressed",
     "application/octet-stream",
-    "text/csv",
-    "text/comma-separated-values",
   )
 
 @Preview(showBackground = true)
@@ -371,7 +348,6 @@ private fun DataTransferContentPreview() {
       uiState = DataTransferUiState(),
       onBack = {},
       onExportJson = {},
-      onExportCsv = {},
       onImport = {},
       onConfirmImport = {},
       onCancelImport = {},

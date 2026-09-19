@@ -1,6 +1,5 @@
 package az21.subscribe.domain.usecase
 
-import az21.subscribe.data.export.CsvExportCodec
 import az21.subscribe.data.export.JsonExportCodec
 import az21.subscribe.data.fake.FakePaymentMethodDao
 import az21.subscribe.data.fake.FakePriceHistoryDao
@@ -33,7 +32,7 @@ class ExportImportUseCaseTest {
       transactionRunner = FakeTransactionRunner(),
       clock = Clock.fixed(Instant.parse("2026-02-03T04:05:06Z"), ZoneOffset.UTC),
     )
-  private val codecs: Set<ExportCodec> = setOf(JsonExportCodec(), CsvExportCodec())
+  private val codecs: Set<ExportCodec> = setOf(JsonExportCodec())
   private val exportData = ExportDataUseCase(repository, codecs, Clock.systemUTC())
   private val importData = ImportDataUseCase(repository, codecs)
 
@@ -50,21 +49,6 @@ class ExportImportUseCaseTest {
       val success = parsed as ImportParseResult.Success
       assertEquals(document.subscriptions.sortedBy { it.id }, success.document.subscriptions.sortedBy { it.id })
       assertEquals(document.priceHistory.sortedBy { it.id }, success.document.priceHistory.sortedBy { it.id })
-    }
-
-  @Test
-  fun exportCsv_roundTripsThroughParse() =
-    runTest {
-      val document = sampleExportDocument()
-      repository.merge(document)
-
-      val file = exportData(ExportFormat.CSV)
-      val parsed = importData.parse(file.bytes)
-
-      assertTrue(parsed is ImportParseResult.Success)
-      val success = parsed as ImportParseResult.Success
-      assertEquals(document.tags.sortedBy { it.id }, success.document.tags.sortedBy { it.id })
-      assertEquals(document.paymentMethods.sortedBy { it.id }, success.document.paymentMethods.sortedBy { it.id })
     }
 
   @Test
@@ -108,11 +92,8 @@ class ExportImportUseCaseTest {
       repository.merge(sampleExportDocument())
 
       val json = exportData(ExportFormat.JSON)
-      val csv = exportData(ExportFormat.CSV)
 
       assertEquals(ExportFormat.JSON.mimeType, json.mimeType)
       assertTrue(json.fileName.endsWith(".json"))
-      assertEquals(ExportFormat.CSV.mimeType, csv.mimeType)
-      assertTrue(csv.fileName.endsWith(".csv.zip"))
     }
 }

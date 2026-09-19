@@ -28,7 +28,5 @@ class ExportedFileTest {
   fun exportFormats_exposeMetadata() {
     assertEquals("application/json", ExportFormat.JSON.mimeType)
     assertEquals("json", ExportFormat.JSON.fileExtension)
-    assertEquals("application/zip", ExportFormat.CSV.mimeType)
-    assertEquals("csv.zip", ExportFormat.CSV.fileExtension)
   }
 }

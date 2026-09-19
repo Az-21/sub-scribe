@@ -21,28 +21,11 @@ class ExportCodecTest {
   }
 
   @Test
-  fun csvRoundTrip_preservesDocument() {
-    val codec = CsvExportCodec()
-
-    val decoded = codec.decode(codec.encode(document))
-
-    assertEquals(ImportParseResult.Success(document, document.toImportSummary()), decoded)
-  }
-
-  @Test
   fun jsonDetectsOnlyJson() {
     val codec = JsonExportCodec()
 
     assertTrue(codec.canDecode("  {\"schema_version\":1}".toByteArray()))
     assertFalse(codec.canDecode(byteArrayOf(0x50, 0x4B, 0x03, 0x04)))
-  }
-
-  @Test
-  fun csvDetectsOnlyZip() {
-    val codec = CsvExportCodec()
-
-    assertTrue(codec.canDecode(byteArrayOf(0x50, 0x4B, 0x03, 0x04)))
-    assertFalse(codec.canDecode("{\"schema_version\":1}".toByteArray()))
   }
 
   @Test

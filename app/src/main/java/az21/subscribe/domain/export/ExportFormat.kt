@@ -7,9 +7,6 @@ enum class ExportFormat(
 ) {
   /** Full-fidelity, versioned document. */
   JSON("application/json", "json"),
-
-  /** Human-readable zip of per-entity CSV tables. */
-  CSV("application/zip", "csv.zip"),
 }
 
 /** An encoded export ready to be written to a user-chosen file. */
