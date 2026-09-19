@@ -39,10 +39,20 @@ object BillingSchedule {
     var date = firstOnOrAfter(subscription, from)
     while (!date.isAfter(toInclusive)) {
       dates += date
-      date = date.advance(subscription.billingCycle)
+      date = advance(date, subscription.billingCycle)
     }
     return dates
   }
+
+  /** The date one billing cycle after [date]. */
+  fun advance(
+    date: LocalDate,
+    cycle: BillingCycle,
+  ): LocalDate =
+    when (cycle) {
+      BillingCycle.MONTHLY -> date.plusMonths(1)
+      BillingCycle.ANNUAL -> date.plusYears(1)
+    }
 
   private fun firstOnOrAfter(
     subscription: Subscription,
@@ -50,14 +60,8 @@ object BillingSchedule {
   ): LocalDate {
     var date = billingStartDate(subscription)
     while (date.isBefore(from)) {
-      date = date.advance(subscription.billingCycle)
+      date = advance(date, subscription.billingCycle)
     }
     return date
   }
-
-  private fun LocalDate.advance(cycle: BillingCycle): LocalDate =
-    when (cycle) {
-      BillingCycle.MONTHLY -> plusMonths(1)
-      BillingCycle.ANNUAL -> plusYears(1)
-    }
 }

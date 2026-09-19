@@ -20,4 +20,5 @@
   <string name="form_error_name">Enter a name.</string>
   <string name="form_error_price">Enter a valid non-negative price.</string>
   <string name="form_error_number">Enter a whole number.</string>
+  <string name="form_error_trial_reminder_days">Set reminder days to use the trial reminder.</string>
 </resources>

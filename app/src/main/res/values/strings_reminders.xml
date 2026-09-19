@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="reminder_channel_name">Subscription reminders</string>
+  <string name="reminder_channel_description">Billing and free-trial reminders</string>
+  <string name="reminder_billing_title">Upcoming payment: %1$s</string>
+  <string name="reminder_billing_body">%1$s renews on %2$s.</string>
+  <string name="reminder_trial_title">Free trial ending: %1$s</string>
+  <string name="reminder_trial_body">Your %1$s free trial ends on %2$s.</string>
+</resources>

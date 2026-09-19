@@ -1,5 +1,10 @@
 package az21.subscribe.ui.subscription
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,13 +44,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import az21.subscribe.R
@@ -72,6 +80,9 @@ fun SubscriptionFormScreen(
 
   LaunchedEffect(subscriptionId) { viewModel.initialize(subscriptionId) }
   LaunchedEffect(uiState.saved) { if (uiState.saved) onSaved() }
+  RequestNotificationPermissionWhenEnabled(
+    enabled = uiState.reminderDaysBefore.isNotBlank() || uiState.trialReminderEnabled,
+  )
 
   SubscriptionFormContent(
     uiState = uiState,
@@ -90,6 +101,28 @@ fun SubscriptionFormScreen(
     onSave = viewModel::save,
     modifier = modifier,
   )
+}
+
+/**
+ * Asks for the notification permission the first time the user enables a reminder on this screen.
+ * Deliberately not requested on cold app launch.
+ */
+@Composable
+private fun RequestNotificationPermissionWhenEnabled(enabled: Boolean) {
+  val context = LocalContext.current
+  var requested by rememberSaveable { mutableStateOf(false) }
+  val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {}
+  LaunchedEffect(enabled) {
+    if (!enabled || requested) return@LaunchedEffect
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return@LaunchedEffect
+    val granted =
+      ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
+        PackageManager.PERMISSION_GRANTED
+    if (!granted) {
+      requested = true
+      launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -277,7 +310,11 @@ private fun AssociationFields(
   onPaymentMethodChange: (UUID?) -> Unit,
   onNotesChange: (String) -> Unit,
 ) {
-  TrialReminderRow(checked = uiState.trialReminderEnabled, onCheckedChange = onTrialReminderChange)
+  TrialReminderRow(
+    checked = uiState.trialReminderEnabled,
+    onCheckedChange = onTrialReminderChange,
+    isError = uiState.errors.trialReminder,
+  )
   TagSelector(
     tags = uiState.availableTags,
     selectedTagIds = uiState.selectedTagIds,
@@ -328,14 +365,24 @@ private fun FormTextField(
 private fun TrialReminderRow(
   checked: Boolean,
   onCheckedChange: (Boolean) -> Unit,
+  isError: Boolean = false,
 ) {
-  Row(
-    modifier = Modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.SpaceBetween,
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Text(stringResource(R.string.form_trial_reminder), style = MaterialTheme.typography.bodyLarge)
-    Switch(checked = checked, onCheckedChange = onCheckedChange)
+  Column(modifier = Modifier.fillMaxWidth()) {
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Text(stringResource(R.string.form_trial_reminder), style = MaterialTheme.typography.bodyLarge)
+      Switch(checked = checked, onCheckedChange = onCheckedChange)
+    }
+    if (isError) {
+      Text(
+        text = stringResource(R.string.form_error_trial_reminder_days),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.error,
+      )
+    }
   }
 }
 

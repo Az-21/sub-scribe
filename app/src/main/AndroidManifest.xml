@@ -3,6 +3,9 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools">
 
+  <!-- Reminder notifications (runtime request on API 33+). -->
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
   <!-- localeConfig enables Android 13+ per-app language selection; older API levels ignore it. -->
   <application
     android:name=".SubScribeApplication"
@@ -19,6 +22,7 @@
     <activity
       android:name=".MainActivity"
       android:exported="true"
+      android:launchMode="singleTop"
       android:theme="@style/Theme.SubScribe"
       android:windowSoftInputMode="adjustResize">
       <intent-filter>
@@ -27,6 +31,18 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
+
+    <!-- Hilt provides the WorkManager worker factory, so use on-demand initialization. -->
+    <provider
+      android:name="androidx.startup.InitializationProvider"
+      android:authorities="${applicationId}.androidx-startup"
+      android:exported="false"
+      tools:node="merge">
+      <meta-data
+        android:name="androidx.work.WorkManagerInitializer"
+        android:value="androidx.startup"
+        tools:node="remove" />
+    </provider>
   </application>
 
 </manifest>

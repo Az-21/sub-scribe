@@ -15,6 +15,7 @@ import az21.subscribe.domain.repository.SubscriptionRepository
 import az21.subscribe.domain.repository.TagRepository
 import az21.subscribe.domain.usecase.AddPriceChangeUseCase
 import az21.subscribe.domain.usecase.ArchiveSubscriptionUseCase
+import az21.subscribe.domain.usecase.CancelReminderUseCase
 import az21.subscribe.domain.usecase.CancelSubscriptionUseCase
 import az21.subscribe.domain.usecase.DeleteSubscriptionUseCase
 import az21.subscribe.domain.usecase.GetNextBillingDateUseCase
@@ -52,6 +53,7 @@ class SubscriptionDetailViewModel
     private val cancelSubscription: CancelSubscriptionUseCase,
     private val archiveSubscription: ArchiveSubscriptionUseCase,
     private val deleteSubscription: DeleteSubscriptionUseCase,
+    private val cancelReminder: CancelReminderUseCase,
     private val clock: Clock,
   ) : ViewModel() {
     private val subscriptionId = MutableStateFlow<UUID?>(null)
@@ -92,11 +94,23 @@ class SubscriptionDetailViewModel
       this.subscriptionId.value = UUID.fromString(subscriptionId)
     }
 
-    fun cancel(endDate: LocalDate? = null) = withSubscription { id -> cancelSubscription(id, endDate) }
+    fun cancel(endDate: LocalDate? = null) =
+      withSubscription { id ->
+        cancelSubscription(id, endDate)
+        cancelReminder(id)
+      }
 
-    fun archive() = withSubscription { id -> archiveSubscription(id) }
+    fun archive() =
+      withSubscription { id ->
+        archiveSubscription(id)
+        cancelReminder(id)
+      }
 
-    fun delete() = withSubscription { id -> deleteSubscription(id) }
+    fun delete() =
+      withSubscription { id ->
+        deleteSubscription(id)
+        cancelReminder(id)
+      }
 
     fun addPrice(
       price: BigDecimal,

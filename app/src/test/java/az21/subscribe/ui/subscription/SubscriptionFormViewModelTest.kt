@@ -3,6 +3,7 @@ package az21.subscribe.ui.subscription
 import az21.subscribe.MainDispatcherRule
 import az21.subscribe.data.fake.FakePaymentMethodDao
 import az21.subscribe.data.fake.FakePriceHistoryDao
+import az21.subscribe.data.fake.FakeReminderScheduler
 import az21.subscribe.data.fake.FakeSubscriptionDao
 import az21.subscribe.data.fake.FakeTagDao
 import az21.subscribe.data.repository.PaymentMethodRepositoryImpl
@@ -12,6 +13,7 @@ import az21.subscribe.data.repository.TagRepositoryImpl
 import az21.subscribe.domain.model.BillingCycle
 import az21.subscribe.domain.model.SubscriptionDraft
 import az21.subscribe.domain.usecase.AddPriceChangeUseCase
+import az21.subscribe.domain.usecase.ScheduleReminderUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -38,6 +40,7 @@ class SubscriptionFormViewModelTest {
   private val priceHistoryRepository = PriceHistoryRepositoryImpl(FakePriceHistoryDao(), clock)
   private val tagRepository = TagRepositoryImpl(FakeTagDao())
   private val paymentMethodRepository = PaymentMethodRepositoryImpl(FakePaymentMethodDao())
+  private val reminderScheduler = FakeReminderScheduler()
 
   private fun createViewModel() =
     SubscriptionFormViewModel(
@@ -46,6 +49,7 @@ class SubscriptionFormViewModelTest {
       tagRepository = tagRepository,
       paymentMethodRepository = paymentMethodRepository,
       addPriceChange = AddPriceChangeUseCase(subscriptionRepository, priceHistoryRepository),
+      scheduleReminder = ScheduleReminderUseCase(subscriptionRepository, reminderScheduler),
       clock = clock,
     )
 
@@ -79,6 +83,7 @@ class SubscriptionFormViewModelTest {
       assertEquals("Netflix", created.name)
       assertEquals("netflix", created.iconId)
       assertEquals(BigDecimal("15.99"), priceHistoryRepository.getTimeline(created.id).single().price)
+      assertEquals(listOf(created.id), reminderScheduler.scheduled.map { it.id })
       assertTrue(viewModel.uiState.value.saved)
     }
 

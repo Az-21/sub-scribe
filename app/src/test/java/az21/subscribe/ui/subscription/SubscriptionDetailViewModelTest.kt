@@ -5,6 +5,7 @@ import app.cash.turbine.test
 import az21.subscribe.MainDispatcherRule
 import az21.subscribe.data.fake.FakePaymentMethodDao
 import az21.subscribe.data.fake.FakePriceHistoryDao
+import az21.subscribe.data.fake.FakeReminderScheduler
 import az21.subscribe.data.fake.FakeSettingsRepository
 import az21.subscribe.data.fake.FakeSubscriptionDao
 import az21.subscribe.data.fake.FakeTagDao
@@ -18,6 +19,7 @@ import az21.subscribe.domain.model.SubscriptionDraft
 import az21.subscribe.domain.model.SubscriptionStatus
 import az21.subscribe.domain.usecase.AddPriceChangeUseCase
 import az21.subscribe.domain.usecase.ArchiveSubscriptionUseCase
+import az21.subscribe.domain.usecase.CancelReminderUseCase
 import az21.subscribe.domain.usecase.CancelSubscriptionUseCase
 import az21.subscribe.domain.usecase.DeleteSubscriptionUseCase
 import az21.subscribe.domain.usecase.GetNextBillingDateUseCase
@@ -45,6 +47,7 @@ class SubscriptionDetailViewModelTest {
   private val tagRepository = TagRepositoryImpl(FakeTagDao())
   private val paymentMethodRepository = PaymentMethodRepositoryImpl(FakePaymentMethodDao())
   private val settingsRepository = FakeSettingsRepository()
+  private val reminderScheduler = FakeReminderScheduler()
 
   private fun createViewModel() =
     SubscriptionDetailViewModel(
@@ -58,6 +61,7 @@ class SubscriptionDetailViewModelTest {
       cancelSubscription = CancelSubscriptionUseCase(subscriptionRepository),
       archiveSubscription = ArchiveSubscriptionUseCase(subscriptionRepository),
       deleteSubscription = DeleteSubscriptionUseCase(subscriptionRepository),
+      cancelReminder = CancelReminderUseCase(reminderScheduler),
       clock = clock,
     )
 
@@ -96,6 +100,7 @@ class SubscriptionDetailViewModelTest {
       val updated = subscriptionRepository.getSubscription(subscription.id)
       assertEquals(SubscriptionStatus.CANCELLED, updated?.status)
       assertEquals(LocalDate.of(2024, 5, 20), updated?.endDate)
+      assertEquals(listOf(subscription.id), reminderScheduler.cancelled)
     }
 
   @Test

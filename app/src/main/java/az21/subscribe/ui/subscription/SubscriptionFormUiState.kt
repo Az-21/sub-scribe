@@ -12,9 +12,10 @@ data class FormErrors(
   val price: Boolean = false,
   val freeTrialMonths: Boolean = false,
   val reminderDays: Boolean = false,
+  val trialReminder: Boolean = false,
 ) {
   val hasErrors: Boolean
-    get() = name || price || freeTrialMonths || reminderDays
+    get() = name || price || freeTrialMonths || reminderDays || trialReminder
 }
 
 /**

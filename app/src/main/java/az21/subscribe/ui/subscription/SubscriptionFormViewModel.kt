@@ -10,6 +10,7 @@ import az21.subscribe.domain.repository.PriceHistoryRepository
 import az21.subscribe.domain.repository.SubscriptionRepository
 import az21.subscribe.domain.repository.TagRepository
 import az21.subscribe.domain.usecase.AddPriceChangeUseCase
+import az21.subscribe.domain.usecase.ScheduleReminderUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -41,6 +42,7 @@ class SubscriptionFormViewModel
     tagRepository: TagRepository,
     paymentMethodRepository: PaymentMethodRepository,
     private val addPriceChange: AddPriceChangeUseCase,
+    private val scheduleReminder: ScheduleReminderUseCase,
     private val clock: Clock,
   ) : ViewModel() {
     private val form = MutableStateFlow(SubscriptionFormUiState())
@@ -157,12 +159,14 @@ class SubscriptionFormViewModel
     fun save() {
       val state = form.value
       val price = state.price.toBigDecimalOrNull()?.takeIf { value -> value.signum() >= 0 }
+      val reminderDays = state.reminderDaysBefore.toIntOrNull()
       val errors =
         FormErrors(
           name = state.name.isBlank(),
           price = price == null,
           freeTrialMonths = state.freeTrialMonths.isNotBlank() && state.freeTrialMonths.toIntOrNull() == null,
-          reminderDays = state.reminderDaysBefore.isNotBlank() && state.reminderDaysBefore.toIntOrNull() == null,
+          reminderDays = state.reminderDaysBefore.isNotBlank() && reminderDays == null,
+          trialReminder = state.trialReminderEnabled && reminderDays == null,
         )
       if (errors.hasErrors || price == null) {
         form.value = state.copy(errors = errors)
@@ -201,10 +205,11 @@ class SubscriptionFormViewModel
           effectiveFromDate = state.startDate ?: LocalDate.now(clock),
         )
         subscriptionRepository.setTags(created.id, state.selectedTagIds)
+        scheduleReminder(created)
       } else {
         val existing = subscriptionRepository.getSubscription(id)
         if (existing != null) {
-          subscriptionRepository.updateSubscription(
+          val updated =
             existing.copy(
               name = state.name.trim(),
               iconId = state.iconId,
@@ -215,13 +220,14 @@ class SubscriptionFormViewModel
               trialReminderEnabled = state.trialReminderEnabled,
               paymentMethodId = state.paymentMethodId,
               notes = notes,
-            ),
-          )
+            )
+          subscriptionRepository.updateSubscription(updated)
           val previousPrice = loadedPrice
           if (previousPrice == null || price.compareTo(previousPrice) != 0) {
             addPriceChange(id, price, LocalDate.now(clock))
           }
           subscriptionRepository.setTags(id, state.selectedTagIds)
+          scheduleReminder(updated)
         }
       }
       form.value = form.value.copy(saved = true)

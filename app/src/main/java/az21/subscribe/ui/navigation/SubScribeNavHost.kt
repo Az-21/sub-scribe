@@ -2,7 +2,9 @@ package az21.subscribe.ui.navigation
 
 import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -18,7 +20,11 @@ import az21.subscribe.ui.subscription.SubscriptionFormScreen
 import az21.subscribe.ui.tags.TagsScreen
 
 @Composable
-fun SubScribeNavHost(modifier: Modifier = Modifier) {
+fun SubScribeNavHost(
+  modifier: Modifier = Modifier,
+  deepLinkSubscriptionId: String? = null,
+  onDeepLinkConsumed: () -> Unit = {},
+) {
   val backStack = rememberNavBackStack(HomeRoute)
   val activity = LocalActivity.current
   val navigateTopLevel: (NavKey) -> Unit = { route ->
@@ -30,51 +36,65 @@ fun SubScribeNavHost(modifier: Modifier = Modifier) {
     if (backStack.size > 1) backStack.removeLastOrNull() else activity?.finish()
   }
 
+  LaunchedEffect(deepLinkSubscriptionId) {
+    val id = deepLinkSubscriptionId
+    if (id != null) {
+      backStack.add(SubscriptionDetailRoute(id))
+      onDeepLinkConsumed()
+    }
+  }
+
   NavDisplay(
     backStack = backStack,
     modifier = modifier,
     onBack = popOrFinish,
-    entryProvider =
-      entryProvider {
-        entry<HomeRoute> {
-          HomeScreen(
-            onAddSubscription = { backStack.add(SubscriptionFormRoute()) },
-            onOpenSubscription = { id -> backStack.add(SubscriptionDetailRoute(id)) },
-            onOpenArchive = { backStack.add(ArchiveRoute) },
-            onNavigateTopLevel = navigateTopLevel,
-          )
-        }
-        entry<CalendarRoute> { CalendarScreen(onNavigateTopLevel = navigateTopLevel) }
-        entry<MetricsRoute> { MetricsScreen(onNavigateTopLevel = navigateTopLevel) }
-        entry<ArchiveRoute> {
-          ArchiveScreen(
-            onOpenSubscription = { id -> backStack.add(SubscriptionDetailRoute(id)) },
-            onNavigateTopLevel = navigateTopLevel,
-          )
-        }
-        entry<SettingsRoute> {
-          SettingsScreen(
-            onOpenTags = { backStack.add(TagsRoute) },
-            onOpenPaymentMethods = { backStack.add(PaymentMethodsRoute) },
-            onNavigateTopLevel = navigateTopLevel,
-          )
-        }
-        entry<SubscriptionFormRoute> { route ->
-          SubscriptionFormScreen(
-            subscriptionId = route.subscriptionId,
-            onBack = popBackStack,
-            onSaved = popBackStack,
-          )
-        }
-        entry<SubscriptionDetailRoute> { route ->
-          SubscriptionDetailScreen(
-            subscriptionId = route.subscriptionId,
-            onBack = popBackStack,
-            onEdit = { id -> backStack.add(SubscriptionFormRoute(id)) },
-          )
-        }
-        entry<TagsRoute> { TagsScreen(onBack = popBackStack) }
-        entry<PaymentMethodsRoute> { PaymentMethodsScreen(onBack = popBackStack) }
-      },
+    entryProvider = subScribeEntryProvider(backStack, navigateTopLevel, popBackStack),
   )
 }
+
+private fun subScribeEntryProvider(
+  backStack: MutableList<NavKey>,
+  navigateTopLevel: (NavKey) -> Unit,
+  popBackStack: () -> Unit,
+): (NavKey) -> NavEntry<NavKey> =
+  entryProvider {
+    entry<HomeRoute> {
+      HomeScreen(
+        onAddSubscription = { backStack.add(SubscriptionFormRoute()) },
+        onOpenSubscription = { id -> backStack.add(SubscriptionDetailRoute(id)) },
+        onOpenArchive = { backStack.add(ArchiveRoute) },
+        onNavigateTopLevel = navigateTopLevel,
+      )
+    }
+    entry<CalendarRoute> { CalendarScreen(onNavigateTopLevel = navigateTopLevel) }
+    entry<MetricsRoute> { MetricsScreen(onNavigateTopLevel = navigateTopLevel) }
+    entry<ArchiveRoute> {
+      ArchiveScreen(
+        onOpenSubscription = { id -> backStack.add(SubscriptionDetailRoute(id)) },
+        onNavigateTopLevel = navigateTopLevel,
+      )
+    }
+    entry<SettingsRoute> {
+      SettingsScreen(
+        onOpenTags = { backStack.add(TagsRoute) },
+        onOpenPaymentMethods = { backStack.add(PaymentMethodsRoute) },
+        onNavigateTopLevel = navigateTopLevel,
+      )
+    }
+    entry<SubscriptionFormRoute> { route ->
+      SubscriptionFormScreen(
+        subscriptionId = route.subscriptionId,
+        onBack = popBackStack,
+        onSaved = popBackStack,
+      )
+    }
+    entry<SubscriptionDetailRoute> { route ->
+      SubscriptionDetailScreen(
+        subscriptionId = route.subscriptionId,
+        onBack = popBackStack,
+        onEdit = { id -> backStack.add(SubscriptionFormRoute(id)) },
+      )
+    }
+    entry<TagsRoute> { TagsScreen(onBack = popBackStack) }
+    entry<PaymentMethodsRoute> { PaymentMethodsScreen(onBack = popBackStack) }
+  }
