@@ -9,14 +9,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -38,13 +36,13 @@ fun ColorPickerDialog(
     remember(initialColor) {
       FloatArray(HSV_COMPONENT_COUNT).also { AndroidColor.colorToHSV(initialColor, it) }
     }
-  var hue by remember(initialHsv) { mutableFloatStateOf(initialHsv[0]) }
-  var saturation by remember(initialHsv) { mutableFloatStateOf(initialHsv[1]) }
-  var brightness by remember(initialHsv) { mutableFloatStateOf(initialHsv[2]) }
+  val hueState = rememberSliderState(value = initialHsv[0], trackRange = HUE_RANGE)
+  val saturationState = rememberSliderState(value = initialHsv[1], trackRange = COMPONENT_RANGE)
+  val brightnessState = rememberSliderState(value = initialHsv[2], trackRange = COMPONENT_RANGE)
   val selectedColor =
-    remember(hue, saturation, brightness) {
-      AndroidColor.HSVToColor(floatArrayOf(hue, saturation, brightness))
-    }
+    AndroidColor.HSVToColor(
+      floatArrayOf(hueState.value, saturationState.value, brightnessState.value),
+    )
 
   AlertDialog(
     onDismissRequest = onDismiss,
@@ -60,21 +58,15 @@ fun ColorPickerDialog(
         )
         ColorSlider(
           label = stringResource(R.string.color_picker_hue),
-          value = hue,
-          valueRange = HUE_RANGE,
-          onValueChange = { hue = it },
+          state = hueState,
         )
         ColorSlider(
           label = stringResource(R.string.color_picker_saturation),
-          value = saturation,
-          valueRange = COMPONENT_RANGE,
-          onValueChange = { saturation = it },
+          state = saturationState,
         )
         ColorSlider(
           label = stringResource(R.string.color_picker_brightness),
-          value = brightness,
-          valueRange = COMPONENT_RANGE,
-          onValueChange = { brightness = it },
+          state = brightnessState,
         )
       }
     },
@@ -94,14 +86,11 @@ fun ColorPickerDialog(
 @Composable
 private fun ColorSlider(
   label: String,
-  value: Float,
-  valueRange: ClosedFloatingPointRange<Float>,
-  onValueChange: (Float) -> Unit,
+  state: SliderState,
 ) {
-  val sliderState = rememberSliderState(value = value, trackRange = valueRange)
   Column {
     Text(text = label, style = MaterialTheme.typography.labelMedium)
-    Slider(state = sliderState, onValueChange = onValueChange)
+    Slider(state = state)
   }
 }
 
