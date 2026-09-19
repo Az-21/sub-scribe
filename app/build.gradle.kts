@@ -4,7 +4,6 @@ plugins {
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.ksp)
   alias(libs.plugins.hilt)
-  alias(libs.plugins.ktlint)
   alias(libs.plugins.detekt)
 }
 
@@ -99,14 +98,6 @@ dependencies {
   androidTestImplementation(libs.androidx.test.core)
   debugImplementation(libs.androidx.compose.ui.test.manifest)
   debugImplementation(libs.androidx.compose.ui.tooling)
-}
-
-ktlint {
-  android.set(true)
-  outputToConsole.set(true)
-  filter {
-    exclude { it.file.path.contains("/build/") }
-  }
 }
 
 detekt {
