@@ -22,11 +22,10 @@ import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AppBarWithSearch
 import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ButtonGroupScope
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.ExpandedDockedSearchBarWithGap
+import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FabPosition
@@ -39,10 +38,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.SearchBarScrollBehavior
 import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.SelectableDropdownMenuItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,6 +65,7 @@ import az21.subscribe.R
 import az21.subscribe.domain.model.Currency
 import az21.subscribe.domain.model.SubscriptionStatus
 import az21.subscribe.ui.common.IconActionButton
+import az21.subscribe.ui.common.SubScribeTopAppBar
 import az21.subscribe.ui.common.SubscriptionIcon
 import az21.subscribe.ui.common.SubscriptionSummary
 import az21.subscribe.ui.common.formatMoney
@@ -119,22 +119,25 @@ fun HomeContent(
 ) {
   val searchBarState = rememberSearchBarState()
   val textFieldState = rememberTextFieldState(initialText = uiState.query)
-  val searchScrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
+  val searchBarScope = rememberCoroutineScope()
+  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
   LaunchedEffect(textFieldState) {
     snapshotFlow { textFieldState.text.toString() }.collect { value -> onQueryChange(value) }
   }
   Scaffold(
-    modifier = modifier.fillMaxSize().nestedScroll(searchScrollBehavior.nestedScrollConnection),
+    modifier = modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
-      HomeSearchTopBar(
-        searchBarState = searchBarState,
-        textFieldState = textFieldState,
-        scrollBehavior = searchScrollBehavior,
-        items = uiState.items,
-        currentSort = uiState.sort,
-        onSortChange = onSortChange,
-        onOpenArchive = onOpenArchive,
-        onOpenSubscription = onOpenSubscription,
+      SubScribeTopAppBar(
+        title = stringResource(R.string.home_title),
+        scrollBehavior = scrollBehavior,
+        actions = {
+          HomeTopBarActions(
+            currentSort = uiState.sort,
+            onSortChange = onSortChange,
+            onOpenArchive = onOpenArchive,
+            onSearch = { searchBarScope.launch { searchBarState.animateToExpanded() } },
+          )
+        },
       )
     },
     floatingActionButtonPosition = FabPosition.Center,
@@ -155,18 +158,20 @@ fun HomeContent(
       modifier = Modifier.fillMaxSize().padding(innerPadding),
     )
   }
+  HomeSearchBar(
+    searchBarState = searchBarState,
+    textFieldState = textFieldState,
+    items = uiState.items,
+    onOpenSubscription = onOpenSubscription,
+  )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeSearchTopBar(
+private fun HomeSearchBar(
   searchBarState: SearchBarState,
   textFieldState: TextFieldState,
-  scrollBehavior: SearchBarScrollBehavior,
   items: List<SubscriptionSummary>,
-  currentSort: SubscriptionSort,
-  onSortChange: (SubscriptionSort) -> Unit,
-  onOpenArchive: () -> Unit,
   onOpenSubscription: (String) -> Unit,
 ) {
   val scope = rememberCoroutineScope()
@@ -187,19 +192,7 @@ private fun HomeSearchTopBar(
         },
       )
     }
-  AppBarWithSearch(
-    state = searchBarState,
-    inputField = inputField,
-    scrollBehavior = scrollBehavior,
-    actions = {
-      HomeTopBarActions(
-        currentSort = currentSort,
-        onSortChange = onSortChange,
-        onOpenArchive = onOpenArchive,
-      )
-    },
-  )
-  ExpandedDockedSearchBarWithGap(state = searchBarState, inputField = inputField) {
+  ExpandedFullScreenSearchBar(state = searchBarState, inputField = inputField) {
     items.take(MAX_SEARCH_SUGGESTIONS).forEach { item ->
       ListItem(
         onClick = {
@@ -225,7 +218,13 @@ private fun HomeTopBarActions(
   currentSort: SubscriptionSort,
   onSortChange: (SubscriptionSort) -> Unit,
   onOpenArchive: () -> Unit,
+  onSearch: () -> Unit,
 ) {
+  IconActionButton(
+    onClick = onSearch,
+    icon = Icons.Default.Search,
+    contentDescription = stringResource(R.string.home_search),
+  )
   var sortMenuExpanded by remember { mutableStateOf(false) }
   Box {
     IconActionButton(
