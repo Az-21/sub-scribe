@@ -155,12 +155,19 @@ class HomeViewModelTest {
   ): Subscription {
     val created = subscriptionRepository.createSubscription(draft(name))
     return when (status) {
-      SubscriptionStatus.ACTIVE -> created
-      SubscriptionStatus.CANCELLED -> subscriptionRepository.cancelSubscription(created.id)
-      SubscriptionStatus.ARCHIVED ->
+      SubscriptionStatus.ACTIVE -> {
+        created
+      }
+
+      SubscriptionStatus.CANCELLED -> {
+        subscriptionRepository.cancelSubscription(created.id)
+      }
+
+      SubscriptionStatus.ARCHIVED -> {
         subscriptionRepository.archiveSubscription(
           subscriptionRepository.cancelSubscription(created.id).id,
         )
+      }
     }
   }
 
