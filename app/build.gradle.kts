@@ -1,6 +1,9 @@
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.compose)
+  alias(libs.plugins.kotlin.serialization)
+  alias(libs.plugins.ksp)
+  alias(libs.plugins.hilt)
   alias(libs.plugins.ktlint)
   alias(libs.plugins.detekt)
 }
@@ -37,6 +40,10 @@ android {
   }
 }
 
+ksp {
+  arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 dependencies {
   implementation(platform(libs.androidx.compose.bom))
   implementation(libs.androidx.activity.compose)
@@ -45,12 +52,47 @@ dependencies {
   implementation(libs.androidx.compose.ui.graphics)
   implementation(libs.androidx.compose.ui.tooling.preview)
   implementation(libs.androidx.core.ktx)
+  implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.runtime.ktx)
+  implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+  // Navigation 3
+  implementation(libs.androidx.navigation3.runtime)
+  implementation(libs.androidx.navigation3.ui)
+
+  // Room
+  implementation(libs.androidx.room.ktx)
+  implementation(libs.androidx.room.runtime)
+  ksp(libs.androidx.room.compiler)
+
+  // Hilt
+  implementation(libs.androidx.hilt.navigation.compose)
+  implementation(libs.androidx.hilt.work)
+  implementation(libs.hilt.android)
+  ksp(libs.androidx.hilt.compiler)
+  ksp(libs.hilt.compiler)
+
+  // Coroutines, Flow, and serialization
+  implementation(libs.kotlinx.coroutines.android)
+  implementation(libs.kotlinx.serialization.json)
+
+  // WorkManager and DataStore
+  implementation(libs.androidx.datastore.preferences)
+  implementation(libs.androidx.work.runtime.ktx)
+
+  // Simple Icons (full set embedded)
+  implementation(libs.simple.icons)
+
+  testImplementation(libs.androidx.room.testing)
   testImplementation(libs.junit)
+  testImplementation(libs.kotlinx.coroutines.test)
+  testImplementation(libs.turbine)
+
   androidTestImplementation(platform(libs.androidx.compose.bom))
   androidTestImplementation(libs.androidx.compose.ui.test.junit4)
   androidTestImplementation(libs.androidx.espresso.core)
   androidTestImplementation(libs.androidx.junit)
+  androidTestImplementation(libs.androidx.test.core)
   debugImplementation(libs.androidx.compose.ui.test.manifest)
   debugImplementation(libs.androidx.compose.ui.tooling)
 }
