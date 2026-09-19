@@ -2,8 +2,6 @@
   <string name="form_title_add">Add subscription</string>
   <string name="form_title_edit">Edit subscription</string>
   <string name="form_name">Name</string>
-  <string name="form_icon">Icon</string>
-  <string name="form_start_date">Start date</string>
   <string name="form_start_date_hint">Defaults to today</string>
   <string name="form_clear_date">Clear date</string>
   <string name="form_billing_cycle">Billing cycle</string>
@@ -19,7 +17,6 @@
   <string name="form_notes">Notes</string>
   <string name="form_choose_icon">Choose an icon</string>
   <string name="form_icon_search">Search icons</string>
-  <string name="form_icon_empty">No icons match your search.</string>
   <string name="form_error_name">Enter a name.</string>
   <string name="form_error_price">Enter a valid non-negative price.</string>
   <string name="form_error_number">Enter a whole number.</string>

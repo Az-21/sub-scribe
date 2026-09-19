@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
@@ -249,7 +250,7 @@ private fun DetailInfo(uiState: SubscriptionDetailUiState) {
     subscription.freeTrialMonths?.takeIf { it > 0 }?.let { months ->
       InfoRow(
         label = stringResource(R.string.detail_free_trial),
-        value = stringResource(R.string.detail_free_trial_months, months),
+        value = pluralStringResource(R.plurals.detail_free_trial_months, months, months),
       )
     }
     uiState.trialEndDate?.let { date ->
@@ -258,7 +259,7 @@ private fun DetailInfo(uiState: SubscriptionDetailUiState) {
     subscription.reminderDaysBefore?.let { days ->
       InfoRow(
         label = stringResource(R.string.detail_reminder),
-        value = stringResource(R.string.detail_reminder_days, days),
+        value = pluralStringResource(R.plurals.detail_reminder_days, days, days),
       )
     }
     InfoRow(
