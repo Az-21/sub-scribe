@@ -17,7 +17,9 @@ import az21.subscribe.ui.datatransfer.DataTransferScreen
 import az21.subscribe.ui.home.HomeScreen
 import az21.subscribe.ui.metrics.MetricsScreen
 import az21.subscribe.ui.paymentmethods.PaymentMethodsScreen
+import az21.subscribe.ui.settings.GeneralSettingsScreen
 import az21.subscribe.ui.settings.SettingsScreen
+import az21.subscribe.ui.settings.ThemeSettingsScreen
 import az21.subscribe.ui.subscription.SubscriptionDetailScreen
 import az21.subscribe.ui.subscription.SubscriptionFormScreen
 import az21.subscribe.ui.tags.TagsScreen
@@ -84,12 +86,16 @@ private fun subScribeEntryProvider(
     }
     entry<SettingsRoute> {
       SettingsScreen(
+        onOpenGeneral = { backStack.add(GeneralSettingsRoute) },
+        onOpenTheme = { backStack.add(ThemeSettingsRoute) },
         onOpenTags = { backStack.add(TagsRoute) },
         onOpenPaymentMethods = { backStack.add(PaymentMethodsRoute) },
         onOpenDataTransfer = { backStack.add(DataTransferRoute) },
         onNavigateTopLevel = navigateTopLevel,
       )
     }
+    entry<GeneralSettingsRoute> { GeneralSettingsScreen(onBack = popBackStack) }
+    entry<ThemeSettingsRoute> { ThemeSettingsScreen(onBack = popBackStack) }
     entry<SubscriptionFormRoute> { route ->
       SubscriptionFormScreen(
         subscriptionId = route.subscriptionId,

@@ -13,19 +13,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -44,8 +48,8 @@ import az21.subscribe.R
 import az21.subscribe.domain.model.Tag
 import az21.subscribe.ui.common.IconActionButton
 import az21.subscribe.ui.common.PresetColors
-import az21.subscribe.ui.common.PrimaryAppBarAction
 import az21.subscribe.ui.common.SubScribeTopAppBar
+import az21.subscribe.ui.common.segmentedListItemColors
 import az21.subscribe.ui.theme.AppTheme
 
 @Composable
@@ -95,12 +99,13 @@ fun TagsContent(
         title = stringResource(R.string.tags_title),
         onNavigateUp = onBack,
         scrollBehavior = scrollBehavior,
-        primaryAction =
-          PrimaryAppBarAction(
-            label = stringResource(R.string.action_add),
-            icon = Icons.Default.Add,
-            onClick = onAdd,
-          ),
+      )
+    },
+    floatingActionButton = {
+      ExtendedFloatingActionButton(
+        text = { Text(stringResource(R.string.action_add)) },
+        icon = { Icon(imageVector = Icons.Default.Add, contentDescription = null) },
+        onClick = onAdd,
       )
     },
   ) { innerPadding ->
@@ -145,11 +150,17 @@ private fun TagsBody(
     else -> {
       LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 88.dp),
+        verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
       ) {
-        items(items = uiState.tags, key = { tag -> tag.id }) { tag ->
-          TagRow(tag = tag, onEdit = onEdit, onRequestDelete = onRequestDelete)
+        itemsIndexed(items = uiState.tags, key = { _, tag -> tag.id }) { index, tag ->
+          TagRow(
+            tag = tag,
+            index = index,
+            count = uiState.tags.size,
+            onEdit = onEdit,
+            onRequestDelete = onRequestDelete,
+          )
         }
       }
     }
@@ -159,20 +170,31 @@ private fun TagsBody(
 @Composable
 private fun TagRow(
   tag: Tag,
+  index: Int,
+  count: Int,
   onEdit: (Tag) -> Unit,
   onRequestDelete: (Tag) -> Unit,
 ) {
-  ListItem(
+  SegmentedListItem(
     onClick = { onEdit(tag) },
+    shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
+    colors = segmentedListItemColors(),
     modifier = Modifier.fillMaxWidth(),
     leadingContent = { TagColorDot(color = tag.color) },
     content = { Text(text = tag.name, style = MaterialTheme.typography.bodyLarge) },
     trailingContent = {
-      IconActionButton(
-        onClick = { onRequestDelete(tag) },
-        icon = Icons.Default.Delete,
-        contentDescription = stringResource(R.string.tags_delete),
-      )
+      Row {
+        IconActionButton(
+          onClick = { onEdit(tag) },
+          icon = Icons.Outlined.Edit,
+          contentDescription = stringResource(R.string.action_edit),
+        )
+        IconActionButton(
+          onClick = { onRequestDelete(tag) },
+          icon = Icons.Default.Delete,
+          contentDescription = stringResource(R.string.tags_delete),
+        )
+      }
     },
   )
 }
