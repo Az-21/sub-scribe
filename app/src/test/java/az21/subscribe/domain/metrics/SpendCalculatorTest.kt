@@ -139,7 +139,6 @@ class SpendCalculatorTest {
       billingCycle = billingCycle,
       status = status,
       endDate = endDate,
-      reminderDaysBefore = null,
       paymentMethodId = null,
       notes = null,
       createdAt = Instant.EPOCH,

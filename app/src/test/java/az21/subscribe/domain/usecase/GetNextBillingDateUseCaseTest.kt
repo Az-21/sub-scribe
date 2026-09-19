@@ -52,7 +52,6 @@ class GetNextBillingDateUseCaseTest {
       billingCycle = BillingCycle.MONTHLY,
       status = status,
       endDate = null,
-      reminderDaysBefore = null,
       paymentMethodId = null,
       notes = null,
       createdAt = Instant.EPOCH,

@@ -254,7 +254,12 @@ private fun SelectedDayCharges(uiState: CalendarUiState) {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
       ) {
-        SubscriptionIcon(iconId = charge.iconId, name = charge.name, modifier = Modifier.size(32.dp))
+        SubscriptionIcon(
+          iconId = charge.iconId,
+          name = charge.name,
+          iconColor = charge.iconColor,
+          modifier = Modifier.size(32.dp),
+        )
         Text(text = charge.name, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
         Text(
           text = charge.price?.let { formatMoney(it, uiState.currency, locale) }.orEmpty(),

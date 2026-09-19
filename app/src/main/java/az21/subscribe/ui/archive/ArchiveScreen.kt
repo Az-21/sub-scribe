@@ -148,6 +148,7 @@ private fun ArchiveRow(
       SubscriptionIcon(
         iconId = item.subscription.iconId,
         name = item.subscription.name,
+        iconColor = item.subscription.iconColor,
         modifier = Modifier.size(40.dp),
       )
     },

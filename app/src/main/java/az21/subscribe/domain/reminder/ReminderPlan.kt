@@ -2,31 +2,30 @@ package az21.subscribe.domain.reminder
 
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
 
 /**
- * A single reminder that should fire at [triggerAt] and mentions [targetDate].
- *
- * [targetDate] is the charge date for a billing reminder.
+ * A single reminder that should fire at [triggerAt] for the charge on [targetDate]. [daysBefore] and
+ * [time] are the rule that produced it.
  */
 data class ReminderPlan(
-  val type: ReminderType,
   val triggerAt: Instant,
   val targetDate: LocalDate,
+  val daysBefore: Int,
+  val time: LocalTime,
 ) {
   companion object {
-    /** Reminders land at 09:00 local time so they arrive before the day gets going. */
-    const val NOTIFICATION_HOUR: Int = 9
-
-    /** The instant [daysBefore] days before [date], at [NOTIFICATION_HOUR] in [zone]. */
+    /** The instant [daysBefore] days before [date], at [time] in [zone]. */
     fun triggerAt(
       date: LocalDate,
       daysBefore: Int,
+      time: LocalTime,
       zone: ZoneId,
     ): Instant =
       date
         .minusDays(daysBefore.toLong())
-        .atTime(NOTIFICATION_HOUR, 0)
+        .atTime(time)
         .atZone(zone)
         .toInstant()
   }

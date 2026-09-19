@@ -109,7 +109,6 @@ class ExportMappersTest {
         billingCycle = BillingCycle.MONTHLY,
         status = SubscriptionStatus.ACTIVE,
         endDate = null,
-        reminderDaysBefore = null,
         paymentMethodId = null,
         notes = null,
         createdAt = Instant.parse("2024-01-01T00:00:00Z"),
@@ -119,11 +118,35 @@ class ExportMappersTest {
     val export = subscription.toExport()
 
     assertNull(export.endDate)
-    assertNull(export.reminderDaysBefore)
+    assertEquals(emptyList<ReminderExport>(), export.reminders)
     assertNull(export.paymentMethodId)
     assertNull(export.notes)
     assertEquals("MONTHLY", export.billingCycle)
     assertEquals("ACTIVE", export.status)
+  }
+
+  @Test
+  fun subscriptionToExport_mapsIconColor() {
+    val subscription =
+      Subscription(
+        id = UUID.fromString("11111111-1111-1111-1111-111111111111"),
+        name = "Test",
+        iconId = "simple:netflix",
+        startDate = LocalDate.of(2024, 1, 1),
+        billingCycle = BillingCycle.MONTHLY,
+        status = SubscriptionStatus.ACTIVE,
+        endDate = null,
+        paymentMethodId = null,
+        notes = null,
+        createdAt = Instant.parse("2024-01-01T00:00:00Z"),
+        updatedAt = Instant.parse("2024-01-01T00:00:00Z"),
+        iconColor = 0xFFE57373.toInt(),
+      )
+
+    val export = subscription.toExport()
+
+    assertEquals("simple:netflix", export.iconId)
+    assertEquals(0xFFE57373.toInt(), export.iconColor)
   }
 
   @Test

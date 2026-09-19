@@ -14,9 +14,9 @@ import androidx.core.content.ContextCompat
 import az21.subscribe.MainActivity
 import az21.subscribe.R
 import az21.subscribe.domain.model.Subscription
-import az21.subscribe.domain.reminder.ReminderType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
@@ -33,8 +33,9 @@ class ReminderNotifier
   ) {
     fun show(
       subscription: Subscription,
-      type: ReminderType,
       targetDate: LocalDate,
+      daysBefore: Int,
+      time: LocalTime,
     ) {
       val manager = NotificationManagerCompat.from(context)
       val permissionDenied =
@@ -59,7 +60,7 @@ class ReminderNotifier
           .setContentIntent(contentIntent(subscription.id))
           .build()
 
-      manager.notify(notificationId(subscription.id, type), notification)
+      manager.notify(notificationId(subscription.id, daysBefore, time), notification)
     }
 
     private fun contentIntent(subscriptionId: UUID): PendingIntent {
@@ -78,8 +79,11 @@ class ReminderNotifier
 
     private fun notificationId(
       subscriptionId: UUID,
-      type: ReminderType,
-    ): Int = subscriptionId.hashCode() * HASH_MULTIPLIER + type.ordinal
+      daysBefore: Int,
+      time: LocalTime,
+    ): Int =
+      listOf(subscriptionId.hashCode(), daysBefore, time.hashCode())
+        .fold(1) { acc, value -> acc * HASH_MULTIPLIER + value }
 
     companion object {
       const val CHANNEL_ID: String = "subscription_reminders"

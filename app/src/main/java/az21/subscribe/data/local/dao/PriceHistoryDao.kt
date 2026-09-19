@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 import az21.subscribe.data.local.entity.PriceHistoryEntity
 import kotlinx.coroutines.flow.Flow
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
 
@@ -48,6 +49,13 @@ interface PriceHistoryDao {
     subscriptionId: UUID,
     date: LocalDate,
   ): PriceHistoryEntity?
+
+  @Query("UPDATE price_history SET price = :price, effective_from_date = :date WHERE id = :id")
+  suspend fun updateEntry(
+    id: UUID,
+    price: BigDecimal,
+    date: LocalDate,
+  )
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun upsert(entity: PriceHistoryEntity)

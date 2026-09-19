@@ -31,9 +31,9 @@ data class SubscriptionEntity(
   @ColumnInfo(name = "billing_cycle") val billingCycle: BillingCycle,
   @ColumnInfo(name = "status") val status: SubscriptionStatus,
   @ColumnInfo(name = "end_date") val endDate: LocalDate?,
-  @ColumnInfo(name = "reminder_days_before") val reminderDaysBefore: Int?,
   @ColumnInfo(name = "payment_method_id") val paymentMethodId: UUID?,
   @ColumnInfo(name = "notes") val notes: String?,
   @ColumnInfo(name = "created_at") val createdAt: Instant,
   @ColumnInfo(name = "updated_at") val updatedAt: Instant,
+  @ColumnInfo(name = "icon_color") val iconColor: Int? = null,
 )

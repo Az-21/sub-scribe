@@ -92,6 +92,49 @@ class PriceHistoryRepositoryImplTest {
     }
 
   @Test
+  fun updateEntry_changesPriceAndDatePreservingIdentity() =
+    runTest {
+      val entry = repository.addPriceChange(subscriptionId, BigDecimal("9.99"), LocalDate.of(2023, 1, 1))
+
+      repository.updateEntry(entry.id, BigDecimal("12.99"), LocalDate.of(2024, 1, 1))
+
+      val updated = repository.getTimeline(subscriptionId).single()
+      assertEquals(entry.id, updated.id)
+      assertEquals(entry.createdAt, updated.createdAt)
+      assertEquals(BigDecimal("12.99"), updated.price)
+      assertEquals(LocalDate.of(2024, 1, 1), updated.effectiveFromDate)
+    }
+
+  @Test
+  fun deleteEntry_removesOnlyThatPricePoint() =
+    runTest {
+      val oldest = repository.addPriceChange(subscriptionId, BigDecimal("9.99"), LocalDate.of(2023, 1, 1))
+      repository.addPriceChange(subscriptionId, BigDecimal("12.99"), LocalDate.of(2024, 1, 1))
+
+      repository.deleteEntry(oldest.id)
+
+      assertEquals(
+        listOf(BigDecimal("12.99")),
+        repository.getTimeline(subscriptionId).map { it.price },
+      )
+    }
+
+  @Test
+  fun deleteEntry_leavesOtherSubscriptionsUntouched() =
+    runTest {
+      val otherId = UUID.randomUUID()
+      val entry = repository.addPriceChange(subscriptionId, BigDecimal("9.99"), LocalDate.of(2023, 1, 1))
+      repository.addPriceChange(otherId, BigDecimal("4.99"), LocalDate.of(2024, 2, 1))
+
+      repository.deleteEntry(entry.id)
+
+      assertEquals(
+        listOf(BigDecimal("4.99")),
+        repository.getTimeline(otherId).map { it.price },
+      )
+    }
+
+  @Test
   fun addPriceChange_stampsCreationTime() =
     runTest {
       val instant = Instant.parse("2024-03-01T00:00:00Z")

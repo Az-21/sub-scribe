@@ -1,9 +1,11 @@
 package az21.subscribe.data.mapper
 
 import az21.subscribe.data.local.entity.SubscriptionEntity
+import az21.subscribe.data.local.entity.SubscriptionWithReminders
 import az21.subscribe.domain.model.BillingCycle
 import az21.subscribe.domain.model.PaymentMethod
 import az21.subscribe.domain.model.PriceHistory
+import az21.subscribe.domain.model.ReminderSpec
 import az21.subscribe.domain.model.Subscription
 import az21.subscribe.domain.model.SubscriptionStatus
 import az21.subscribe.domain.model.Tag
@@ -12,6 +14,7 @@ import org.junit.Test
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
 import java.util.UUID
 
 class MapperTest {
@@ -26,14 +29,21 @@ class MapperTest {
         billingCycle = BillingCycle.ANNUAL,
         status = SubscriptionStatus.ACTIVE,
         endDate = null,
-        reminderDaysBefore = 3,
+        reminders = listOf(ReminderSpec(daysBefore = 3, time = LocalTime.of(9, 0))),
         paymentMethodId = UUID.randomUUID(),
         notes = "Family plan",
         createdAt = Instant.parse("2022-03-01T00:00:00Z"),
         updatedAt = Instant.parse("2022-04-01T00:00:00Z"),
+        iconColor = 0xFF4285F4.toInt(),
+      )
+    val entity = subscription.toEntity()
+    val stored =
+      SubscriptionWithReminders(
+        subscription = entity,
+        reminders = subscription.reminders.map { it.toEntity(subscription.id, UUID.randomUUID()) },
       )
 
-    assertEquals(subscription, subscription.toEntity().toDomain())
+    assertEquals(subscription, stored.toDomain())
   }
 
   @Test
@@ -75,18 +85,19 @@ class MapperTest {
         billingCycle = BillingCycle.MONTHLY,
         status = SubscriptionStatus.ACTIVE,
         endDate = null,
-        reminderDaysBefore = null,
         paymentMethodId = null,
         notes = null,
         createdAt = Instant.EPOCH,
         updatedAt = Instant.EPOCH,
       )
+    val stored =
+      SubscriptionWithReminders(subscription = subscription.toEntity(), reminders = emptyList())
 
-    val mapped = subscription.toEntity().toDomain()
+    val mapped = stored.toDomain()
 
     assertEquals(subscription, mapped)
     assertEquals(null, mapped.endDate)
-    assertEquals(null, mapped.reminderDaysBefore)
+    assertEquals(emptyList<ReminderSpec>(), mapped.reminders)
     assertEquals(null, mapped.paymentMethodId)
     assertEquals(null, mapped.notes)
   }
@@ -102,7 +113,6 @@ class MapperTest {
         billingCycle = BillingCycle.MONTHLY,
         status = SubscriptionStatus.CANCELLED,
         endDate = LocalDate.of(2023, 6, 1),
-        reminderDaysBefore = null,
         paymentMethodId = null,
         notes = null,
         createdAt = Instant.EPOCH,

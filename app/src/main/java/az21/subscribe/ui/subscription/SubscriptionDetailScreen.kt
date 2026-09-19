@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -25,7 +24,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
@@ -80,7 +78,6 @@ fun SubscriptionDetailScreen(
     uiState = uiState,
     onBack = onBack,
     onEdit = { onEdit(subscriptionId) },
-    onAddPrice = viewModel::addPrice,
     onCancel = viewModel::cancel,
     onArchive = viewModel::archive,
     onDelete = {
@@ -97,13 +94,11 @@ fun SubscriptionDetailContent(
   uiState: SubscriptionDetailUiState,
   onBack: () -> Unit,
   onEdit: () -> Unit,
-  onAddPrice: (BigDecimal, LocalDate) -> Unit,
   onCancel: (LocalDate?) -> Unit,
   onArchive: () -> Unit,
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  var showPriceDialog by remember { mutableStateOf(false) }
   var showDeleteDialog by remember { mutableStateOf(false) }
 
   DetailScaffold(
@@ -122,21 +117,10 @@ fun SubscriptionDetailContent(
 
     DetailBody(
       uiState = uiState,
-      onAddPrice = { showPriceDialog = true },
       onCancel = { onCancel(null) },
       onArchive = onArchive,
       onRequestDelete = { showDeleteDialog = true },
       modifier = Modifier.padding(innerPadding),
-    )
-  }
-
-  if (showPriceDialog) {
-    PriceChangeDialog(
-      onConfirm = { price, date ->
-        onAddPrice(price, date)
-        showPriceDialog = false
-      },
-      onDismiss = { showPriceDialog = false },
     )
   }
 
@@ -155,7 +139,6 @@ fun SubscriptionDetailContent(
 @Composable
 private fun DetailBody(
   uiState: SubscriptionDetailUiState,
-  onAddPrice: () -> Unit,
   onCancel: () -> Unit,
   onArchive: () -> Unit,
   onRequestDelete: () -> Unit,
@@ -176,7 +159,7 @@ private fun DetailBody(
         Text(text = subscription.notes, style = MaterialTheme.typography.bodyMedium)
       }
     }
-    PriceHistorySection(uiState = uiState, onAddPrice = onAddPrice)
+    PriceHistorySection(uiState = uiState)
     LifecycleActions(
       status = subscription.status,
       onCancel = onCancel,
@@ -223,7 +206,12 @@ private fun DetailHeader(uiState: SubscriptionDetailUiState) {
     horizontalArrangement = Arrangement.spacedBy(16.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    SubscriptionIcon(iconId = subscription.iconId, name = subscription.name, modifier = Modifier.size(56.dp))
+    SubscriptionIcon(
+      iconId = subscription.iconId,
+      name = subscription.name,
+      iconColor = subscription.iconColor,
+      modifier = Modifier.size(56.dp),
+    )
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
       Text(text = subscription.name, style = MaterialTheme.typography.headlineSmall)
       Text(
@@ -266,11 +254,16 @@ private fun DetailInfo(uiState: SubscriptionDetailUiState) {
           },
         ),
     )
-    subscription.reminderDaysBefore?.let { days ->
-      InfoRow(
-        label = stringResource(R.string.detail_reminder),
-        value = pluralStringResource(R.plurals.detail_reminder_days, days, days),
-      )
+    if (subscription.reminders.isNotEmpty()) {
+      val at = stringResource(R.string.detail_reminder_at)
+      val reminders =
+        subscription.reminders.map { reminder ->
+          val days =
+            pluralStringResource(R.plurals.detail_reminder_days, reminder.daysBefore, reminder.daysBefore)
+          val time = reminder.time.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+          "$days $at $time"
+        }
+      InfoRow(label = stringResource(R.string.detail_reminder), value = reminders.joinToString(", "))
     }
     InfoRow(
       label = stringResource(R.string.detail_payment_method),
@@ -316,58 +309,52 @@ private fun TagSection(tags: List<String>) {
 }
 
 @Composable
-private fun PriceHistorySection(
-  uiState: SubscriptionDetailUiState,
-  onAddPrice: () -> Unit,
-) {
-  val locale = Locale.current.platformLocale
-  val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+private fun PriceHistorySection(uiState: SubscriptionDetailUiState) {
   SectionCard(title = stringResource(R.string.detail_price_history)) {
     if (uiState.timeline.isEmpty()) {
       Text(text = stringResource(R.string.detail_price_no_history), style = MaterialTheme.typography.bodyMedium)
     } else {
-      uiState.timeline.forEachIndexed { index, item ->
-        if (index > 0) HorizontalDivider()
-        Row(
-          modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-          horizontalArrangement = Arrangement.SpaceBetween,
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          Text(text = item.entry.effectiveFromDate.format(dateFormatter), style = MaterialTheme.typography.bodyMedium)
-          Column(horizontalAlignment = Alignment.End) {
-            Text(
-              text = formatMoney(item.entry.price, uiState.currency, locale),
-              style = MaterialTheme.typography.titleSmall,
-            )
-            item.delta?.takeIf { it.signum() != 0 }?.let { delta ->
-              Text(
-                text = formatDelta(delta, uiState.currency, locale),
-                style = MaterialTheme.typography.labelSmall,
-                color =
-                  if (delta.signum() > 0) {
-                    MaterialTheme.colorScheme.error
-                  } else {
-                    MaterialTheme.colorScheme.primary
-                  },
-              )
-            }
-          }
-        }
+      uiState.timeline.forEach { item ->
+        PriceHistoryRow(item = item, currency = uiState.currency)
       }
     }
-    val buttonHeight = ButtonDefaults.MinHeight
-    OutlinedButton(
-      onClick = onAddPrice,
-      modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-      contentPadding = ButtonDefaults.contentPaddingFor(buttonHeight, hasStartIcon = true),
-    ) {
-      Icon(
-        imageVector = Icons.Default.Add,
-        contentDescription = null,
-        modifier = Modifier.size(ButtonDefaults.iconSizeFor(buttonHeight)),
+  }
+}
+
+@Composable
+private fun PriceHistoryRow(
+  item: PriceHistoryItem,
+  currency: Currency,
+) {
+  val locale = Locale.current.platformLocale
+  val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+  Row(
+    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Text(
+      text = item.entry.effectiveFromDate.format(dateFormatter),
+      style = MaterialTheme.typography.bodyMedium,
+      modifier = Modifier.weight(1f),
+    )
+    Column(horizontalAlignment = Alignment.End) {
+      Text(
+        text = formatMoney(item.entry.price, currency, locale),
+        style = MaterialTheme.typography.titleSmall,
       )
-      Spacer(modifier = Modifier.size(ButtonDefaults.iconSpacingFor(buttonHeight)))
-      Text(stringResource(R.string.detail_add_price_change))
+      item.delta?.takeIf { it.signum() != 0 }?.let { delta ->
+        Text(
+          text = formatDelta(delta, currency, locale),
+          style = MaterialTheme.typography.labelSmall,
+          color =
+            if (delta.signum() > 0) {
+              MaterialTheme.colorScheme.error
+            } else {
+              MaterialTheme.colorScheme.primary
+            },
+        )
+      }
     }
   }
 }
@@ -472,7 +459,6 @@ private fun SubscriptionDetailPreview() {
       uiState = SubscriptionDetailUiState(isLoading = false),
       onBack = {},
       onEdit = {},
-      onAddPrice = { _, _ -> },
       onCancel = {},
       onArchive = {},
       onDelete = {},

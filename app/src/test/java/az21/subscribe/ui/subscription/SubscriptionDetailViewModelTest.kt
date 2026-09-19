@@ -17,7 +17,6 @@ import az21.subscribe.domain.model.BillingCycle
 import az21.subscribe.domain.model.Subscription
 import az21.subscribe.domain.model.SubscriptionDraft
 import az21.subscribe.domain.model.SubscriptionStatus
-import az21.subscribe.domain.usecase.AddPriceChangeUseCase
 import az21.subscribe.domain.usecase.ArchiveSubscriptionUseCase
 import az21.subscribe.domain.usecase.CancelReminderUseCase
 import az21.subscribe.domain.usecase.CancelSubscriptionUseCase
@@ -57,7 +56,6 @@ class SubscriptionDetailViewModelTest {
       paymentMethodRepository = paymentMethodRepository,
       settingsRepository = settingsRepository,
       getNextBillingDate = GetNextBillingDateUseCase(clock),
-      addPriceChange = AddPriceChangeUseCase(subscriptionRepository, priceHistoryRepository),
       cancelSubscription = CancelSubscriptionUseCase(subscriptionRepository),
       archiveSubscription = ArchiveSubscriptionUseCase(subscriptionRepository),
       deleteSubscription = DeleteSubscriptionUseCase(subscriptionRepository),
@@ -114,19 +112,6 @@ class SubscriptionDetailViewModelTest {
       advanceUntilIdle()
 
       assertEquals(SubscriptionStatus.ACTIVE, subscriptionRepository.getSubscription(subscription.id)?.status)
-    }
-
-  @Test
-  fun addPrice_appendsToTimeline() =
-    runTest(mainDispatcherRule.testDispatcher) {
-      val viewModel = createViewModel()
-      val subscription = create()
-      viewModel.initialize(subscription.id.toString())
-
-      viewModel.addPrice(BigDecimal("19.99"), LocalDate.of(2024, 6, 1))
-      advanceUntilIdle()
-
-      assertEquals(BigDecimal("19.99"), priceHistoryRepository.getTimeline(subscription.id).single().price)
     }
 
   private suspend fun create(): Subscription =

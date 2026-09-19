@@ -12,38 +12,48 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.luminance
 
 /**
- * Renders a subscription's Simple Icons glyph, falling back to a monogram when the stored key has no
- * matching icon.
+ * Renders a subscription's icon glyph from the combined Simple Icons and Material Icons catalog,
+ * falling back to a monogram when the stored key has no matching icon. [iconColor] overrides the
+ * icon's default color; when null the icon's brand color (or the theme for Material Icons) is used.
  */
 @Composable
 fun SubscriptionIcon(
   iconId: String?,
   name: String,
   modifier: Modifier = Modifier,
-  tint: Color = MaterialTheme.colorScheme.primary,
+  iconColor: Int? = null,
   shape: Shape = CircleShape,
 ) {
-  val vector = remember(iconId) { SimpleIconsCatalog.find(iconId) }
+  val entry = remember(iconId) { IconCatalog.findEntry(iconId) }
+  val vector = entry?.vector
+  val customColor = (iconColor ?: entry?.defaultColor)?.let(::Color)
   if (vector != null) {
     Icon(
       imageVector = vector,
       contentDescription = null,
-      tint = tint,
+      tint = customColor ?: MaterialTheme.colorScheme.primary,
       modifier = modifier,
     )
   } else {
     val initial = name.trim().firstOrNull()?.uppercase() ?: "?"
     Box(
-      modifier = modifier.background(MaterialTheme.colorScheme.secondaryContainer, shape),
+      modifier = modifier.background(customColor ?: MaterialTheme.colorScheme.secondaryContainer, shape),
       contentAlignment = Alignment.Center,
     ) {
       Text(
         text = initial,
         style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onSecondaryContainer,
+        color = customColor?.let { onContentColorFor(it) } ?: MaterialTheme.colorScheme.onSecondaryContainer,
       )
     }
   }
 }
+
+/** Picks a readable foreground for [background]: black on light colors, white on dark ones. */
+private fun onContentColorFor(background: Color): Color =
+  if (background.luminance() > LIGHT_LUMINANCE_THRESHOLD) Color.Black else Color.White
+
+private const val LIGHT_LUMINANCE_THRESHOLD = 0.5f

@@ -8,6 +8,7 @@ import java.util.UUID
  * A tracked subscription.
  *
  * [startDate] is the date the subscription was taken out and the date of its first charge.
+ * [iconColor] is an ARGB color overriding the theme's default icon tint; null keeps the theme color.
  */
 data class Subscription(
   val id: UUID,
@@ -17,11 +18,12 @@ data class Subscription(
   val billingCycle: BillingCycle,
   val status: SubscriptionStatus,
   val endDate: LocalDate?,
-  val reminderDaysBefore: Int?,
+  val reminders: List<ReminderSpec> = emptyList(),
   val paymentMethodId: UUID?,
   val notes: String?,
   val createdAt: Instant,
   val updatedAt: Instant,
+  val iconColor: Int? = null,
 )
 
 /**
@@ -32,8 +34,10 @@ data class SubscriptionDraft(
   val name: String,
   val iconId: String,
   val startDate: LocalDate? = null,
+  val endDate: LocalDate? = null,
   val billingCycle: BillingCycle,
-  val reminderDaysBefore: Int? = null,
+  val reminders: List<ReminderSpec> = emptyList(),
   val paymentMethodId: UUID? = null,
   val notes: String? = null,
+  val iconColor: Int? = null,
 )

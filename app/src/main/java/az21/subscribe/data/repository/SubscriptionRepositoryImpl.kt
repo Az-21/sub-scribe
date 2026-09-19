@@ -2,8 +2,11 @@ package az21.subscribe.data.repository
 
 import az21.subscribe.data.local.dao.SubscriptionDao
 import az21.subscribe.data.local.entity.SubscriptionEntity
+import az21.subscribe.data.local.entity.SubscriptionReminderEntity
+import az21.subscribe.data.local.entity.SubscriptionWithReminders
 import az21.subscribe.data.mapper.toDomain
 import az21.subscribe.data.mapper.toEntity
+import az21.subscribe.domain.model.ReminderSpec
 import az21.subscribe.domain.model.Subscription
 import az21.subscribe.domain.model.SubscriptionDraft
 import az21.subscribe.domain.model.SubscriptionStatus
@@ -25,10 +28,12 @@ class SubscriptionRepositoryImpl
     private val clock: Clock,
   ) : SubscriptionRepository {
     override fun observeSubscriptions(): Flow<List<Subscription>> =
-      subscriptionDao.observeAll().map { entities -> entities.map(SubscriptionEntity::toDomain) }
+      subscriptionDao.observeAll().map { entities -> entities.map(SubscriptionWithReminders::toDomain) }
 
     override fun observeSubscriptionsByStatus(status: SubscriptionStatus): Flow<List<Subscription>> =
-      subscriptionDao.observeByStatus(status).map { entities -> entities.map(SubscriptionEntity::toDomain) }
+      subscriptionDao.observeByStatus(status).map { entities ->
+        entities.map(SubscriptionWithReminders::toDomain)
+      }
 
     override fun observeSubscription(id: UUID): Flow<Subscription?> =
       subscriptionDao.observeById(id).map { it?.toDomain() }
@@ -37,27 +42,29 @@ class SubscriptionRepositoryImpl
 
     override suspend fun createSubscription(draft: SubscriptionDraft): Subscription {
       val now = clock.instant()
+      val id = UUID.randomUUID()
       val entity =
         SubscriptionEntity(
-          id = UUID.randomUUID(),
+          id = id,
           name = draft.name,
           iconId = draft.iconId,
           startDate = draft.startDate ?: LocalDate.now(clock),
           billingCycle = draft.billingCycle,
           status = SubscriptionStatus.ACTIVE,
-          endDate = null,
-          reminderDaysBefore = draft.reminderDaysBefore,
+          endDate = draft.endDate,
           paymentMethodId = draft.paymentMethodId,
           notes = draft.notes,
           createdAt = now,
           updatedAt = now,
+          iconColor = draft.iconColor,
         )
-      subscriptionDao.upsert(entity)
-      return entity.toDomain()
+      subscriptionDao.upsertWithReminders(entity, draft.reminders.toEntities(id))
+      return entity.toDomain().copy(reminders = draft.reminders.sortedWith(REMINDER_ORDER))
     }
 
     override suspend fun updateSubscription(subscription: Subscription) {
-      subscriptionDao.upsert(subscription.copy(updatedAt = clock.instant()).toEntity())
+      val entity = subscription.copy(updatedAt = clock.instant()).toEntity()
+      subscriptionDao.upsertWithReminders(entity, subscription.reminders.toEntities(subscription.id))
     }
 
     override suspend fun cancelSubscription(
@@ -107,5 +114,12 @@ class SubscriptionRepositoryImpl
     }
 
     private suspend fun requireSubscription(id: UUID): SubscriptionEntity =
-      subscriptionDao.getById(id) ?: throw SubscriptionTransitionException.NotFound(id)
+      subscriptionDao.getById(id)?.subscription ?: throw SubscriptionTransitionException.NotFound(id)
+
+    private fun List<ReminderSpec>.toEntities(subscriptionId: UUID): List<SubscriptionReminderEntity> =
+      map { spec -> spec.toEntity(subscriptionId = subscriptionId, id = UUID.randomUUID()) }
+
+    private companion object {
+      val REMINDER_ORDER: Comparator<ReminderSpec> = compareBy({ it.daysBefore }, { it.time })
+    }
   }

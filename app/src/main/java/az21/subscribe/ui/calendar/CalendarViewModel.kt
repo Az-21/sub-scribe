@@ -90,6 +90,7 @@ class CalendarViewModel
                 iconId = subscription.iconId,
                 date = date,
                 price = SpendCalculator.resolvePrice(timeline, date),
+                iconColor = subscription.iconColor,
               )
             }
           }

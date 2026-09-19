@@ -4,7 +4,8 @@
   <string name="detail_current_price">Current price</string>
   <string name="detail_start_date">Start date</string>
   <string name="detail_billing_cycle">Billing cycle</string>
-  <string name="detail_reminder">Reminder</string>
+  <string name="detail_reminder">Reminders</string>
+  <string name="detail_reminder_at">at</string>
   <plurals name="detail_reminder_days">
     <item quantity="one">%1$d day before</item>
     <item quantity="other">%1$d days before</item>
@@ -13,9 +14,6 @@
   <string name="detail_tags">Tags</string>
   <string name="detail_notes">Notes</string>
   <string name="detail_price_history">Price history</string>
-  <string name="detail_add_price_change">Add price change</string>
-  <string name="detail_price_change_title">New price</string>
-  <string name="detail_price_change_effective">Effective from: %1$s</string>
   <string name="detail_cancel">Cancel subscription</string>
   <string name="detail_archive">Archive</string>
   <string name="detail_delete">Delete permanently</string>

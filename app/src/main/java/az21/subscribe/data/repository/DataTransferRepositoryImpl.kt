@@ -6,8 +6,10 @@ import az21.subscribe.data.local.dao.PriceHistoryDao
 import az21.subscribe.data.local.dao.SubscriptionDao
 import az21.subscribe.data.local.dao.TagDao
 import az21.subscribe.data.local.entity.SubscriptionTagEntity
+import az21.subscribe.data.local.entity.SubscriptionWithReminders
 import az21.subscribe.data.mapper.toDomain
 import az21.subscribe.data.mapper.toEntity
+import az21.subscribe.data.mapper.toEntityWithReminders
 import az21.subscribe.domain.export.EXPORT_SCHEMA_VERSION
 import az21.subscribe.domain.export.ExportDocument
 import az21.subscribe.domain.export.ImportSummary
@@ -50,7 +52,9 @@ class DataTransferRepositoryImpl
       transactionRunner.runTransaction {
         paymentMethodDao.upsertAll(document.paymentMethods.map { entry -> entry.toEntity() })
         tagDao.upsertAll(document.tags.map { entry -> entry.toEntity() })
-        subscriptionDao.upsertAll(document.subscriptions.map { entry -> entry.toEntity() })
+        subscriptionDao.upsertAllWithReminders(
+          document.subscriptions.map { entry -> entry.toEntityWithReminders() },
+        )
 
         val importedSubscriptionIds = document.subscriptions.map { entry -> UUID.fromString(entry.id) }
         if (importedSubscriptionIds.isNotEmpty()) {

@@ -61,7 +61,11 @@ class ExportValidatorNegativeTest {
 
   @Test
   fun dropsSubscriptionWithNegativeReminderDays() {
-    val result = validate(subscriptions = listOf(validSubscription().copy(reminderDaysBefore = -1)))
+    val result =
+      validate(
+        subscriptions =
+          listOf(validSubscription().copy(reminders = listOf(ReminderExport(daysBefore = -1, time = "09:00")))),
+      )
 
     assertTrue(result.document.subscriptions.isEmpty())
     assertSkipped(result)
@@ -83,7 +87,6 @@ class ExportValidatorNegativeTest {
           listOf(
             validSubscription().copy(
               endDate = null,
-              reminderDaysBefore = null,
               paymentMethodId = null,
               notes = null,
             ),

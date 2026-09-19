@@ -21,7 +21,11 @@ object DatabaseModule {
   @Singleton
   fun provideDatabase(
     @ApplicationContext context: Context,
-  ): SubScribeDatabase = Room.databaseBuilder(context, SubScribeDatabase::class.java, SubScribeDatabase.NAME).build()
+  ): SubScribeDatabase =
+    Room
+      .databaseBuilder(context, SubScribeDatabase::class.java, SubScribeDatabase.NAME)
+      .fallbackToDestructiveMigration(dropAllTables = true)
+      .build()
 
   @Provides
   fun provideSubscriptionDao(database: SubScribeDatabase): SubscriptionDao = database.subscriptionDao()

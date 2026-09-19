@@ -1,6 +1,7 @@
 package az21.subscribe.ui.navigation
 
 import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -51,7 +52,7 @@ fun SubScribeNavHost(
 
   NavDisplay(
     backStack = backStack,
-    modifier = modifier,
+    modifier = modifier.fillMaxSize(),
     onBack = popOrFinish,
     entryDecorators =
       listOf(
@@ -101,6 +102,8 @@ private fun subScribeEntryProvider(
         subscriptionId = route.subscriptionId,
         onBack = popBackStack,
         onSaved = popBackStack,
+        onOpenTags = { backStack.add(TagsRoute) },
+        onOpenPaymentMethods = { backStack.add(PaymentMethodsRoute) },
       )
     }
     entry<SubscriptionDetailRoute> { route ->

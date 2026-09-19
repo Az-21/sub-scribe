@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  * Version of the export document format. Bump when the shape of [ExportDocument] changes in a way
  * that older importers cannot read; importers reject versions they do not understand.
  */
-const val EXPORT_SCHEMA_VERSION: Int = 1
+const val EXPORT_SCHEMA_VERSION: Int = 2
 
 /**
  * Full-fidelity snapshot of everything a user owns: subscriptions, their price timelines, tags and
@@ -35,11 +35,18 @@ data class SubscriptionExport(
   @SerialName("billing_cycle") val billingCycle: String,
   val status: String,
   @SerialName("end_date") val endDate: String? = null,
-  @SerialName("reminder_days_before") val reminderDaysBefore: Int? = null,
+  val reminders: List<ReminderExport> = emptyList(),
   @SerialName("payment_method_id") val paymentMethodId: String? = null,
   val notes: String? = null,
   @SerialName("created_at") val createdAt: String,
   @SerialName("updated_at") val updatedAt: String,
+  @SerialName("icon_color") val iconColor: Int? = null,
+)
+
+@Serializable
+data class ReminderExport(
+  @SerialName("days_before") val daysBefore: Int,
+  val time: String,
 )
 
 @Serializable

@@ -64,6 +64,14 @@ class PriceHistoryRepositoryImpl
       return entity.toDomain()
     }
 
+    override suspend fun updateEntry(
+      id: UUID,
+      price: BigDecimal,
+      effectiveFromDate: LocalDate,
+    ) {
+      priceHistoryDao.updateEntry(id, price, effectiveFromDate)
+    }
+
     override suspend fun deleteEntry(id: UUID) {
       priceHistoryDao.deleteById(id)
     }

@@ -6,6 +6,7 @@ import az21.subscribe.domain.model.SubscriptionStatus
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
 import java.util.UUID
 
 /**
@@ -33,6 +34,12 @@ class Converters {
 
   @TypeConverter
   fun toInstant(value: Long?): Instant? = value?.let(Instant::ofEpochMilli)
+
+  @TypeConverter
+  fun fromLocalTime(value: LocalTime?): String? = value?.toString()
+
+  @TypeConverter
+  fun toLocalTime(value: String?): LocalTime? = value?.let(LocalTime::parse)
 
   @TypeConverter
   fun fromBigDecimal(value: BigDecimal?): String? = value?.toPlainString()

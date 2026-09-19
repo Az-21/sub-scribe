@@ -80,7 +80,7 @@ object ExportValidator {
         entry.billingCycle.isEnum<BillingCycle>() &&
         entry.status.isEnum<SubscriptionStatus>() &&
         entry.endDate.isDateOrNull() &&
-        entry.reminderDaysBefore.isNonNegativeOrNull() &&
+        entry.reminders.all { reminder -> reminder.daysBefore >= 0 && reminder.time.isTime() } &&
         entry.createdAt.isInstant() &&
         entry.updatedAt.isInstant() &&
         entry.paymentMethodId.isUuidOrNull()
@@ -166,7 +166,7 @@ private fun String?.isDateOrNull(): Boolean = this == null || isDate()
 
 private fun String.isInstant(): Boolean = runCatching { Instant.parse(this) }.isSuccess
 
-private fun Int?.isNonNegativeOrNull(): Boolean = this == null || this >= 0
+private fun String.isTime(): Boolean = runCatching { java.time.LocalTime.parse(this) }.isSuccess
 
 private inline fun <reified T : Enum<T>> String.isEnum(): Boolean = enumValues<T>().any { it.name == this }
 

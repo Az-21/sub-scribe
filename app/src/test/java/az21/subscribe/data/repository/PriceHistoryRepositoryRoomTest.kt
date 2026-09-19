@@ -100,6 +100,19 @@ class PriceHistoryRepositoryRoomTest {
     }
 
   @Test
+  fun updateEntry_changesPriceAndDateInRealDatabase() =
+    runTest {
+      val entry = repository.addPriceChange(subscriptionId, BigDecimal("9.99"), LocalDate.of(2023, 1, 1))
+
+      repository.updateEntry(entry.id, BigDecimal("12.99"), LocalDate.of(2024, 1, 1))
+
+      val updated = repository.getTimeline(subscriptionId).single()
+      assertEquals(entry.id, updated.id)
+      assertEquals(BigDecimal("12.99"), updated.price)
+      assertEquals(LocalDate.of(2024, 1, 1), updated.effectiveFromDate)
+    }
+
+  @Test
   fun deletingSubscription_cascadesPriceHistory() =
     runTest {
       repository.addPriceChange(subscriptionId, BigDecimal("9.99"), LocalDate.of(2023, 1, 1))
@@ -121,7 +134,6 @@ class PriceHistoryRepositoryRoomTest {
         billingCycle = BillingCycle.MONTHLY,
         status = SubscriptionStatus.ACTIVE,
         endDate = null,
-        reminderDaysBefore = null,
         paymentMethodId = null,
         notes = null,
         createdAt = now,

@@ -12,7 +12,6 @@ import az21.subscribe.domain.repository.PriceHistoryRepository
 import az21.subscribe.domain.repository.SettingsRepository
 import az21.subscribe.domain.repository.SubscriptionRepository
 import az21.subscribe.domain.repository.TagRepository
-import az21.subscribe.domain.usecase.AddPriceChangeUseCase
 import az21.subscribe.domain.usecase.ArchiveSubscriptionUseCase
 import az21.subscribe.domain.usecase.CancelReminderUseCase
 import az21.subscribe.domain.usecase.CancelSubscriptionUseCase
@@ -28,7 +27,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 import java.time.Clock
 import java.time.LocalDate
 import java.util.UUID
@@ -43,12 +41,11 @@ class SubscriptionDetailViewModel
   @Inject
   constructor(
     private val subscriptionRepository: SubscriptionRepository,
-    priceHistoryRepository: PriceHistoryRepository,
+    private val priceHistoryRepository: PriceHistoryRepository,
     tagRepository: TagRepository,
     paymentMethodRepository: PaymentMethodRepository,
     settingsRepository: SettingsRepository,
     private val getNextBillingDate: GetNextBillingDateUseCase,
-    private val addPriceChange: AddPriceChangeUseCase,
     private val cancelSubscription: CancelSubscriptionUseCase,
     private val archiveSubscription: ArchiveSubscriptionUseCase,
     private val deleteSubscription: DeleteSubscriptionUseCase,
@@ -110,11 +107,6 @@ class SubscriptionDetailViewModel
         deleteSubscription(id)
         cancelReminder(id)
       }
-
-    fun addPrice(
-      price: BigDecimal,
-      effectiveFromDate: LocalDate,
-    ) = withSubscription { id -> addPriceChange(id, price, effectiveFromDate) }
 
     private fun withSubscription(action: suspend (UUID) -> Unit) {
       val id = subscriptionId.value ?: return

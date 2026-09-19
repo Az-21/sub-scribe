@@ -2,7 +2,9 @@ package az21.subscribe.data.fake
 
 import az21.subscribe.data.local.dao.SubscriptionDao
 import az21.subscribe.data.local.entity.SubscriptionEntity
+import az21.subscribe.data.local.entity.SubscriptionReminderEntity
 import az21.subscribe.data.local.entity.SubscriptionTagEntity
+import az21.subscribe.data.local.entity.SubscriptionWithReminders
 import az21.subscribe.domain.model.SubscriptionStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,21 +14,30 @@ import java.util.UUID
 /** In-memory [SubscriptionDao] for JVM-only repository tests. */
 class FakeSubscriptionDao : SubscriptionDao {
   private val entities = MutableStateFlow<Map<UUID, SubscriptionEntity>>(emptyMap())
+  private val reminders = MutableStateFlow<Map<UUID, List<SubscriptionReminderEntity>>>(emptyMap())
   private val tagLinks = MutableStateFlow<Map<UUID, Set<UUID>>>(emptyMap())
 
-  override fun observeAll(): Flow<List<SubscriptionEntity>> =
-    entities.map { it.values.sortedBy { entity -> entity.name.lowercase() } }
-
-  override fun observeByStatus(status: SubscriptionStatus): Flow<List<SubscriptionEntity>> =
+  override fun observeAll(): Flow<List<SubscriptionWithReminders>> =
     entities.map { map ->
-      map.values.filter { it.status == status }.sortedBy { entity -> entity.name.lowercase() }
+      map.values
+        .sortedBy { entity -> entity.name.lowercase() }
+        .map { entity -> entity.withReminders() }
     }
 
-  override fun observeById(id: UUID): Flow<SubscriptionEntity?> = entities.map { it[id] }
+  override fun observeByStatus(status: SubscriptionStatus): Flow<List<SubscriptionWithReminders>> =
+    entities.map { map ->
+      map.values
+        .filter { it.status == status }
+        .sortedBy { entity -> entity.name.lowercase() }
+        .map { entity -> entity.withReminders() }
+    }
 
-  override suspend fun getById(id: UUID): SubscriptionEntity? = entities.value[id]
+  override fun observeById(id: UUID): Flow<SubscriptionWithReminders?> =
+    entities.map { map -> map[id]?.withReminders() }
 
-  override suspend fun getAll(): List<SubscriptionEntity> = entities.value.values.toList()
+  override suspend fun getById(id: UUID): SubscriptionWithReminders? = entities.value[id]?.withReminders()
+
+  override suspend fun getAll(): List<SubscriptionWithReminders> = entities.value.values.map { it.withReminders() }
 
   override suspend fun upsert(entity: SubscriptionEntity) {
     entities.value = entities.value + (entity.id to entity)
@@ -38,7 +49,26 @@ class FakeSubscriptionDao : SubscriptionDao {
 
   override suspend fun deleteById(id: UUID) {
     entities.value = entities.value - id
+    reminders.value = reminders.value - id
     tagLinks.value = tagLinks.value - id
+  }
+
+  override suspend fun getAllReminders(): List<SubscriptionReminderEntity> = reminders.value.values.flatten()
+
+  override suspend fun clearReminders(subscriptionId: UUID) {
+    reminders.value = reminders.value - subscriptionId
+  }
+
+  override suspend fun clearRemindersFor(subscriptionIds: List<UUID>) {
+    reminders.value = reminders.value - subscriptionIds.toSet()
+  }
+
+  override suspend fun insertReminders(rows: List<SubscriptionReminderEntity>) {
+    val current = reminders.value.toMutableMap()
+    rows.groupBy { it.subscriptionId }.forEach { (subscriptionId, group) ->
+      current[subscriptionId] = (current[subscriptionId] ?: emptyList()) + group
+    }
+    reminders.value = current
   }
 
   override fun observeTagIds(subscriptionId: UUID): Flow<List<UUID>> =
@@ -64,4 +94,7 @@ class FakeSubscriptionDao : SubscriptionDao {
     }
     tagLinks.value = links
   }
+
+  private fun SubscriptionEntity.withReminders(): SubscriptionWithReminders =
+    SubscriptionWithReminders(subscription = this, reminders = reminders.value[this.id].orEmpty())
 }

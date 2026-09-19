@@ -26,7 +26,7 @@ private fun sampleSubscriptions(): List<SubscriptionExport> =
       startDate = "2025-01-15",
       billingCycle = "MONTHLY",
       status = "ACTIVE",
-      reminderDaysBefore = 3,
+      reminders = listOf(ReminderExport(daysBefore = 3, time = "09:00")),
       paymentMethodId = PAYMENT_ID,
       notes = "shared with family",
       createdAt = "2025-01-15T08:00:00Z",

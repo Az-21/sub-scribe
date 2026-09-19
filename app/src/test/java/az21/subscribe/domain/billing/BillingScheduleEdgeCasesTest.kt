@@ -95,7 +95,6 @@ class BillingScheduleEdgeCasesTest {
       billingCycle = billingCycle,
       status = status,
       endDate = null,
-      reminderDaysBefore = null,
       paymentMethodId = null,
       notes = null,
       createdAt = Instant.EPOCH,

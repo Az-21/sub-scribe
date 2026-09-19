@@ -1,41 +1,632 @@
 package az21.subscribe.ui.common
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import compose.icons.AllIcons
 import compose.icons.SimpleIcons
+import compose.icons.simpleicons.Activision
+import compose.icons.simpleicons.Adidas
+import compose.icons.simpleicons.Afterpay
+import compose.icons.simpleicons.Airbnb
+import compose.icons.simpleicons.Airtable
+import compose.icons.simpleicons.Aliexpress
+import compose.icons.simpleicons.Alltrails
+import compose.icons.simpleicons.Americanexpress
+import compose.icons.simpleicons.Anki
+import compose.icons.simpleicons.Anthropic
+import compose.icons.simpleicons.Anydesk
+import compose.icons.simpleicons.Apple
+import compose.icons.simpleicons.Applearcade
+import compose.icons.simpleicons.Applemusic
+import compose.icons.simpleicons.Applenews
+import compose.icons.simpleicons.Applepay
+import compose.icons.simpleicons.Applepodcasts
+import compose.icons.simpleicons.Appletv
+import compose.icons.simpleicons.Appstore
+import compose.icons.simpleicons.Archiveofourown
+import compose.icons.simpleicons.Asana
+import compose.icons.simpleicons.Atlassian
+import compose.icons.simpleicons.Audible
+import compose.icons.simpleicons.Audiomack
+import compose.icons.simpleicons.Barclays
+import compose.icons.simpleicons.Battledotnet
+import compose.icons.simpleicons.Behance
+import compose.icons.simpleicons.Binance
+import compose.icons.simpleicons.Bitbucket
+import compose.icons.simpleicons.Bitwarden
+import compose.icons.simpleicons.Bluesky
+import compose.icons.simpleicons.Bookingdotcom
+import compose.icons.simpleicons.Bosch
+import compose.icons.simpleicons.Buffer
+import compose.icons.simpleicons.Burgerking
+import compose.icons.simpleicons.Calendly
+import compose.icons.simpleicons.Cashapp
+import compose.icons.simpleicons.Castbox
+import compose.icons.simpleicons.Chase
+import compose.icons.simpleicons.Claude
+import compose.icons.simpleicons.Clickup
+import compose.icons.simpleicons.Cloudflare
+import compose.icons.simpleicons.Cnn
+import compose.icons.simpleicons.Coda
+import compose.icons.simpleicons.Coinbase
+import compose.icons.simpleicons.Confluence
+import compose.icons.simpleicons.Coursera
+import compose.icons.simpleicons.Crunchyroll
+import compose.icons.simpleicons.Dashlane
+import compose.icons.simpleicons.Datadog
+import compose.icons.simpleicons.Dazn
+import compose.icons.simpleicons.Deezer
+import compose.icons.simpleicons.Deliveroo
+import compose.icons.simpleicons.Digitalocean
+import compose.icons.simpleicons.Discord
+import compose.icons.simpleicons.Docker
+import compose.icons.simpleicons.Doordash
+import compose.icons.simpleicons.Dribbble
+import compose.icons.simpleicons.Dropbox
+import compose.icons.simpleicons.Duolingo
+import compose.icons.simpleicons.Ea
+import compose.icons.simpleicons.Ebay
+import compose.icons.simpleicons.Edx
+import compose.icons.simpleicons.Eightsleep
+import compose.icons.simpleicons.Elevenlabs
+import compose.icons.simpleicons.Emby
+import compose.icons.simpleicons.Epicgames
+import compose.icons.simpleicons.Etsy
+import compose.icons.simpleicons.Evernote
+import compose.icons.simpleicons.Expedia
+import compose.icons.simpleicons.Expressvpn
+import compose.icons.simpleicons.Facebook
+import compose.icons.simpleicons.Figma
+import compose.icons.simpleicons.Fitbit
+import compose.icons.simpleicons.Flydotio
+import compose.icons.simpleicons.Fortnite
+import compose.icons.simpleicons.Futurelearn
+import compose.icons.simpleicons.Garmin
+import compose.icons.simpleicons.Genius
+import compose.icons.simpleicons.Github
+import compose.icons.simpleicons.Githubcopilot
+import compose.icons.simpleicons.Gitlab
+import compose.icons.simpleicons.Godaddy
+import compose.icons.simpleicons.Gofundme
+import compose.icons.simpleicons.Gogdotcom
+import compose.icons.simpleicons.Goodreads
+import compose.icons.simpleicons.Google
+import compose.icons.simpleicons.Googleassistant
+import compose.icons.simpleicons.Googlecalendar
+import compose.icons.simpleicons.Googlechat
+import compose.icons.simpleicons.Googleclassroom
+import compose.icons.simpleicons.Googlecloud
+import compose.icons.simpleicons.Googledocs
+import compose.icons.simpleicons.Googledrive
+import compose.icons.simpleicons.Googleforms
+import compose.icons.simpleicons.Googlegemini
+import compose.icons.simpleicons.Googlehome
+import compose.icons.simpleicons.Googlekeep
+import compose.icons.simpleicons.Googlemaps
+import compose.icons.simpleicons.Googlemeet
+import compose.icons.simpleicons.Googlemessages
+import compose.icons.simpleicons.Googlenews
+import compose.icons.simpleicons.Googlepay
+import compose.icons.simpleicons.Googlephotos
+import compose.icons.simpleicons.Googleplay
+import compose.icons.simpleicons.Googlesheets
+import compose.icons.simpleicons.Googletasks
+import compose.icons.simpleicons.Googletranslate
+import compose.icons.simpleicons.Googletv
+import compose.icons.simpleicons.Grammarly
+import compose.icons.simpleicons.Gumroad
+import compose.icons.simpleicons.Hbo
+import compose.icons.simpleicons.Hbomax
+import compose.icons.simpleicons.Headspace
+import compose.icons.simpleicons.Hellofresh
+import compose.icons.simpleicons.Hey
+import compose.icons.simpleicons.Homeassistant
+import compose.icons.simpleicons.Hootsuite
+import compose.icons.simpleicons.Hsbc
+import compose.icons.simpleicons.Huawei
+import compose.icons.simpleicons.Hubspot
+import compose.icons.simpleicons.Huggingface
+import compose.icons.simpleicons.Icloud
+import compose.icons.simpleicons.Ifttt
+import compose.icons.simpleicons.Iheartradio
+import compose.icons.simpleicons.Ikea
+import compose.icons.simpleicons.Imdb
+import compose.icons.simpleicons.Instacart
+import compose.icons.simpleicons.Instagram
+import compose.icons.simpleicons.Instapaper
+import compose.icons.simpleicons.Intercom
+import compose.icons.simpleicons.Itunes
+import compose.icons.simpleicons.Jellyfin
+import compose.icons.simpleicons.Jetbrains
+import compose.icons.simpleicons.Jira
+import compose.icons.simpleicons.Justeat
+import compose.icons.simpleicons.Kfc
+import compose.icons.simpleicons.Khanacademy
+import compose.icons.simpleicons.Kickstarter
+import compose.icons.simpleicons.Klarna
+import compose.icons.simpleicons.Kodi
+import compose.icons.simpleicons.Komoot
+import compose.icons.simpleicons.Lastdotfm
+import compose.icons.simpleicons.Lastpass
+import compose.icons.simpleicons.Lg
+import compose.icons.simpleicons.Lidl
+import compose.icons.simpleicons.Linear
+import compose.icons.simpleicons.Lyft
+import compose.icons.simpleicons.Mailchimp
+import compose.icons.simpleicons.Make
+import compose.icons.simpleicons.Mastercard
+import compose.icons.simpleicons.Mastodon
+import compose.icons.simpleicons.Max
+import compose.icons.simpleicons.Mcdonalds
+import compose.icons.simpleicons.Medium
+import compose.icons.simpleicons.Mega
+import compose.icons.simpleicons.Messenger
+import compose.icons.simpleicons.Miro
+import compose.icons.simpleicons.Monzo
+import compose.icons.simpleicons.Mubi
+import compose.icons.simpleicons.Mullvad
+import compose.icons.simpleicons.N26
+import compose.icons.simpleicons.N8n
+import compose.icons.simpleicons.Namecheap
+import compose.icons.simpleicons.Napster
+import compose.icons.simpleicons.Netflix
+import compose.icons.simpleicons.Netgear
+import compose.icons.simpleicons.Netlify
+import compose.icons.simpleicons.Newyorktimes
+import compose.icons.simpleicons.Nike
+import compose.icons.simpleicons.Nordvpn
+import compose.icons.simpleicons.Notion
+import compose.icons.simpleicons.Nvidia
+import compose.icons.simpleicons.O2
+import compose.icons.simpleicons.Obsidian
+import compose.icons.simpleicons.Ollama
+import compose.icons.simpleicons.Oneplus
+import compose.icons.simpleicons.Onlyfans
+import compose.icons.simpleicons.Oppo
+import compose.icons.simpleicons.Orange
+import compose.icons.simpleicons.Overcast
+import compose.icons.simpleicons.Pandora
+import compose.icons.simpleicons.Paramountplus
+import compose.icons.simpleicons.Patreon
+import compose.icons.simpleicons.Paypal
+import compose.icons.simpleicons.Peloton
+import compose.icons.simpleicons.Perplexity
+import compose.icons.simpleicons.Philipshue
+import compose.icons.simpleicons.Pinboard
+import compose.icons.simpleicons.Pinterest
+import compose.icons.simpleicons.Planetscale
+import compose.icons.simpleicons.Playstation
+import compose.icons.simpleicons.Plex
+import compose.icons.simpleicons.Pluralsight
+import compose.icons.simpleicons.Pocketcasts
+import compose.icons.simpleicons.Postman
+import compose.icons.simpleicons.Producthunt
+import compose.icons.simpleicons.Protonmail
+import compose.icons.simpleicons.Protonvpn
+import compose.icons.simpleicons.Quickbooks
+import compose.icons.simpleicons.Quizlet
+import compose.icons.simpleicons.Railway
+import compose.icons.simpleicons.Reddit
+import compose.icons.simpleicons.Render
+import compose.icons.simpleicons.Replicate
+import compose.icons.simpleicons.Revolut
+import compose.icons.simpleicons.Ring
+import compose.icons.simpleicons.Riotgames
+import compose.icons.simpleicons.Robinhood
+import compose.icons.simpleicons.Roblox
+import compose.icons.simpleicons.Rockstargames
+import compose.icons.simpleicons.Roku
+import compose.icons.simpleicons.Samsung
+import compose.icons.simpleicons.Semrush
+import compose.icons.simpleicons.Setapp
+import compose.icons.simpleicons.Shazam
+import compose.icons.simpleicons.Shelly
+import compose.icons.simpleicons.Shopify
+import compose.icons.simpleicons.Showtime
+import compose.icons.simpleicons.Signal
+import compose.icons.simpleicons.Sketch
+import compose.icons.simpleicons.Skillshare
+import compose.icons.simpleicons.Smartthings
+import compose.icons.simpleicons.Snapchat
+import compose.icons.simpleicons.Sonos
+import compose.icons.simpleicons.Sony
+import compose.icons.simpleicons.Soundcloud
+import compose.icons.simpleicons.Spotify
+import compose.icons.simpleicons.Square
+import compose.icons.simpleicons.Squarespace
+import compose.icons.simpleicons.Stackoverflow
+import compose.icons.simpleicons.Starbucks
+import compose.icons.simpleicons.Starlingbank
+import compose.icons.simpleicons.Starz
+import compose.icons.simpleicons.Steam
+import compose.icons.simpleicons.Strava
+import compose.icons.simpleicons.Stremio
+import compose.icons.simpleicons.Stripe
+import compose.icons.simpleicons.Substack
+import compose.icons.simpleicons.Supabase
+import compose.icons.simpleicons.Surfshark
+import compose.icons.simpleicons.Tacobell
+import compose.icons.simpleicons.Tapas
+import compose.icons.simpleicons.Target
+import compose.icons.simpleicons.Teamviewer
+import compose.icons.simpleicons.Techcrunch
+import compose.icons.simpleicons.Telegram
+import compose.icons.simpleicons.Tesco
+import compose.icons.simpleicons.Theguardian
+import compose.icons.simpleicons.Thewashingtonpost
+import compose.icons.simpleicons.Threads
+import compose.icons.simpleicons.Thunderbird
+import compose.icons.simpleicons.Tidal
+import compose.icons.simpleicons.Tiktok
+import compose.icons.simpleicons.Todoist
+import compose.icons.simpleicons.Tplink
+import compose.icons.simpleicons.Trello
+import compose.icons.simpleicons.Tripadvisor
+import compose.icons.simpleicons.Tubi
+import compose.icons.simpleicons.Twitch
+import compose.icons.simpleicons.Uber
+import compose.icons.simpleicons.Ubereats
+import compose.icons.simpleicons.Ubiquiti
+import compose.icons.simpleicons.Ubisoft
+import compose.icons.simpleicons.Udemy
+import compose.icons.simpleicons.Unity
+import compose.icons.simpleicons.Venmo
+import compose.icons.simpleicons.Vercel
+import compose.icons.simpleicons.Verizon
+import compose.icons.simpleicons.Vimeo
+import compose.icons.simpleicons.Visa
+import compose.icons.simpleicons.Vodafone
+import compose.icons.simpleicons.Wattpad
+import compose.icons.simpleicons.Webflow
+import compose.icons.simpleicons.Webtoon
+import compose.icons.simpleicons.Wetransfer
+import compose.icons.simpleicons.Whatsapp
+import compose.icons.simpleicons.Wikipedia
+import compose.icons.simpleicons.Wise
+import compose.icons.simpleicons.Wix
+import compose.icons.simpleicons.Wordpress
+import compose.icons.simpleicons.Wyze
+import compose.icons.simpleicons.Xcode
+import compose.icons.simpleicons.Xero
+import compose.icons.simpleicons.Xiaomi
+import compose.icons.simpleicons.Youtube
+import compose.icons.simpleicons.Youtubemusic
+import compose.icons.simpleicons.Youtubestudio
+import compose.icons.simpleicons.Youtubetv
+import compose.icons.simpleicons.Zapier
+import compose.icons.simpleicons.Zelle
+import compose.icons.simpleicons.Zendesk
+import compose.icons.simpleicons.Zoho
+import compose.icons.simpleicons.Zoom
 import java.util.Locale
 
 /**
- * Lookup over the embedded Simple Icons set.
+ * Lookup over a curated subset of the embedded Simple Icons set.
  *
- * The library generates one `ImageVector` per icon and exposes the whole set as [AllIcons]. Each
- * vector's [ImageVector.name] is the icon identifier with separators removed (for example
- * `Youtubemusic`), which normalises to the Simple Icons slug (`youtubemusic`) used as the stored
- * `icon_id`.
+ * The library exposes every icon through SimpleIcons.AllIcons, but referencing that keeps all
+ * ~3400 glyphs in the build. Listing the subscription-relevant icons explicitly (filtering in)
+ * lets the shrinker drop the rest. Each vector's name normalises to the Simple Icons slug used
+ * in earlier stored icon_id values, so legacy ids keep resolving.
  */
 object SimpleIconsCatalog {
-  data class IconEntry(
-    val key: String,
-    val displayName: String,
-    val vector: ImageVector,
-  )
-
-  /** All icons, de-duplicated by normalised key and sorted for browsing. */
+  /** The curated Simple Icons, de-duplicated by key and sorted for browsing. */
   val all: List<IconEntry> by lazy {
-    SimpleIcons.AllIcons
-      .map { vector ->
-        val key = toIconKey(vector.name)
-        IconEntry(key = key, displayName = vector.name, vector = vector)
-      }.filter { entry -> entry.key.isNotEmpty() }
+    CURATED_SIMPLE_ICONS
+      .map { icon ->
+        IconEntry(
+          key = IconCatalog.SIMPLE_PREFIX + toSlug(icon.vector.name),
+          displayName = icon.vector.name,
+          vector = icon.vector,
+          source = IconSource.SIMPLE,
+          defaultColor = icon.brandColor,
+        )
+      }.filter { entry -> entry.key.length > IconCatalog.SIMPLE_PREFIX.length }
       .distinctBy { entry -> entry.key }
       .sortedBy { entry -> entry.displayName.lowercase(Locale.ROOT) }
   }
 
-  private val byKey: Map<String, ImageVector> by lazy { all.associate { entry -> entry.key to entry.vector } }
-
-  /** The vector for [iconId], or null when the key is unknown. */
-  fun find(iconId: String?): ImageVector? = iconId?.let { key -> byKey[toIconKey(key)] }
-
-  /** Normalises a raw identifier to the Simple Icons slug used as the stored `icon_id`. */
-  fun toIconKey(raw: String): String = raw.filter { character -> character.isLetterOrDigit() }.lowercase(Locale.ROOT)
+  private fun toSlug(raw: String): String =
+    raw.filter { character -> character.isLetterOrDigit() }.lowercase(Locale.ROOT)
 }
+
+/** A curated Simple Icons glyph paired with its real brand color (ARGB). */
+private data class CuratedSimpleIcon(
+  val vector: ImageVector,
+  val brandColor: Int,
+)
+
+private val CURATED_SIMPLE_ICONS: List<CuratedSimpleIcon> =
+  listOf(
+    CuratedSimpleIcon(SimpleIcons.Activision, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Adidas, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Afterpay, 0xFFB2FCE4.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Airbnb, 0xFFFF5A5F.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Airtable, 0xFF18BFFF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Aliexpress, 0xFFFF4747.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Alltrails, 0xFF142800.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Americanexpress, 0xFF2E77BC.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Anki, 0xFF80C2EE.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Anthropic, 0xFF191919.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Anydesk, 0xFFEF443B.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Apple, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Applearcade, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Applemusic, 0xFFFA243C.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Applenews, 0xFFFD415E.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Applepay, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Applepodcasts, 0xFF9933CC.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Appletv, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Appstore, 0xFF0D96F6.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Archiveofourown, 0xFF990000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Asana, 0xFFF06A6A.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Atlassian, 0xFF0052CC.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Audible, 0xFFF8991C.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Audiomack, 0xFFFFA200.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Barclays, 0xFF00AEEF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Battledotnet, 0xFF4381C3.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Behance, 0xFF1769FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Binance, 0xFFF0B90B.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Bitbucket, 0xFF0052CC.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Bitwarden, 0xFF175DDC.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Bluesky, 0xFF0285FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Bookingdotcom, 0xFF003580.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Bosch, 0xFFEA0016.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Buffer, 0xFF231F20.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Burgerking, 0xFFD62300.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Calendly, 0xFF006BFF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Cashapp, 0xFF00C244.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Castbox, 0xFFF55B23.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Chase, 0xFF117ACA.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Claude, 0xFFD97757.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Clickup, 0xFF7B68EE.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Cloudflare, 0xFFF38020.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Cnn, 0xFFCC0000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Coda, 0xFFF46A54.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Coinbase, 0xFF0052FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Confluence, 0xFF172B4D.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Coursera, 0xFF0056D2.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Crunchyroll, 0xFFFF5E00.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Dashlane, 0xFF0E353D.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Datadog, 0xFF632CA6.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Dazn, 0xFFF8F8F5.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Deezer, 0xFFA238FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Deliveroo, 0xFF00CCBC.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Digitalocean, 0xFF0080FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Discord, 0xFF5865F2.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Docker, 0xFF2496ED.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Doordash, 0xFFFF3008.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Dribbble, 0xFFEA4C89.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Dropbox, 0xFF0061FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Duolingo, 0xFF58CC02.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Ea, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Ebay, 0xFFE53238.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Edx, 0xFF02262B.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Eightsleep, 0xFF262729.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Elevenlabs, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Emby, 0xFF52B54B.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Epicgames, 0xFF313131.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Etsy, 0xFFF16521.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Evernote, 0xFF00A82D.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Expedia, 0xFF191E3B.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Expressvpn, 0xFFDA3940.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Facebook, 0xFF0866FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Figma, 0xFFF24E1E.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Fitbit, 0xFF00B0B9.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Flydotio, 0xFF24175B.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Fortnite, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Futurelearn, 0xFFDE00A5.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Garmin, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Genius, 0xFFFFFF64.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Github, 0xFF181717.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Githubcopilot, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Gitlab, 0xFFFC6D26.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Godaddy, 0xFF1BDBDB.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Gofundme, 0xFF00B964.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Gogdotcom, 0xFF86328A.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Goodreads, 0xFF372213.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Google, 0xFF4285F4.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googleassistant, 0xFF4285F4.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googlecalendar, 0xFF4285F4.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googlechat, 0xFF34A853.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googleclassroom, 0xFF0F9D58.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googlecloud, 0xFF4285F4.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googledocs, 0xFF4285F4.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googledrive, 0xFF4285F4.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googleforms, 0xFF7248B9.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googlegemini, 0xFF8E75B2.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googlehome, 0xFF4285F4.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googlekeep, 0xFFFFBB00.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googlemaps, 0xFF4285F4.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googlemeet, 0xFF00897B.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googlemessages, 0xFF1A73E8.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googlenews, 0xFF174EA6.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googlepay, 0xFF4285F4.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googlephotos, 0xFF4285F4.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googleplay, 0xFF414141.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googlesheets, 0xFF34A853.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googletasks, 0xFF2684FC.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googletranslate, 0xFF4285F4.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Googletv, 0xFF4285F4.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Grammarly, 0xFF027E6F.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Gumroad, 0xFFFF90E8.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Hbo, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Hbomax, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Headspace, 0xFFF47D31.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Hellofresh, 0xFF99CC33.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Hey, 0xFF5522FA.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Homeassistant, 0xFF18BCF2.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Hootsuite, 0xFFFF4C46.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Hsbc, 0xFFDB0011.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Huawei, 0xFFFF0000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Hubspot, 0xFFFF7A59.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Huggingface, 0xFFFFD21E.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Icloud, 0xFF3693F3.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Ifttt, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Iheartradio, 0xFFC6002B.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Ikea, 0xFF0058A3.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Imdb, 0xFFF5C518.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Instacart, 0xFF43B02A.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Instagram, 0xFFFF0069.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Instapaper, 0xFF1F1F1F.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Intercom, 0xFF6AFDEF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Itunes, 0xFFFB5BC5.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Jellyfin, 0xFF00A4DC.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Jetbrains, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Jira, 0xFF0052CC.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Justeat, 0xFFFF8000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Kfc, 0xFFF40027.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Khanacademy, 0xFF14BF96.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Kickstarter, 0xFF05CE78.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Klarna, 0xFFFFB3C7.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Kodi, 0xFF17B2E7.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Komoot, 0xFF6AA127.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Lastdotfm, 0xFFD51007.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Lastpass, 0xFFD32D27.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Lg, 0xFFA50034.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Lidl, 0xFF0050AA.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Linear, 0xFF5E6AD2.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Lyft, 0xFFFF00BF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Mailchimp, 0xFFFFE01B.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Make, 0xFF6D00CC.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Mastercard, 0xFFEB001B.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Mastodon, 0xFF6364FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Max, 0xFF525252.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Mcdonalds, 0xFFFBC817.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Medium, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Mega, 0xFFD9272E.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Messenger, 0xFF0866FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Miro, 0xFF050038.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Monzo, 0xFF14233C.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Mubi, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Mullvad, 0xFF294D73.toInt()),
+    CuratedSimpleIcon(SimpleIcons.N26, 0xFF48AC98.toInt()),
+    CuratedSimpleIcon(SimpleIcons.N8n, 0xFFEA4B71.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Namecheap, 0xFFDE3723.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Napster, 0xFF2259FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Netflix, 0xFFE50914.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Netgear, 0xFF2C262D.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Netlify, 0xFF00C7B7.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Newyorktimes, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Nike, 0xFF111111.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Nordvpn, 0xFF4687FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Notion, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Nvidia, 0xFF76B900.toInt()),
+    CuratedSimpleIcon(SimpleIcons.O2, 0xFF0050FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Obsidian, 0xFF7C3AED.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Ollama, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Oneplus, 0xFFF5010C.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Onlyfans, 0xFF00AFF0.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Oppo, 0xFF2D683D.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Orange, 0xFFFF7900.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Overcast, 0xFFFC7E0F.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Pandora, 0xFF224099.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Paramountplus, 0xFF0064FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Patreon, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Paypal, 0xFF003087.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Peloton, 0xFF181A1D.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Perplexity, 0xFF1FB8CD.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Philipshue, 0xFF0065D3.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Pinboard, 0xFF0000FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Pinterest, 0xFFBD081C.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Planetscale, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Playstation, 0xFF0070D1.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Plex, 0xFFEBAF00.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Pluralsight, 0xFFF15B2A.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Pocketcasts, 0xFFF43E37.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Postman, 0xFFFF6C37.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Producthunt, 0xFFDA552F.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Protonmail, 0xFF6D4AFF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Protonvpn, 0xFF66DEB1.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Quickbooks, 0xFF2CA01C.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Quizlet, 0xFF4255FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Railway, 0xFF0B0D0E.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Reddit, 0xFFFF4500.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Render, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Replicate, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Revolut, 0xFF191C1F.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Ring, 0xFF1C9AD6.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Riotgames, 0xFFEB0029.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Robinhood, 0xFFCCFF00.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Roblox, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Rockstargames, 0xFFFCAF17.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Roku, 0xFF662D91.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Samsung, 0xFF1428A0.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Semrush, 0xFFFF642D.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Setapp, 0xFFE6C3A5.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Shazam, 0xFF0088FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Shelly, 0xFF4495D1.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Shopify, 0xFF7AB55C.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Showtime, 0xFFB10000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Signal, 0xFF3B45FD.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Sketch, 0xFFF7B500.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Skillshare, 0xFF00FF84.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Smartthings, 0xFF15BFFF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Snapchat, 0xFFFFFC00.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Sonos, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Sony, 0xFFFFFFFF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Soundcloud, 0xFFFF5500.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Spotify, 0xFF1ED760.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Square, 0xFF3E4348.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Squarespace, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Stackoverflow, 0xFFF58025.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Starbucks, 0xFF006241.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Starlingbank, 0xFF6935D3.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Starz, 0xFF082125.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Steam, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Strava, 0xFFFC4C02.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Stremio, 0xFF685CEE.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Stripe, 0xFF635BFF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Substack, 0xFFFF6719.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Supabase, 0xFF3FCF8E.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Surfshark, 0xFF1EBFBF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Tacobell, 0xFF38096C.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Tapas, 0xFFFFCE00.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Target, 0xFFCC0000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Teamviewer, 0xFF050A52.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Techcrunch, 0xFF029F00.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Telegram, 0xFF26A5E4.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Tesco, 0xFF00539F.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Theguardian, 0xFF052962.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Thewashingtonpost, 0xFF231F20.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Threads, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Thunderbird, 0xFF0A84FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Tidal, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Tiktok, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Todoist, 0xFFE44332.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Tplink, 0xFF4ACBD6.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Trello, 0xFF0052CC.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Tripadvisor, 0xFF34E0A1.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Tubi, 0xFF7408FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Twitch, 0xFF9146FF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Uber, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Ubereats, 0xFF06C167.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Ubiquiti, 0xFF0559C9.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Ubisoft, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Udemy, 0xFFA435F0.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Unity, 0xFFFFFFFF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Venmo, 0xFF008CFF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Vercel, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Verizon, 0xFFCD040B.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Vimeo, 0xFF1AB7EA.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Visa, 0xFF1A1F71.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Vodafone, 0xFFE60000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Wattpad, 0xFFFF500A.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Webflow, 0xFF146EF5.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Webtoon, 0xFF00D564.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Wetransfer, 0xFF409FFF.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Whatsapp, 0xFF25D366.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Wikipedia, 0xFF000000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Wise, 0xFF9FE870.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Wix, 0xFF0C6EFC.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Wordpress, 0xFF21759B.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Wyze, 0xFF1DF0BB.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Xcode, 0xFF147EFB.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Xero, 0xFF13B5EA.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Xiaomi, 0xFFFF6900.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Youtube, 0xFFFF0000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Youtubemusic, 0xFFFF0000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Youtubestudio, 0xFFFF0000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Youtubetv, 0xFFFF0000.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Zapier, 0xFFFF4F00.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Zelle, 0xFF6D1ED4.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Zendesk, 0xFF03363D.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Zoho, 0xFFE42527.toInt()),
+    CuratedSimpleIcon(SimpleIcons.Zoom, 0xFF0B5CFF.toInt()),
+  )

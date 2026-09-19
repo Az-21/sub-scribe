@@ -96,7 +96,6 @@ class DataTransferRepositoryImplTest {
       billingCycle = BillingCycle.MONTHLY,
       status = SubscriptionStatus.ACTIVE,
       endDate = null,
-      reminderDaysBefore = null,
       paymentMethodId = null,
       notes = null,
       createdAt = now,

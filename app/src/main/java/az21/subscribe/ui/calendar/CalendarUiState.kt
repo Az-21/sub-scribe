@@ -13,6 +13,7 @@ data class CalendarCharge(
   val iconId: String,
   val date: LocalDate,
   val price: BigDecimal?,
+  val iconColor: Int? = null,
 )
 
 /** A day cell with the charges that land on it. */

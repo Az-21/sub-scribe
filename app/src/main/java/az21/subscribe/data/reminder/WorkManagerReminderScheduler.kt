@@ -64,8 +64,9 @@ class WorkManagerReminderScheduler
         .setInputData(
           workDataOf(
             ReminderWorker.KEY_SUBSCRIPTION_ID to subscriptionId.toString(),
-            ReminderWorker.KEY_TYPE to plan.type.name,
             ReminderWorker.KEY_TARGET_DATE to plan.targetDate.toString(),
+            ReminderWorker.KEY_DAYS_BEFORE to plan.daysBefore,
+            ReminderWorker.KEY_TIME to plan.time.toString(),
           ),
         ).addTag(tag(subscriptionId))
         .build()
@@ -73,7 +74,7 @@ class WorkManagerReminderScheduler
     private fun uniqueWorkName(
       subscriptionId: UUID,
       plan: ReminderPlan,
-    ): String = "reminder-${plan.type.name.lowercase()}-$subscriptionId-${plan.targetDate}"
+    ): String = "reminder-$subscriptionId-${plan.targetDate}-${plan.daysBefore}-${plan.time}"
 
     private fun tag(subscriptionId: UUID): String = "reminder-subscription-$subscriptionId"
   }

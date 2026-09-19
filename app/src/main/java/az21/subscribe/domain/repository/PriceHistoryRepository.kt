@@ -29,5 +29,12 @@ interface PriceHistoryRepository {
     effectiveFromDate: LocalDate,
   ): PriceHistory
 
+  /** Updates an existing entry's price and effective date, preserving its creation time. */
+  suspend fun updateEntry(
+    id: UUID,
+    price: BigDecimal,
+    effectiveFromDate: LocalDate,
+  )
+
   suspend fun deleteEntry(id: UUID)
 }

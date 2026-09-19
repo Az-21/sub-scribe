@@ -4,6 +4,7 @@ import az21.subscribe.domain.model.AppSettings
 import az21.subscribe.domain.model.Currency
 import az21.subscribe.domain.model.PaymentMethod
 import az21.subscribe.domain.model.PriceHistory
+import az21.subscribe.domain.model.ReminderSpec
 import az21.subscribe.domain.model.Subscription
 import az21.subscribe.domain.model.Tag
 import az21.subscribe.domain.model.ThemeMode
@@ -19,12 +20,15 @@ fun Subscription.toExport(): SubscriptionExport =
     billingCycle = billingCycle.name,
     status = status.name,
     endDate = endDate?.toString(),
-    reminderDaysBefore = reminderDaysBefore,
+    reminders = reminders.map(ReminderSpec::toExport),
     paymentMethodId = paymentMethodId?.toString(),
     notes = notes,
     createdAt = createdAt.toString(),
     updatedAt = updatedAt.toString(),
+    iconColor = iconColor,
   )
+
+fun ReminderSpec.toExport(): ReminderExport = ReminderExport(daysBefore = daysBefore, time = time.toString())
 
 fun PriceHistory.toExport(): PriceHistoryExport =
   PriceHistoryExport(

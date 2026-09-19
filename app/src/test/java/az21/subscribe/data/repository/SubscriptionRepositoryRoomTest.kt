@@ -1,6 +1,7 @@
 package az21.subscribe.data.repository
 
 import az21.subscribe.data.local.SubScribeDatabase
+import az21.subscribe.data.local.entity.PriceHistoryEntity
 import az21.subscribe.data.local.entity.SubscriptionTagEntity
 import az21.subscribe.data.local.entity.TagEntity
 import az21.subscribe.data.local.inMemorySubScribeDatabase
@@ -18,6 +19,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.math.BigDecimal
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
@@ -125,6 +127,41 @@ class SubscriptionRepositoryRoomTest {
 
       assertTrue(database.subscriptionDao().getAllTagAssignments().isEmpty())
     }
+
+  @Test
+  fun updateSubscription_preservesPriceHistory() =
+    runTest {
+      val created = repository.createSubscription(draft())
+      insertPriceHistory(created.id)
+
+      repository.updateSubscription(created.copy(name = "Netflix Premium"))
+
+      assertEquals(1, database.priceHistoryDao().getForSubscription(created.id).size)
+    }
+
+  @Test
+  fun cancelAndArchive_preservePriceHistory() =
+    runTest {
+      val created = repository.createSubscription(draft())
+      insertPriceHistory(created.id)
+
+      repository.cancelSubscription(created.id)
+      repository.archiveSubscription(created.id)
+
+      assertEquals(1, database.priceHistoryDao().getForSubscription(created.id).size)
+    }
+
+  private suspend fun insertPriceHistory(subscriptionId: UUID) {
+    database.priceHistoryDao().upsert(
+      PriceHistoryEntity(
+        id = UUID.randomUUID(),
+        subscriptionId = subscriptionId,
+        price = BigDecimal("9.99"),
+        effectiveFromDate = today,
+        createdAt = clock.instant(),
+      ),
+    )
+  }
 
   private fun draft(
     name: String = "Netflix",

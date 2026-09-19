@@ -2,14 +2,15 @@ package az21.subscribe.ui.subscription
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import az21.subscribe.domain.metrics.SpendCalculator
 import az21.subscribe.domain.model.BillingCycle
+import az21.subscribe.domain.model.PriceEntryDraft
+import az21.subscribe.domain.model.ReminderSpec
 import az21.subscribe.domain.model.SubscriptionDraft
 import az21.subscribe.domain.repository.PaymentMethodRepository
 import az21.subscribe.domain.repository.PriceHistoryRepository
 import az21.subscribe.domain.repository.SubscriptionRepository
 import az21.subscribe.domain.repository.TagRepository
-import az21.subscribe.domain.usecase.AddPriceChangeUseCase
+import az21.subscribe.domain.usecase.SavePriceHistoryUseCase
 import az21.subscribe.domain.usecase.ScheduleReminderUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,9 +20,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 import java.time.Clock
 import java.time.LocalDate
+import java.time.LocalTime
 import java.util.UUID
 import javax.inject.Inject
 
@@ -41,14 +42,13 @@ class SubscriptionFormViewModel
     private val priceHistoryRepository: PriceHistoryRepository,
     tagRepository: TagRepository,
     paymentMethodRepository: PaymentMethodRepository,
-    private val addPriceChange: AddPriceChangeUseCase,
+    private val savePriceHistory: SavePriceHistoryUseCase,
     private val scheduleReminder: ScheduleReminderUseCase,
     private val clock: Clock,
   ) : ViewModel() {
     private val form = MutableStateFlow(SubscriptionFormUiState())
     private var started = false
     private var editingId: UUID? = null
-    private var loadedPrice: BigDecimal? = null
 
     val uiState: StateFlow<SubscriptionFormUiState> =
       combine(
@@ -68,7 +68,13 @@ class SubscriptionFormViewModel
       if (started) return
       started = true
       if (subscriptionId == null) {
-        form.value = form.value.copy(isLoading = false)
+        val today = LocalDate.now(clock)
+        form.value =
+          form.value.copy(
+            isLoading = false,
+            startDate = today,
+            priceEntries = listOf(PriceEntry(effectiveFromDate = today)),
+          )
         return
       }
       val id = UUID.fromString(subscriptionId)
@@ -83,17 +89,28 @@ class SubscriptionFormViewModel
         form.value = form.value.copy(isLoading = false)
         return
       }
-      val price = SpendCalculator.resolvePrice(priceHistoryRepository.getTimeline(id), LocalDate.now(clock))
-      loadedPrice = price
+      val entries =
+        priceHistoryRepository.getTimeline(id).map { entry ->
+          PriceEntry(
+            id = entry.id,
+            price = entry.price.stripTrailingZeros().toPlainString(),
+            effectiveFromDate = entry.effectiveFromDate,
+          )
+        }
       form.value =
         form.value.copy(
           isLoading = false,
           name = subscription.name,
           iconId = subscription.iconId,
+          iconColor = subscription.iconColor,
           startDate = subscription.startDate,
+          endDate = subscription.endDate,
           billingCycle = subscription.billingCycle,
-          price = price?.stripTrailingZeros()?.toPlainString().orEmpty(),
-          reminderDaysBefore = subscription.reminderDaysBefore?.toString().orEmpty(),
+          priceEntries = entries.ifEmpty { listOf(PriceEntry(effectiveFromDate = subscription.startDate)) },
+          reminders =
+            subscription.reminders.map { reminder ->
+              ReminderEntry(daysBefore = reminder.daysBefore.toString(), time = reminder.time)
+            },
           selectedTagIds = subscriptionRepository.observeTagIds(id).first().toSet(),
           paymentMethodId = subscription.paymentMethodId,
           notes = subscription.notes.orEmpty(),
@@ -108,22 +125,72 @@ class SubscriptionFormViewModel
       update { it.copy(iconId = iconId) }
     }
 
+    fun onIconColorChange(color: Int?) {
+      update { it.copy(iconColor = color) }
+    }
+
     fun onStartDateChange(date: LocalDate?) {
       update { it.copy(startDate = date) }
+    }
+
+    fun onEndDateChange(date: LocalDate?) {
+      update { it.copy(endDate = date) }
     }
 
     fun onBillingCycleChange(cycle: BillingCycle) {
       update { it.copy(billingCycle = cycle) }
     }
 
-    fun onPriceChange(value: String) {
-      update { it.copy(price = value, errors = it.errors.copy(price = false)) }
+    fun onPriceEntryChange(
+      index: Int,
+      value: String,
+    ) {
+      updatePriceEntry(index) { entry -> entry.copy(price = value, isError = false) }
     }
 
-    fun onReminderDaysChange(value: String) {
-      update {
-        it.copy(reminderDaysBefore = value.filter(Char::isDigit), errors = it.errors.copy(reminderDays = false))
+    fun onPriceEntryDateChange(
+      index: Int,
+      date: LocalDate,
+    ) {
+      updatePriceEntry(index) { entry -> entry.copy(effectiveFromDate = date) }
+    }
+
+    fun onAddPriceEntry() {
+      update { state ->
+        state.copy(priceEntries = state.priceEntries + PriceEntry(effectiveFromDate = LocalDate.now(clock)))
       }
+    }
+
+    fun onRemovePriceEntry(index: Int) {
+      update { state ->
+        state.copy(priceEntries = state.priceEntries.filterIndexed { i, _ -> i != index })
+      }
+    }
+
+    fun onAddReminder() {
+      update { it.copy(reminders = it.reminders + ReminderEntry()) }
+    }
+
+    fun onRemoveReminder(index: Int) {
+      update { state ->
+        state.copy(reminders = state.reminders.filterIndexed { i, _ -> i != index })
+      }
+    }
+
+    fun onReminderDaysChange(
+      index: Int,
+      value: String,
+    ) {
+      updateReminder(index) { entry ->
+        entry.copy(daysBefore = value.filter(Char::isDigit), isError = false)
+      }
+    }
+
+    fun onReminderTimeChange(
+      index: Int,
+      time: LocalTime,
+    ) {
+      updateReminder(index) { entry -> entry.copy(time = time) }
     }
 
     fun onToggleTag(tagId: UUID) {
@@ -143,26 +210,44 @@ class SubscriptionFormViewModel
 
     fun save() {
       val state = form.value
-      val price = state.price.toBigDecimalOrNull()?.takeIf { value -> value.signum() >= 0 }
-      val reminderDays = state.reminderDaysBefore.toIntOrNull()
+      val parsedPrices =
+        state.priceEntries.map { entry ->
+          entry.price.toBigDecimalOrNull()?.takeIf { value -> value.signum() >= 0 }?.let { price ->
+            PriceEntryDraft(id = entry.id, price = price, effectiveFromDate = entry.effectiveFromDate)
+          }
+        }
+      val priceEntries =
+        state.priceEntries.mapIndexed { index, entry ->
+          entry.copy(isError = parsedPrices[index] == null)
+        }
+      val specs =
+        state.reminders.map { entry ->
+          entry.daysBefore
+            .toIntOrNull()
+            ?.takeIf { it >= 0 }
+            ?.let { days -> ReminderSpec(days, entry.time) }
+        }
+      val reminders =
+        state.reminders.mapIndexed { index, entry ->
+          ReminderEntry(daysBefore = entry.daysBefore, time = entry.time, isError = specs[index] == null)
+        }
       val errors =
         FormErrors(
           name = state.name.isBlank(),
-          price = price == null,
-          reminderDays = state.reminderDaysBefore.isNotBlank() && reminderDays == null,
+          price = state.priceEntries.isEmpty() || parsedPrices.any { it == null },
         )
-      if (errors.hasErrors || price == null) {
-        form.value = state.copy(errors = errors)
+      if (errors.hasErrors || specs.any { it == null }) {
+        form.value = state.copy(errors = errors, priceEntries = priceEntries, reminders = reminders)
         return
       }
-      viewModelScope.launch { persist(state, price) }
+      viewModelScope.launch { persist(state, parsedPrices.filterNotNull(), specs.filterNotNull()) }
     }
 
     private suspend fun persist(
       state: SubscriptionFormUiState,
-      price: BigDecimal,
+      priceEntries: List<PriceEntryDraft>,
+      specs: List<ReminderSpec>,
     ) {
-      val reminderDays = state.reminderDaysBefore.toIntOrNull()
       val notes = state.notes.ifBlank { null }
       val id = editingId
 
@@ -173,17 +258,15 @@ class SubscriptionFormViewModel
               name = state.name.trim(),
               iconId = state.iconId,
               startDate = state.startDate,
+              endDate = state.endDate,
               billingCycle = state.billingCycle,
-              reminderDaysBefore = reminderDays,
+              reminders = specs,
               paymentMethodId = state.paymentMethodId,
               notes = notes,
+              iconColor = state.iconColor,
             ),
           )
-        priceHistoryRepository.addPriceChange(
-          subscriptionId = created.id,
-          price = price,
-          effectiveFromDate = state.startDate ?: LocalDate.now(clock),
-        )
+        savePriceHistory(created.id, priceEntries)
         subscriptionRepository.setTags(created.id, state.selectedTagIds)
         scheduleReminder(created)
       } else {
@@ -194,21 +277,43 @@ class SubscriptionFormViewModel
               name = state.name.trim(),
               iconId = state.iconId,
               startDate = state.startDate ?: existing.startDate,
+              endDate = state.endDate,
               billingCycle = state.billingCycle,
-              reminderDaysBefore = reminderDays,
+              reminders = specs,
               paymentMethodId = state.paymentMethodId,
               notes = notes,
+              iconColor = state.iconColor,
             )
           subscriptionRepository.updateSubscription(updated)
-          val previousPrice = loadedPrice
-          if (previousPrice == null || price.compareTo(previousPrice) != 0) {
-            addPriceChange(id, price, LocalDate.now(clock))
-          }
+          savePriceHistory(id, priceEntries)
           subscriptionRepository.setTags(id, state.selectedTagIds)
           scheduleReminder(updated)
         }
       }
       form.value = form.value.copy(saved = true)
+    }
+
+    private fun updatePriceEntry(
+      index: Int,
+      transform: (PriceEntry) -> PriceEntry,
+    ) {
+      update { state ->
+        state.copy(
+          priceEntries =
+            state.priceEntries.mapIndexed { i, entry -> if (i == index) transform(entry) else entry },
+        )
+      }
+    }
+
+    private fun updateReminder(
+      index: Int,
+      transform: (ReminderEntry) -> ReminderEntry,
+    ) {
+      update { state ->
+        state.copy(
+          reminders = state.reminders.mapIndexed { i, entry -> if (i == index) transform(entry) else entry },
+        )
+      }
     }
 
     private fun update(transform: (SubscriptionFormUiState) -> SubscriptionFormUiState) {

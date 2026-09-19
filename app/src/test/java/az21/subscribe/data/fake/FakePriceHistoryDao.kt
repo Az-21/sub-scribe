@@ -5,6 +5,7 @@ import az21.subscribe.data.local.entity.PriceHistoryEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
 
@@ -27,6 +28,16 @@ class FakePriceHistoryDao : PriceHistoryDao {
     date: LocalDate,
   ): PriceHistoryEntity? =
     timeline(entities.value.values, subscriptionId).firstOrNull { !it.effectiveFromDate.isAfter(date) }
+
+  override suspend fun updateEntry(
+    id: UUID,
+    price: BigDecimal,
+    date: LocalDate,
+  ) {
+    entities.value[id]?.let { existing ->
+      entities.value = entities.value + (id to existing.copy(price = price, effectiveFromDate = date))
+    }
+  }
 
   override suspend fun upsert(entity: PriceHistoryEntity) {
     entities.value = entities.value + (entity.id to entity)

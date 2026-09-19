@@ -10,12 +10,14 @@ import az21.subscribe.data.local.dao.TagDao
 import az21.subscribe.data.local.entity.PaymentMethodEntity
 import az21.subscribe.data.local.entity.PriceHistoryEntity
 import az21.subscribe.data.local.entity.SubscriptionEntity
+import az21.subscribe.data.local.entity.SubscriptionReminderEntity
 import az21.subscribe.data.local.entity.SubscriptionTagEntity
 import az21.subscribe.data.local.entity.TagEntity
 
 @Database(
   entities = [
     SubscriptionEntity::class,
+    SubscriptionReminderEntity::class,
     PriceHistoryEntity::class,
     TagEntity::class,
     SubscriptionTagEntity::class,

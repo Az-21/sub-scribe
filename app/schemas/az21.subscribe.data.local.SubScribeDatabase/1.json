@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "d57f9ff085c693c1378b8948390408ae",
+    "identityHash": "1732ed2df10c2fcba0ad1b1bcd5a2959",
     "entities": [
       {
         "tableName": "subscriptions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `icon_id` TEXT NOT NULL, `start_date` TEXT NOT NULL, `billing_cycle` TEXT NOT NULL, `status` TEXT NOT NULL, `end_date` TEXT, `reminder_days_before` INTEGER, `payment_method_id` TEXT, `notes` TEXT, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`payment_method_id`) REFERENCES `payment_methods`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `icon_id` TEXT NOT NULL, `start_date` TEXT NOT NULL, `billing_cycle` TEXT NOT NULL, `status` TEXT NOT NULL, `end_date` TEXT, `payment_method_id` TEXT, `notes` TEXT, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `icon_color` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`payment_method_id`) REFERENCES `payment_methods`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -50,11 +50,6 @@
             "affinity": "TEXT"
           },
           {
-            "fieldPath": "reminderDaysBefore",
-            "columnName": "reminder_days_before",
-            "affinity": "INTEGER"
-          },
-          {
             "fieldPath": "paymentMethodId",
             "columnName": "payment_method_id",
             "affinity": "TEXT"
@@ -75,6 +70,11 @@
             "columnName": "updated_at",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "iconColor",
+            "columnName": "icon_color",
+            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -101,6 +101,66 @@
             "onUpdate": "NO ACTION",
             "columns": [
               "payment_method_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "subscription_reminders",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `subscription_id` TEXT NOT NULL, `days_before` INTEGER NOT NULL, `time` TEXT NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`subscription_id`) REFERENCES `subscriptions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subscriptionId",
+            "columnName": "subscription_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "daysBefore",
+            "columnName": "days_before",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "time",
+            "columnName": "time",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_subscription_reminders_subscription_id",
+            "unique": false,
+            "columnNames": [
+              "subscription_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_subscription_reminders_subscription_id` ON `${TABLE_NAME}` (`subscription_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "subscriptions",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "subscription_id"
             ],
             "referencedColumns": [
               "id"
@@ -296,7 +356,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd57f9ff085c693c1378b8948390408ae')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1732ed2df10c2fcba0ad1b1bcd5a2959')"
     ]
   }
 }
