@@ -4,17 +4,24 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -22,12 +29,14 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,6 +47,7 @@ import az21.subscribe.domain.export.ExportFormat
 import az21.subscribe.domain.export.ImportIssue
 import az21.subscribe.domain.export.ImportIssueReason
 import az21.subscribe.domain.export.ImportPreview
+import az21.subscribe.ui.common.SubScribeTopAppBar
 import az21.subscribe.ui.theme.AppTheme
 import java.time.LocalDate
 
@@ -100,14 +110,14 @@ fun DataTransferContent(
     }
   }
 
+  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
   Scaffold(
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
-      TopAppBar(
-        title = { Text(stringResource(R.string.transfer_title)) },
-        navigationIcon = {
-          TextButton(onClick = onBack) { Text(stringResource(R.string.action_back)) }
-        },
+      SubScribeTopAppBar(
+        title = stringResource(R.string.transfer_title),
+        onNavigateUp = onBack,
+        scrollBehavior = scrollBehavior,
       )
     },
     snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -143,7 +153,7 @@ private fun DataTransferBody(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     if (uiState.isBusy) {
-      LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+      LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth())
     }
     ExportCard(enabled = !uiState.isBusy, onExportJson = onExportJson, onExportCsv = onExportCsv)
     ImportCard(enabled = !uiState.isBusy, onImport = onImport)
@@ -168,9 +178,11 @@ private fun ExportCard(
         color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
       Button(onClick = onExportJson, enabled = enabled, modifier = Modifier.fillMaxWidth()) {
+        ButtonLeadingIcon(imageVector = Icons.Default.Share)
         Text(stringResource(R.string.transfer_export_json))
       }
       OutlinedButton(onClick = onExportCsv, enabled = enabled, modifier = Modifier.fillMaxWidth()) {
+        ButtonLeadingIcon(imageVector = Icons.Default.Share)
         Text(stringResource(R.string.transfer_export_csv))
       }
     }
@@ -194,6 +206,7 @@ private fun ImportCard(
         color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
       Button(onClick = onImport, enabled = enabled, modifier = Modifier.fillMaxWidth()) {
+        ButtonLeadingIcon(imageVector = Icons.Default.Refresh)
         Text(stringResource(R.string.transfer_import_button))
       }
     }
@@ -289,6 +302,16 @@ private fun ImportFailureDialog(
       TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_close)) }
     },
   )
+}
+
+@Composable
+private fun ButtonLeadingIcon(imageVector: ImageVector) {
+  Icon(
+    imageVector = imageVector,
+    contentDescription = null,
+    modifier = Modifier.size(ButtonDefaults.IconSize),
+  )
+  Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
 }
 
 @Composable

@@ -15,22 +15,22 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,6 +52,7 @@ import az21.subscribe.domain.model.ThemeSeedSource
 import az21.subscribe.domain.model.ThemeVariant
 import az21.subscribe.ui.common.ColorPickerDialog
 import az21.subscribe.ui.common.PresetColors
+import az21.subscribe.ui.common.SubScribeTopAppBar
 import az21.subscribe.ui.navigation.SettingsRoute
 import az21.subscribe.ui.navigation.SubScribeBottomBar
 import az21.subscribe.ui.theme.AppTheme
@@ -97,9 +99,12 @@ fun SettingsContent(
   modifier: Modifier = Modifier,
 ) {
   val settings = uiState.settings
+  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
   Scaffold(
-    modifier = modifier.fillMaxSize(),
-    topBar = { TopAppBar(title = { Text(stringResource(R.string.settings_title)) }) },
+    modifier = modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
+    topBar = {
+      SubScribeTopAppBar(title = stringResource(R.string.settings_title), scrollBehavior = scrollBehavior)
+    },
     bottomBar = { SubScribeBottomBar(currentRoute = SettingsRoute, onSelect = onNavigateTopLevel) },
   ) { innerPadding ->
     Column(
@@ -126,25 +131,36 @@ fun SettingsContent(
       Card(modifier = Modifier.fillMaxWidth()) {
         Column {
           ListItem(
-            headlineContent = { Text(stringResource(R.string.settings_tags)) },
-            modifier = Modifier.clickable(onClick = onOpenTags),
+            onClick = onOpenTags,
+            trailingContent = { NavigationChevron() },
+            content = { Text(stringResource(R.string.settings_tags)) },
           )
           ListItem(
-            headlineContent = { Text(stringResource(R.string.settings_payment_methods)) },
-            modifier = Modifier.clickable(onClick = onOpenPaymentMethods),
+            onClick = onOpenPaymentMethods,
+            trailingContent = { NavigationChevron() },
+            content = { Text(stringResource(R.string.settings_payment_methods)) },
           )
         }
       }
 
       Card(modifier = Modifier.fillMaxWidth()) {
         ListItem(
-          headlineContent = { Text(stringResource(R.string.transfer_title)) },
+          onClick = onOpenDataTransfer,
           supportingContent = { Text(stringResource(R.string.transfer_export_description)) },
-          modifier = Modifier.clickable(onClick = onOpenDataTransfer),
+          trailingContent = { NavigationChevron() },
+          content = { Text(stringResource(R.string.transfer_title)) },
         )
       }
     }
   }
+}
+
+@Composable
+private fun NavigationChevron() {
+  Icon(
+    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+    contentDescription = null,
+  )
 }
 
 @Composable
@@ -286,23 +302,26 @@ private fun VariantSetting(
   )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ModeSetting(
   selected: ThemeMode,
   onModeChange: (ThemeMode) -> Unit,
 ) {
+  val labels = ThemeMode.entries.associateWith { mode -> stringResource(mode.labelRes()) }
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
     SettingTitle(stringResource(R.string.settings_theme_mode))
-    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-      ThemeMode.entries.forEachIndexed { index, mode ->
-        SegmentedButton(
-          selected = selected == mode,
-          onClick = { onModeChange(mode) },
-          shape = SegmentedButtonDefaults.itemShape(index = index, count = ThemeMode.entries.size),
-        ) {
-          Text(stringResource(mode.labelRes()), maxLines = 1)
-        }
+    ButtonGroup(
+      overflowIndicator = {},
+      modifier = Modifier.fillMaxWidth(),
+    ) {
+      ThemeMode.entries.forEach { mode ->
+        toggleableItem(
+          checked = selected == mode,
+          label = labels.getValue(mode),
+          onCheckedChange = { onModeChange(mode) },
+          weight = 1f,
+        )
       }
     }
   }

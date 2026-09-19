@@ -12,23 +12,23 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,6 +36,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import az21.subscribe.R
 import az21.subscribe.domain.model.PaymentMethod
+import az21.subscribe.ui.common.IconActionButton
+import az21.subscribe.ui.common.PrimaryAppBarAction
+import az21.subscribe.ui.common.SubScribeTopAppBar
 import az21.subscribe.ui.theme.AppTheme
 
 @Composable
@@ -60,7 +63,7 @@ fun PaymentMethodsScreen(
   )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun PaymentMethodsContent(
   uiState: PaymentMethodsUiState,
@@ -75,22 +78,20 @@ fun PaymentMethodsContent(
   onDismissEditor: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
   Scaffold(
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
-      TopAppBar(
-        title = { Text(stringResource(R.string.payment_methods_title)) },
-        navigationIcon = {
-          TextButton(onClick = onBack) { Text(stringResource(R.string.action_back)) }
-        },
-        actions = {
-          IconButton(onClick = onAdd) {
-            Icon(
-              imageVector = Icons.Default.Add,
-              contentDescription = stringResource(R.string.payment_methods_add),
-            )
-          }
-        },
+      SubScribeTopAppBar(
+        title = stringResource(R.string.payment_methods_title),
+        onNavigateUp = onBack,
+        scrollBehavior = scrollBehavior,
+        primaryAction =
+          PrimaryAppBarAction(
+            label = stringResource(R.string.action_add),
+            icon = Icons.Default.Add,
+            onClick = onAdd,
+          ),
       )
     },
   ) { innerPadding ->
@@ -112,6 +113,7 @@ fun PaymentMethodsContent(
   )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PaymentMethodsBody(
   uiState: PaymentMethodsUiState,
@@ -121,7 +123,7 @@ private fun PaymentMethodsBody(
 ) {
   when {
     uiState.isLoading -> {
-      Box(modifier = modifier, contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+      Box(modifier = modifier, contentAlignment = Alignment.Center) { LoadingIndicator() }
     }
 
     uiState.paymentMethods.isEmpty() -> {
@@ -157,9 +159,11 @@ private fun PaymentMethodRow(
       verticalAlignment = Alignment.CenterVertically,
     ) {
       Text(text = method.label, style = MaterialTheme.typography.bodyLarge)
-      IconButton(onClick = { onRequestDelete(method) }) {
-        Icon(imageVector = Icons.Default.Clear, contentDescription = stringResource(R.string.payment_methods_delete))
-      }
+      IconActionButton(
+        onClick = { onRequestDelete(method) },
+        icon = Icons.Default.Delete,
+        contentDescription = stringResource(R.string.payment_methods_delete),
+      )
     }
   }
 }

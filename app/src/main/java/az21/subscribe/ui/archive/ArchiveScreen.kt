@@ -11,19 +11,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Archive
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,6 +38,8 @@ import az21.subscribe.R
 import az21.subscribe.domain.model.Currency
 import az21.subscribe.domain.model.SubscriptionStatus
 import az21.subscribe.ui.common.DeleteSubscriptionDialog
+import az21.subscribe.ui.common.IconActionButton
+import az21.subscribe.ui.common.SubScribeTopAppBar
 import az21.subscribe.ui.common.SubscriptionIcon
 import az21.subscribe.ui.common.SubscriptionSummary
 import az21.subscribe.ui.common.formatMoney
@@ -63,7 +68,7 @@ fun ArchiveScreen(
   )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ArchiveContent(
   uiState: ArchiveUiState,
@@ -75,15 +80,18 @@ fun ArchiveContent(
   onNavigateTopLevel: (NavKey) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
   Scaffold(
-    modifier = modifier.fillMaxSize(),
-    topBar = { TopAppBar(title = { Text(stringResource(R.string.archive_title)) }) },
+    modifier = modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
+    topBar = {
+      SubScribeTopAppBar(title = stringResource(R.string.archive_title), scrollBehavior = scrollBehavior)
+    },
     bottomBar = { SubScribeBottomBar(currentRoute = ArchiveRoute, onSelect = onNavigateTopLevel) },
   ) { innerPadding ->
     when {
       uiState.isLoading -> {
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center) {
-          CircularProgressIndicator()
+          LoadingIndicator()
         }
       }
 
@@ -168,11 +176,18 @@ private fun ArchiveRow(
       }
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         if (item.subscription.status == SubscriptionStatus.CANCELLED) {
-          OutlinedButton(onClick = onArchive) { Text(stringResource(R.string.archive_archive_action)) }
+          IconActionButton(
+            onClick = onArchive,
+            icon = Icons.Default.Archive,
+            contentDescription = stringResource(R.string.archive_archive_action),
+          )
         } else {
-          TextButton(onClick = onDelete) {
-            Text(stringResource(R.string.archive_delete_action), color = MaterialTheme.colorScheme.error)
-          }
+          IconActionButton(
+            onClick = onDelete,
+            icon = Icons.Default.Delete,
+            contentDescription = stringResource(R.string.archive_delete_action),
+            tint = MaterialTheme.colorScheme.error,
+          )
         }
       }
     }

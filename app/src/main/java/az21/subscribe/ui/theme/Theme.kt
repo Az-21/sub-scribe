@@ -3,7 +3,9 @@ package az21.subscribe.ui.theme
 import android.content.Context
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -18,6 +20,7 @@ import az21.subscribe.domain.model.ThemeSeedSource
  * reactively whenever the persisted [AppSettings] (seed color, style variant, brightness) change,
  * so theme edits apply live without an app restart.
  */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppTheme(
   settings: AppSettings = AppSettings(),
@@ -33,7 +36,12 @@ fun AppTheme(
     remember(seedColor, settings.themeVariant, isDark) {
       themeColorScheme(seedColor = seedColor, variant = settings.themeVariant, isDark = isDark)
     }
-  MaterialTheme(colorScheme = colorScheme, typography = Typography, content = content)
+  MaterialTheme(
+    colorScheme = colorScheme,
+    motionScheme = MotionScheme.expressive(),
+    typography = Typography,
+    content = content,
+  )
 }
 
 @Composable

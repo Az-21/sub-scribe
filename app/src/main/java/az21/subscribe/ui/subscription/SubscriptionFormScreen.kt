@@ -19,26 +19,25 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,6 +47,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -60,6 +60,8 @@ import az21.subscribe.R
 import az21.subscribe.domain.model.BillingCycle
 import az21.subscribe.domain.model.PaymentMethod
 import az21.subscribe.domain.model.Tag
+import az21.subscribe.ui.common.PrimaryAppBarAction
+import az21.subscribe.ui.common.SubScribeTopAppBar
 import az21.subscribe.ui.common.SubscriptionDatePickerDialog
 import az21.subscribe.ui.common.SubscriptionIcon
 import az21.subscribe.ui.theme.AppTheme
@@ -125,7 +127,7 @@ private fun RequestNotificationPermissionWhenEnabled(enabled: Boolean) {
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SubscriptionFormContent(
   uiState: SubscriptionFormUiState,
@@ -146,28 +148,28 @@ fun SubscriptionFormContent(
 ) {
   var showIconPicker by remember { mutableStateOf(false) }
   var showDatePicker by remember { mutableStateOf(false) }
+  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
   Scaffold(
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
-      TopAppBar(
-        title = {
-          Text(
-            stringResource(if (uiState.isEditing) R.string.form_title_edit else R.string.form_title_add),
-          )
-        },
-        navigationIcon = {
-          TextButton(onClick = onBack) { Text(stringResource(R.string.action_back)) }
-        },
-        actions = {
-          TextButton(onClick = onSave) { Text(stringResource(R.string.action_save)) }
-        },
+      SubScribeTopAppBar(
+        title =
+          stringResource(if (uiState.isEditing) R.string.form_title_edit else R.string.form_title_add),
+        onNavigateUp = onBack,
+        scrollBehavior = scrollBehavior,
+        primaryAction =
+          PrimaryAppBarAction(
+            label = stringResource(R.string.action_save),
+            icon = Icons.Default.Check,
+            onClick = onSave,
+          ),
       )
     },
   ) { innerPadding ->
     if (uiState.isLoading) {
       Box(modifier = Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
+        LoadingIndicator()
       }
     } else {
       FormFields(
@@ -445,27 +447,31 @@ private fun StartDateField(
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun BillingCycleField(
   cycle: BillingCycle,
   onBillingCycleChange: (BillingCycle) -> Unit,
 ) {
+  val labels =
+    BillingCycle.entries.associateWith { entry ->
+      stringResource(
+        if (entry == BillingCycle.MONTHLY) R.string.form_cycle_monthly else R.string.form_cycle_annual,
+      )
+    }
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
     Text(stringResource(R.string.form_billing_cycle), style = MaterialTheme.typography.titleSmall)
-    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-      BillingCycle.entries.forEachIndexed { index, entry ->
-        SegmentedButton(
-          selected = cycle == entry,
-          onClick = { onBillingCycleChange(entry) },
-          shape = SegmentedButtonDefaults.itemShape(index = index, count = BillingCycle.entries.size),
-        ) {
-          Text(
-            stringResource(
-              if (entry == BillingCycle.MONTHLY) R.string.form_cycle_monthly else R.string.form_cycle_annual,
-            ),
-          )
-        }
+    ButtonGroup(
+      overflowIndicator = {},
+      modifier = Modifier.fillMaxWidth(),
+    ) {
+      BillingCycle.entries.forEach { entry ->
+        toggleableItem(
+          checked = cycle == entry,
+          label = labels.getValue(entry),
+          onCheckedChange = { onBillingCycleChange(entry) },
+          weight = 1f,
+        )
       }
     }
   }

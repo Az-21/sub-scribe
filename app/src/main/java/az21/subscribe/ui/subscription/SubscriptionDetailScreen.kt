@@ -7,23 +7,32 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Archive
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
@@ -44,6 +54,8 @@ import az21.subscribe.domain.model.BillingCycle
 import az21.subscribe.domain.model.Currency
 import az21.subscribe.domain.model.SubscriptionStatus
 import az21.subscribe.ui.common.DeleteSubscriptionDialog
+import az21.subscribe.ui.common.PrimaryAppBarAction
+import az21.subscribe.ui.common.SubScribeTopAppBar
 import az21.subscribe.ui.common.SubscriptionIcon
 import az21.subscribe.ui.common.formatMoney
 import az21.subscribe.ui.theme.AppTheme
@@ -79,7 +91,7 @@ fun SubscriptionDetailScreen(
   )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SubscriptionDetailContent(
   uiState: SubscriptionDetailUiState,
@@ -103,7 +115,7 @@ fun SubscriptionDetailContent(
     val subscription = uiState.subscription
     if (uiState.isLoading || subscription == null) {
       Box(modifier = Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
+        LoadingIndicator()
       }
       return@DetailScaffold
     }
@@ -183,13 +195,20 @@ private fun DetailScaffold(
   modifier: Modifier = Modifier,
   content: @Composable (PaddingValues) -> Unit,
 ) {
+  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
   Scaffold(
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
-      TopAppBar(
-        title = { Text(title) },
-        navigationIcon = { TextButton(onClick = onBack) { Text(stringResource(R.string.action_back)) } },
-        actions = { TextButton(onClick = onEdit) { Text(stringResource(R.string.action_edit)) } },
+      SubScribeTopAppBar(
+        title = title,
+        onNavigateUp = onBack,
+        scrollBehavior = scrollBehavior,
+        primaryAction =
+          PrimaryAppBarAction(
+            label = stringResource(R.string.action_edit),
+            icon = Icons.Default.Edit,
+            onClick = onEdit,
+          ),
       )
     },
     content = content,
@@ -346,6 +365,12 @@ private fun PriceHistorySection(
       }
     }
     OutlinedButton(onClick = onAddPrice, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+      Icon(
+        imageVector = Icons.Default.Add,
+        contentDescription = null,
+        modifier = Modifier.size(ButtonDefaults.IconSize),
+      )
+      Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
       Text(stringResource(R.string.detail_add_price_change))
     }
   }
@@ -362,18 +387,36 @@ private fun LifecycleActions(
     when (status) {
       SubscriptionStatus.ACTIVE -> {
         OutlinedButton(onClick = onCancel, modifier = Modifier.fillMaxWidth()) {
+          Icon(
+            imageVector = Icons.Default.Close,
+            contentDescription = null,
+            modifier = Modifier.size(ButtonDefaults.IconSize),
+          )
+          Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
           Text(stringResource(R.string.detail_cancel))
         }
       }
 
       SubscriptionStatus.CANCELLED -> {
         Button(onClick = onArchive, modifier = Modifier.fillMaxWidth()) {
+          Icon(
+            imageVector = Icons.Default.Archive,
+            contentDescription = null,
+            modifier = Modifier.size(ButtonDefaults.IconSize),
+          )
+          Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
           Text(stringResource(R.string.detail_archive))
         }
       }
 
       SubscriptionStatus.ARCHIVED -> {
         Button(onClick = onDelete, modifier = Modifier.fillMaxWidth()) {
+          Icon(
+            imageVector = Icons.Default.Delete,
+            contentDescription = null,
+            modifier = Modifier.size(ButtonDefaults.IconSize),
+          )
+          Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
           Text(stringResource(R.string.detail_delete))
         }
       }

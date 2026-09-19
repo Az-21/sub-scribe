@@ -9,19 +9,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
@@ -33,6 +39,7 @@ import androidx.navigation3.runtime.NavKey
 import az21.subscribe.R
 import az21.subscribe.domain.metrics.MonthlySpend
 import az21.subscribe.domain.model.Currency
+import az21.subscribe.ui.common.SubScribeTopAppBar
 import az21.subscribe.ui.common.formatMoney
 import az21.subscribe.ui.navigation.MetricsRoute
 import az21.subscribe.ui.navigation.SubScribeBottomBar
@@ -60,7 +67,7 @@ fun MetricsScreen(
   )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MetricsContent(
   uiState: MetricsUiState,
@@ -70,9 +77,12 @@ fun MetricsContent(
   onNavigateTopLevel: (NavKey) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
   Scaffold(
-    modifier = modifier.fillMaxSize(),
-    topBar = { TopAppBar(title = { Text(stringResource(R.string.metrics_title)) }) },
+    modifier = modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
+    topBar = {
+      SubScribeTopAppBar(title = stringResource(R.string.metrics_title), scrollBehavior = scrollBehavior)
+    },
     bottomBar = { SubScribeBottomBar(currentRoute = MetricsRoute, onSelect = onNavigateTopLevel) },
   ) { innerPadding ->
     if (uiState.isLoading) {
@@ -80,7 +90,7 @@ fun MetricsContent(
         modifier = Modifier.fillMaxSize().padding(innerPadding),
         contentAlignment = Alignment.Center,
       ) {
-        CircularProgressIndicator()
+        LoadingIndicator()
       }
     } else {
       Column(
@@ -117,9 +127,19 @@ private fun YearSelector(
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    TextButton(onClick = onPreviousYear) { Text(stringResource(R.string.metrics_previous_year)) }
+    IconButton(onClick = onPreviousYear) {
+      Icon(
+        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+        contentDescription = stringResource(R.string.metrics_previous_year),
+      )
+    }
     Text(text = year.toString(), style = MaterialTheme.typography.headlineSmall)
-    TextButton(onClick = onNextYear) { Text(stringResource(R.string.metrics_next_year)) }
+    IconButton(onClick = onNextYear) {
+      Icon(
+        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+        contentDescription = stringResource(R.string.metrics_next_year),
+      )
+    }
   }
 }
 

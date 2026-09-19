@@ -13,32 +13,45 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Archive
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExpandedDockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,12 +62,15 @@ import androidx.navigation3.runtime.NavKey
 import az21.subscribe.R
 import az21.subscribe.domain.model.Currency
 import az21.subscribe.domain.model.SubscriptionStatus
+import az21.subscribe.ui.common.IconActionButton
+import az21.subscribe.ui.common.SubScribeTopAppBar
 import az21.subscribe.ui.common.SubscriptionIcon
 import az21.subscribe.ui.common.SubscriptionSummary
 import az21.subscribe.ui.common.formatMoney
 import az21.subscribe.ui.navigation.HomeRoute
 import az21.subscribe.ui.navigation.SubScribeBottomBar
 import az21.subscribe.ui.theme.AppTheme
+import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.UUID
@@ -84,7 +100,7 @@ fun HomeScreen(
   )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeContent(
   uiState: HomeUiState,
@@ -99,11 +115,13 @@ fun HomeContent(
   onNavigateTopLevel: (NavKey) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
   Scaffold(
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
-      TopAppBar(
-        title = { Text(stringResource(R.string.home_title)) },
+      SubScribeTopAppBar(
+        title = stringResource(R.string.home_title),
+        scrollBehavior = scrollBehavior,
         actions = { HomeTopBarActions(onSortChange = onSortChange, onOpenArchive = onOpenArchive) },
       )
     },
@@ -133,7 +151,11 @@ private fun HomeTopBarActions(
 ) {
   var sortMenuExpanded by remember { mutableStateOf(false) }
   Box {
-    TextButton(onClick = { sortMenuExpanded = true }) { Text(stringResource(R.string.home_sort)) }
+    IconActionButton(
+      onClick = { sortMenuExpanded = true },
+      icon = Icons.AutoMirrored.Filled.Sort,
+      contentDescription = stringResource(R.string.home_sort),
+    )
     DropdownMenu(expanded = sortMenuExpanded, onDismissRequest = { sortMenuExpanded = false }) {
       SortOption.entries.forEach { option ->
         DropdownMenuItem(
@@ -146,7 +168,11 @@ private fun HomeTopBarActions(
       }
     }
   }
-  TextButton(onClick = onOpenArchive) { Text(stringResource(R.string.home_open_archive)) }
+  IconActionButton(
+    onClick = onOpenArchive,
+    icon = Icons.Default.Archive,
+    contentDescription = stringResource(R.string.home_open_archive),
+  )
 }
 
 @Composable
@@ -160,7 +186,12 @@ private fun HomeBody(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier) {
-    HomeSearchBar(query = uiState.query, onQueryChange = onQueryChange)
+    HomeSearchBar(
+      query = uiState.query,
+      items = uiState.items,
+      onQueryChange = onQueryChange,
+      onOpenSubscription = onOpenSubscription,
+    )
     HomeFilterControls(
       uiState = uiState,
       onStatusChange = onStatusChange,
@@ -171,27 +202,67 @@ private fun HomeBody(
   }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeSearchBar(
   query: String,
+  items: List<SubscriptionSummary>,
   onQueryChange: (String) -> Unit,
+  onOpenSubscription: (String) -> Unit,
 ) {
-  OutlinedTextField(
-    value = query,
-    onValueChange = onQueryChange,
+  val searchBarState = rememberSearchBarState()
+  val textFieldState = rememberTextFieldState(initialText = query)
+  val scope = rememberCoroutineScope()
+
+  LaunchedEffect(textFieldState) {
+    snapshotFlow { textFieldState.text.toString() }.collect { value -> onQueryChange(value) }
+  }
+
+  val inputField =
+    @Composable {
+      SearchBarDefaults.InputField(
+        textFieldState = textFieldState,
+        searchBarState = searchBarState,
+        onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
+        placeholder = { Text(stringResource(R.string.home_search_hint)) },
+        leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = null) },
+        trailingIcon = {
+          if (textFieldState.text.isNotEmpty()) {
+            IconButton(onClick = { textFieldState.clearText() }) {
+              Icon(imageVector = Icons.Default.Close, contentDescription = null)
+            }
+          }
+        },
+      )
+    }
+
+  SearchBar(
+    state = searchBarState,
+    inputField = inputField,
     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-    placeholder = { Text(stringResource(R.string.home_search_hint)) },
-    leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = null) },
-    trailingIcon = {
-      if (query.isNotEmpty()) {
-        IconButton(onClick = { onQueryChange("") }) {
-          Icon(imageVector = Icons.Default.Clear, contentDescription = null)
-        }
-      }
-    },
-    singleLine = true,
   )
+  ExpandedDockedSearchBar(state = searchBarState, inputField = inputField) {
+    items.take(MAX_SEARCH_SUGGESTIONS).forEach { item ->
+      ListItem(
+        onClick = {
+          textFieldState.setTextAndPlaceCursorAtEnd(item.subscription.name)
+          scope.launch { searchBarState.animateToCollapsed() }
+          onOpenSubscription(item.subscription.id.toString())
+        },
+        leadingContent = {
+          SubscriptionIcon(
+            iconId = item.subscription.iconId,
+            name = item.subscription.name,
+            modifier = Modifier.size(32.dp),
+          )
+        },
+        content = { Text(item.subscription.name) },
+      )
+    }
+  }
 }
+
+private const val MAX_SEARCH_SUGGESTIONS = 5
 
 @Composable
 private fun HomeFilterControls(
@@ -250,6 +321,7 @@ private fun HomeFilterControls(
   }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun HomeList(
   uiState: HomeUiState,
@@ -257,7 +329,7 @@ private fun HomeList(
 ) {
   when {
     uiState.isLoading -> {
-      Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+      Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { LoadingIndicator() }
     }
 
     uiState.items.isEmpty() -> {
