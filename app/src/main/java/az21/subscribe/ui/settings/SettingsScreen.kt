@@ -16,20 +16,23 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.Card
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ExposedDropdownMenu
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -175,28 +178,49 @@ private fun SettingTitle(text: String) {
   Text(text = text, style = MaterialTheme.typography.titleSmall)
 }
 
+private data class DropdownOption(
+  val label: String,
+  val selected: Boolean,
+  val onSelect: () -> Unit,
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DropdownSetting(
   label: String,
   selectedLabel: String,
-  options: List<Pair<String, () -> Unit>>,
+  options: List<DropdownOption>,
 ) {
   var expanded by remember { mutableStateOf(false) }
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
     SettingTitle(label)
-    Box {
-      OutlinedButton(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth()) {
-        Text(selectedLabel, modifier = Modifier.weight(1f))
-        Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = null)
-      }
-      DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-        options.forEach { (optionLabel, onSelect) ->
-          DropdownMenuItem(
-            text = { Text(optionLabel) },
+    ExposedDropdownMenuBox(
+      expanded = expanded,
+      onExpandedChange = { expanded = it },
+    ) {
+      OutlinedTextField(
+        value = selectedLabel,
+        onValueChange = {},
+        readOnly = true,
+        modifier =
+          Modifier
+            .fillMaxWidth()
+            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+      )
+      ExposedDropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+      ) {
+        options.forEachIndexed { index, option ->
+          SelectableDropdownMenuItem(
+            selected = option.selected,
             onClick = {
-              onSelect()
+              option.onSelect()
               expanded = false
             },
+            text = { Text(option.label) },
+            shapes = MenuDefaults.itemShape(index, options.size),
           )
         }
       }
@@ -212,33 +236,45 @@ private fun CurrencySetting(
   DropdownSetting(
     label = stringResource(R.string.settings_currency),
     selectedLabel = "${selected.code} (${selected.symbol})",
-    options = Currency.entries.map { currency -> currency.code to { onCurrencyChange(currency) } },
+    options =
+      Currency.entries.map { currency ->
+        DropdownOption(
+          label = "${currency.code} (${currency.symbol})",
+          selected = currency == selected,
+          onSelect = { onCurrencyChange(currency) },
+        )
+      },
   )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SeedSourceSetting(
   selected: ThemeSeedSource,
   onSeedSourceChange: (ThemeSeedSource) -> Unit,
 ) {
+  val labels =
+    ThemeSeedSource.entries.associateWith { source ->
+      stringResource(
+        if (source == ThemeSeedSource.SYSTEM) {
+          R.string.settings_theme_source_system
+        } else {
+          R.string.settings_theme_source_manual
+        },
+      )
+    }
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
     SettingTitle(stringResource(R.string.settings_theme_source))
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    ButtonGroup(
+      overflowIndicator = {},
+      modifier = Modifier.fillMaxWidth(),
+    ) {
       ThemeSeedSource.entries.forEach { source ->
-        FilterChip(
-          selected = selected == source,
-          onClick = { onSeedSourceChange(source) },
-          label = {
-            Text(
-              stringResource(
-                if (source == ThemeSeedSource.SYSTEM) {
-                  R.string.settings_theme_source_system
-                } else {
-                  R.string.settings_theme_source_manual
-                },
-              ),
-            )
-          },
+        toggleableItem(
+          checked = selected == source,
+          label = labels.getValue(source),
+          onCheckedChange = { onSeedSourceChange(source) },
+          weight = 1f,
         )
       }
     }
@@ -304,7 +340,11 @@ private fun VariantSetting(
     selectedLabel = stringResource(selected.labelRes()),
     options =
       ThemeVariant.entries.map { variant ->
-        stringResource(variant.labelRes()) to { onVariantChange(variant) }
+        DropdownOption(
+          label = stringResource(variant.labelRes()),
+          selected = variant == selected,
+          onSelect = { onVariantChange(variant) },
+        )
       },
   )
 }

@@ -5,11 +5,10 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -53,14 +52,11 @@ fun SubScribeFloatingToolbar(
   ) {
     TopLevelDestination.entries.forEach { destination ->
       val label = stringResource(destination.labelRes)
-      if (destination == selectedDestination) {
-        FilledIconButton(onClick = { onNavigateTopLevel(destination.route) }) {
-          Icon(imageVector = destination.icon, contentDescription = label)
-        }
-      } else {
-        IconButton(onClick = { onNavigateTopLevel(destination.route) }) {
-          Icon(imageVector = destination.icon, contentDescription = label)
-        }
+      FilledIconToggleButton(
+        checked = destination == selectedDestination,
+        onCheckedChange = { onNavigateTopLevel(destination.route) },
+      ) {
+        Icon(imageVector = destination.icon, contentDescription = label)
       }
     }
   }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -21,10 +22,11 @@ import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Card
+import androidx.compose.material3.AppBarWithSearch
+import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.ButtonGroupScope
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExpandedDockedSearchBar
+import androidx.compose.material3.ExpandedDockedSearchBarWithGap
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FabPosition
@@ -34,11 +36,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SearchBarScrollBehavior
+import androidx.compose.material3.SearchBarState
+import androidx.compose.material3.SelectableDropdownMenuItem
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -62,7 +66,6 @@ import az21.subscribe.R
 import az21.subscribe.domain.model.Currency
 import az21.subscribe.domain.model.SubscriptionStatus
 import az21.subscribe.ui.common.IconActionButton
-import az21.subscribe.ui.common.SubScribeTopAppBar
 import az21.subscribe.ui.common.SubscriptionIcon
 import az21.subscribe.ui.common.SubscriptionSummary
 import az21.subscribe.ui.common.formatMoney
@@ -114,14 +117,24 @@ fun HomeContent(
   onNavigateTopLevel: (NavKey) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+  val searchBarState = rememberSearchBarState()
+  val textFieldState = rememberTextFieldState(initialText = uiState.query)
+  val searchScrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
+  LaunchedEffect(textFieldState) {
+    snapshotFlow { textFieldState.text.toString() }.collect { value -> onQueryChange(value) }
+  }
   Scaffold(
-    modifier = modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
+    modifier = modifier.fillMaxSize().nestedScroll(searchScrollBehavior.nestedScrollConnection),
     topBar = {
-      SubScribeTopAppBar(
-        title = stringResource(R.string.home_title),
-        scrollBehavior = scrollBehavior,
-        actions = { HomeTopBarActions(onSortChange = onSortChange, onOpenArchive = onOpenArchive) },
+      HomeSearchTopBar(
+        searchBarState = searchBarState,
+        textFieldState = textFieldState,
+        scrollBehavior = searchScrollBehavior,
+        items = uiState.items,
+        currentSort = uiState.sort,
+        onSortChange = onSortChange,
+        onOpenArchive = onOpenArchive,
+        onOpenSubscription = onOpenSubscription,
       )
     },
     floatingActionButtonPosition = FabPosition.Center,
@@ -135,7 +148,6 @@ fun HomeContent(
   ) { innerPadding ->
     HomeBody(
       uiState = uiState,
-      onQueryChange = onQueryChange,
       onStatusChange = onStatusChange,
       onTagChange = onTagChange,
       onPaymentMethodChange = onPaymentMethodChange,
@@ -145,80 +157,19 @@ fun HomeContent(
   }
 }
 
-@Composable
-private fun HomeTopBarActions(
-  onSortChange: (SubscriptionSort) -> Unit,
-  onOpenArchive: () -> Unit,
-) {
-  var sortMenuExpanded by remember { mutableStateOf(false) }
-  Box {
-    IconActionButton(
-      onClick = { sortMenuExpanded = true },
-      icon = Icons.AutoMirrored.Filled.Sort,
-      contentDescription = stringResource(R.string.home_sort),
-    )
-    DropdownMenu(expanded = sortMenuExpanded, onDismissRequest = { sortMenuExpanded = false }) {
-      SortOption.entries.forEach { option ->
-        DropdownMenuItem(
-          text = { Text(stringResource(option.labelRes)) },
-          onClick = {
-            onSortChange(option.sort)
-            sortMenuExpanded = false
-          },
-        )
-      }
-    }
-  }
-  IconActionButton(
-    onClick = onOpenArchive,
-    icon = Icons.Default.Archive,
-    contentDescription = stringResource(R.string.home_open_archive),
-  )
-}
-
-@Composable
-private fun HomeBody(
-  uiState: HomeUiState,
-  onQueryChange: (String) -> Unit,
-  onStatusChange: (SubscriptionStatus?) -> Unit,
-  onTagChange: (UUID?) -> Unit,
-  onPaymentMethodChange: (UUID?) -> Unit,
-  onOpenSubscription: (String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  Column(modifier = modifier) {
-    HomeSearchBar(
-      query = uiState.query,
-      items = uiState.items,
-      onQueryChange = onQueryChange,
-      onOpenSubscription = onOpenSubscription,
-    )
-    HomeFilterControls(
-      uiState = uiState,
-      onStatusChange = onStatusChange,
-      onTagChange = onTagChange,
-      onPaymentMethodChange = onPaymentMethodChange,
-    )
-    HomeList(uiState = uiState, onOpenSubscription = onOpenSubscription)
-  }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeSearchBar(
-  query: String,
+private fun HomeSearchTopBar(
+  searchBarState: SearchBarState,
+  textFieldState: TextFieldState,
+  scrollBehavior: SearchBarScrollBehavior,
   items: List<SubscriptionSummary>,
-  onQueryChange: (String) -> Unit,
+  currentSort: SubscriptionSort,
+  onSortChange: (SubscriptionSort) -> Unit,
+  onOpenArchive: () -> Unit,
   onOpenSubscription: (String) -> Unit,
 ) {
-  val searchBarState = rememberSearchBarState()
-  val textFieldState = rememberTextFieldState(initialText = query)
   val scope = rememberCoroutineScope()
-
-  LaunchedEffect(textFieldState) {
-    snapshotFlow { textFieldState.text.toString() }.collect { value -> onQueryChange(value) }
-  }
-
   val inputField =
     @Composable {
       SearchBarDefaults.InputField(
@@ -236,13 +187,19 @@ private fun HomeSearchBar(
         },
       )
     }
-
-  SearchBar(
+  AppBarWithSearch(
     state = searchBarState,
     inputField = inputField,
-    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+    scrollBehavior = scrollBehavior,
+    actions = {
+      HomeTopBarActions(
+        currentSort = currentSort,
+        onSortChange = onSortChange,
+        onOpenArchive = onOpenArchive,
+      )
+    },
   )
-  ExpandedDockedSearchBar(state = searchBarState, inputField = inputField) {
+  ExpandedDockedSearchBarWithGap(state = searchBarState, inputField = inputField) {
     items.take(MAX_SEARCH_SUGGESTIONS).forEach { item ->
       ListItem(
         onClick = {
@@ -263,8 +220,63 @@ private fun HomeSearchBar(
   }
 }
 
+@Composable
+private fun HomeTopBarActions(
+  currentSort: SubscriptionSort,
+  onSortChange: (SubscriptionSort) -> Unit,
+  onOpenArchive: () -> Unit,
+) {
+  var sortMenuExpanded by remember { mutableStateOf(false) }
+  Box {
+    IconActionButton(
+      onClick = { sortMenuExpanded = true },
+      icon = Icons.AutoMirrored.Filled.Sort,
+      contentDescription = stringResource(R.string.home_sort),
+    )
+    DropdownMenu(expanded = sortMenuExpanded, onDismissRequest = { sortMenuExpanded = false }) {
+      SortOption.entries.forEachIndexed { index, option ->
+        SelectableDropdownMenuItem(
+          selected = option.sort == currentSort,
+          text = { Text(stringResource(option.labelRes)) },
+          onClick = {
+            onSortChange(option.sort)
+            sortMenuExpanded = false
+          },
+          shapes = MenuDefaults.itemShape(index, SortOption.entries.size),
+        )
+      }
+    }
+  }
+  IconActionButton(
+    onClick = onOpenArchive,
+    icon = Icons.Default.Archive,
+    contentDescription = stringResource(R.string.home_open_archive),
+  )
+}
+
+@Composable
+private fun HomeBody(
+  uiState: HomeUiState,
+  onStatusChange: (SubscriptionStatus?) -> Unit,
+  onTagChange: (UUID?) -> Unit,
+  onPaymentMethodChange: (UUID?) -> Unit,
+  onOpenSubscription: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier = modifier) {
+    HomeFilterControls(
+      uiState = uiState,
+      onStatusChange = onStatusChange,
+      onTagChange = onTagChange,
+      onPaymentMethodChange = onPaymentMethodChange,
+    )
+    HomeList(uiState = uiState, onOpenSubscription = onOpenSubscription)
+  }
+}
+
 private const val MAX_SEARCH_SUGGESTIONS = 5
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun HomeFilterControls(
   uiState: HomeUiState,
@@ -272,17 +284,21 @@ private fun HomeFilterControls(
   onTagChange: (UUID?) -> Unit,
   onPaymentMethodChange: (UUID?) -> Unit,
 ) {
-  FilterRow(label = stringResource(R.string.home_filter_status)) {
-    FilterChip(
-      selected = uiState.status == null,
-      onClick = { onStatusChange(null) },
-      label = { Text(stringResource(R.string.home_filter_all)) },
+  val allLabel = stringResource(R.string.home_filter_all)
+  val statusLabels = StatusFilter.entries.associateWith { entry -> stringResource(entry.labelRes) }
+  FilterButtonGroup(label = stringResource(R.string.home_filter_status)) {
+    toggleableItem(
+      checked = uiState.status == null,
+      label = allLabel,
+      onCheckedChange = { onStatusChange(null) },
+      weight = 1f,
     )
     StatusFilter.entries.forEach { entry ->
-      FilterChip(
-        selected = uiState.status == entry.status,
-        onClick = { onStatusChange(entry.status) },
-        label = { Text(stringResource(entry.labelRes)) },
+      toggleableItem(
+        checked = uiState.status == entry.status,
+        label = statusLabels.getValue(entry),
+        onCheckedChange = { onStatusChange(entry.status) },
+        weight = 1f,
       )
     }
   }
@@ -360,6 +376,26 @@ private fun HomeList(
   }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun FilterButtonGroup(
+  label: String,
+  content: ButtonGroupScope.() -> Unit,
+) {
+  Column {
+    Text(
+      text = label,
+      style = MaterialTheme.typography.labelMedium,
+      modifier = Modifier.padding(start = 16.dp, top = 4.dp),
+    )
+    ButtonGroup(
+      overflowIndicator = {},
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      content = content,
+    )
+  }
+}
+
 @Composable
 private fun FilterRow(
   label: String,
@@ -388,27 +424,30 @@ private fun SubscriptionRow(
   onClick: () -> Unit,
 ) {
   val locale = Locale.current.platformLocale
-  Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
-    Row(
-      modifier = Modifier.fillMaxWidth().padding(12.dp),
-      horizontalArrangement = Arrangement.spacedBy(12.dp),
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
+  ListItem(
+    onClick = onClick,
+    modifier = Modifier.fillMaxWidth(),
+    leadingContent = {
       SubscriptionIcon(
         iconId = item.subscription.iconId,
         name = item.subscription.name,
         modifier = Modifier.size(40.dp),
       )
-      Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Text(text = item.subscription.name, style = MaterialTheme.typography.titleMedium)
-        if (item.tags.isNotEmpty()) {
+    },
+    content = { Text(text = item.subscription.name, style = MaterialTheme.typography.titleMedium) },
+    supportingContent =
+      if (item.tags.isEmpty()) {
+        null
+      } else {
+        {
           Text(
             text = item.tags.joinToString(" · ") { tag -> tag.name },
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.primary,
           )
         }
-      }
+      },
+    trailingContent = {
       Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(
           text =
@@ -422,8 +461,8 @@ private fun SubscriptionRow(
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
       }
-    }
-  }
+    },
+  )
 }
 
 private enum class SortOption(

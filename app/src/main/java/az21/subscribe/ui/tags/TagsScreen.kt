@@ -19,9 +19,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -162,23 +162,19 @@ private fun TagRow(
   onEdit: (Tag) -> Unit,
   onRequestDelete: (Tag) -> Unit,
 ) {
-  Card(onClick = { onEdit(tag) }, modifier = Modifier.fillMaxWidth()) {
-    Row(
-      modifier = Modifier.fillMaxWidth().padding(16.dp),
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-        TagColorDot(color = tag.color)
-        Text(text = tag.name, style = MaterialTheme.typography.bodyLarge)
-      }
+  ListItem(
+    onClick = { onEdit(tag) },
+    modifier = Modifier.fillMaxWidth(),
+    leadingContent = { TagColorDot(color = tag.color) },
+    content = { Text(text = tag.name, style = MaterialTheme.typography.bodyLarge) },
+    trailingContent = {
       IconActionButton(
         onClick = { onRequestDelete(tag) },
         icon = Icons.Default.Delete,
         contentDescription = stringResource(R.string.tags_delete),
       )
-    }
-  }
+    },
+  )
 }
 
 @Composable

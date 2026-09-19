@@ -177,11 +177,21 @@ private fun ExportCard(
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
-      Button(onClick = onExportJson, enabled = enabled, modifier = Modifier.fillMaxWidth()) {
+      Button(
+        onClick = onExportJson,
+        enabled = enabled,
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = ButtonDefaults.contentPaddingFor(ButtonDefaults.MinHeight, hasStartIcon = true),
+      ) {
         ButtonLeadingIcon(imageVector = Icons.Default.Share)
         Text(stringResource(R.string.transfer_export_json))
       }
-      OutlinedButton(onClick = onExportCsv, enabled = enabled, modifier = Modifier.fillMaxWidth()) {
+      OutlinedButton(
+        onClick = onExportCsv,
+        enabled = enabled,
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = ButtonDefaults.contentPaddingFor(ButtonDefaults.MinHeight, hasStartIcon = true),
+      ) {
         ButtonLeadingIcon(imageVector = Icons.Default.Share)
         Text(stringResource(R.string.transfer_export_csv))
       }
@@ -205,7 +215,12 @@ private fun ImportCard(
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
-      Button(onClick = onImport, enabled = enabled, modifier = Modifier.fillMaxWidth()) {
+      Button(
+        onClick = onImport,
+        enabled = enabled,
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = ButtonDefaults.contentPaddingFor(ButtonDefaults.MinHeight, hasStartIcon = true),
+      ) {
         ButtonLeadingIcon(imageVector = Icons.Default.Refresh)
         Text(stringResource(R.string.transfer_import_button))
       }
@@ -306,12 +321,13 @@ private fun ImportFailureDialog(
 
 @Composable
 private fun ButtonLeadingIcon(imageVector: ImageVector) {
+  val buttonHeight = ButtonDefaults.MinHeight
   Icon(
     imageVector = imageVector,
     contentDescription = null,
-    modifier = Modifier.size(ButtonDefaults.IconSize),
+    modifier = Modifier.size(ButtonDefaults.iconSizeFor(buttonHeight)),
   )
-  Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+  Spacer(modifier = Modifier.size(ButtonDefaults.iconSpacingFor(buttonHeight)))
 }
 
 @Composable

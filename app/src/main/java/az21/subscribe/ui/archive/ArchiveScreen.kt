@@ -2,7 +2,6 @@ package az21.subscribe.ui.archive
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,9 +13,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -142,39 +141,40 @@ private fun ArchiveRow(
   onDelete: () -> Unit,
 ) {
   val locale = Locale.current.platformLocale
-  Card(onClick = onOpen, modifier = Modifier.fillMaxWidth()) {
-    Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+  ListItem(
+    onClick = onOpen,
+    modifier = Modifier.fillMaxWidth(),
+    leadingContent = {
+      SubscriptionIcon(
+        iconId = item.subscription.iconId,
+        name = item.subscription.name,
+        modifier = Modifier.size(40.dp),
+      )
+    },
+    content = { Text(text = item.subscription.name, style = MaterialTheme.typography.titleMedium) },
+    supportingContent = {
+      Text(
+        text =
+          stringResource(
+            if (item.subscription.status == SubscriptionStatus.CANCELLED) {
+              R.string.archive_cancelled
+            } else {
+              R.string.archive_archived
+            },
+          ),
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+    },
+    trailingContent = {
       Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
       ) {
-        SubscriptionIcon(
-          iconId = item.subscription.iconId,
-          name = item.subscription.name,
-          modifier = Modifier.size(40.dp),
-        )
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-          Text(text = item.subscription.name, style = MaterialTheme.typography.titleMedium)
-          Text(
-            text =
-              stringResource(
-                if (item.subscription.status == SubscriptionStatus.CANCELLED) {
-                  R.string.archive_cancelled
-                } else {
-                  R.string.archive_archived
-                },
-              ),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-        }
         Text(
           text = item.price?.let { price -> formatMoney(price, currency, locale) }.orEmpty(),
           style = MaterialTheme.typography.titleSmall,
         )
-      }
-      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         if (item.subscription.status == SubscriptionStatus.CANCELLED) {
           IconActionButton(
             onClick = onArchive,
@@ -190,8 +190,8 @@ private fun ArchiveRow(
           )
         }
       }
-    }
-  }
+    },
+  )
 }
 
 @Preview(showBackground = true)

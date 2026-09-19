@@ -364,13 +364,18 @@ private fun PriceHistorySection(
         }
       }
     }
-    OutlinedButton(onClick = onAddPrice, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+    val buttonHeight = ButtonDefaults.MinHeight
+    OutlinedButton(
+      onClick = onAddPrice,
+      modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+      contentPadding = ButtonDefaults.contentPaddingFor(buttonHeight, hasStartIcon = true),
+    ) {
       Icon(
         imageVector = Icons.Default.Add,
         contentDescription = null,
-        modifier = Modifier.size(ButtonDefaults.IconSize),
+        modifier = Modifier.size(ButtonDefaults.iconSizeFor(buttonHeight)),
       )
-      Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+      Spacer(modifier = Modifier.size(ButtonDefaults.iconSpacingFor(buttonHeight)))
       Text(stringResource(R.string.detail_add_price_change))
     }
   }
@@ -383,40 +388,53 @@ private fun LifecycleActions(
   onArchive: () -> Unit,
   onDelete: () -> Unit,
 ) {
+  val buttonHeight = ButtonDefaults.MinHeight
   Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
     when (status) {
       SubscriptionStatus.ACTIVE -> {
-        OutlinedButton(onClick = onCancel, modifier = Modifier.fillMaxWidth()) {
+        OutlinedButton(
+          onClick = onCancel,
+          modifier = Modifier.fillMaxWidth(),
+          contentPadding = ButtonDefaults.contentPaddingFor(buttonHeight, hasStartIcon = true),
+        ) {
           Icon(
             imageVector = Icons.Default.Close,
             contentDescription = null,
-            modifier = Modifier.size(ButtonDefaults.IconSize),
+            modifier = Modifier.size(ButtonDefaults.iconSizeFor(buttonHeight)),
           )
-          Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+          Spacer(modifier = Modifier.size(ButtonDefaults.iconSpacingFor(buttonHeight)))
           Text(stringResource(R.string.detail_cancel))
         }
       }
 
       SubscriptionStatus.CANCELLED -> {
-        Button(onClick = onArchive, modifier = Modifier.fillMaxWidth()) {
+        Button(
+          onClick = onArchive,
+          modifier = Modifier.fillMaxWidth(),
+          contentPadding = ButtonDefaults.contentPaddingFor(buttonHeight, hasStartIcon = true),
+        ) {
           Icon(
             imageVector = Icons.Default.Archive,
             contentDescription = null,
-            modifier = Modifier.size(ButtonDefaults.IconSize),
+            modifier = Modifier.size(ButtonDefaults.iconSizeFor(buttonHeight)),
           )
-          Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+          Spacer(modifier = Modifier.size(ButtonDefaults.iconSpacingFor(buttonHeight)))
           Text(stringResource(R.string.detail_archive))
         }
       }
 
       SubscriptionStatus.ARCHIVED -> {
-        Button(onClick = onDelete, modifier = Modifier.fillMaxWidth()) {
+        Button(
+          onClick = onDelete,
+          modifier = Modifier.fillMaxWidth(),
+          contentPadding = ButtonDefaults.contentPaddingFor(buttonHeight, hasStartIcon = true),
+        ) {
           Icon(
             imageVector = Icons.Default.Delete,
             contentDescription = null,
-            modifier = Modifier.size(ButtonDefaults.IconSize),
+            modifier = Modifier.size(ButtonDefaults.iconSizeFor(buttonHeight)),
           )
-          Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+          Spacer(modifier = Modifier.size(ButtonDefaults.iconSpacingFor(buttonHeight)))
           Text(stringResource(R.string.detail_delete))
         }
       }

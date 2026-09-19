@@ -21,20 +21,23 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.ButtonGroup
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ExposedDropdownMenu
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDropdownMenuItem
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -477,6 +480,7 @@ private fun BillingCycleField(
   }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PaymentMethodField(
   paymentMethods: List<PaymentMethod>,
@@ -485,28 +489,45 @@ private fun PaymentMethodField(
 ) {
   var expanded by remember { mutableStateOf(false) }
   val selected = paymentMethods.firstOrNull { it.id == selectedId }
+  val optionCount = paymentMethods.size + 1
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
     Text(stringResource(R.string.form_payment_method), style = MaterialTheme.typography.titleSmall)
-    Box {
-      OutlinedButton(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth()) {
-        Text(selected?.label ?: stringResource(R.string.form_payment_method_none))
-        Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = null)
-      }
-      DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-        DropdownMenuItem(
+    ExposedDropdownMenuBox(
+      expanded = expanded,
+      onExpandedChange = { expanded = it },
+    ) {
+      OutlinedTextField(
+        value = selected?.label ?: stringResource(R.string.form_payment_method_none),
+        onValueChange = {},
+        readOnly = true,
+        modifier =
+          Modifier
+            .fillMaxWidth()
+            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+      )
+      ExposedDropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+      ) {
+        SelectableDropdownMenuItem(
+          selected = selectedId == null,
           text = { Text(stringResource(R.string.form_payment_method_none)) },
           onClick = {
             onPaymentMethodChange(null)
             expanded = false
           },
+          shapes = MenuDefaults.itemShape(index = 0, count = optionCount),
         )
-        paymentMethods.forEach { method ->
-          DropdownMenuItem(
+        paymentMethods.forEachIndexed { index, method ->
+          SelectableDropdownMenuItem(
+            selected = method.id == selectedId,
             text = { Text(method.label) },
             onClick = {
               onPaymentMethodChange(method.id)
               expanded = false
             },
+            shapes = MenuDefaults.itemShape(index = index + 1, count = optionCount),
           )
         }
       }

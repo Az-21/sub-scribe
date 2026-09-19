@@ -50,13 +50,17 @@ fun SubScribeTopAppBar(
     },
     actions = {
       if (primaryAction != null) {
-        FilledTonalButton(onClick = primaryAction.onClick) {
+        val buttonHeight = ButtonDefaults.MinHeight
+        FilledTonalButton(
+          onClick = primaryAction.onClick,
+          contentPadding = ButtonDefaults.contentPaddingFor(buttonHeight, hasStartIcon = true),
+        ) {
           Icon(
             imageVector = primaryAction.icon,
             contentDescription = null,
-            modifier = Modifier.size(ButtonDefaults.IconSize),
+            modifier = Modifier.size(ButtonDefaults.iconSizeFor(buttonHeight)),
           )
-          Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+          Spacer(modifier = Modifier.size(ButtonDefaults.iconSpacingFor(buttonHeight)))
           Text(text = primaryAction.label, maxLines = 1)
         }
       }
