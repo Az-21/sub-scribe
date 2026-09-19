@@ -7,8 +7,7 @@ import java.util.UUID
 /**
  * A tracked subscription.
  *
- * [startDate] is the date the subscription was taken out. If it included a free trial, the first
- * real charge lands [freeTrialMonths] later; see `billingStartDate` in `domain/billing`.
+ * [startDate] is the date the subscription was taken out and the date of its first charge.
  */
 data class Subscription(
   val id: UUID,
@@ -16,11 +15,9 @@ data class Subscription(
   val iconId: String,
   val startDate: LocalDate,
   val billingCycle: BillingCycle,
-  val freeTrialMonths: Int?,
   val status: SubscriptionStatus,
   val endDate: LocalDate?,
   val reminderDaysBefore: Int?,
-  val trialReminderEnabled: Boolean,
   val paymentMethodId: UUID?,
   val notes: String?,
   val createdAt: Instant,
@@ -36,9 +33,7 @@ data class SubscriptionDraft(
   val iconId: String,
   val startDate: LocalDate? = null,
   val billingCycle: BillingCycle,
-  val freeTrialMonths: Int? = null,
   val reminderDaysBefore: Int? = null,
-  val trialReminderEnabled: Boolean = false,
   val paymentMethodId: UUID? = null,
   val notes: String? = null,
 )

@@ -24,7 +24,7 @@ import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** Builds and posts the billing and trial reminder notifications. */
+/** Builds and posts billing reminder notifications. */
 @Singleton
 class ReminderNotifier
   @Inject
@@ -45,12 +45,8 @@ class ReminderNotifier
 
       val date =
         targetDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.getDefault()))
-      val title = context.getString(titleResource(type), subscription.name)
-      val body =
-        when (type) {
-          ReminderType.BILLING -> context.getString(R.string.reminder_billing_body, subscription.name, date)
-          ReminderType.TRIAL_ENDING -> context.getString(R.string.reminder_trial_body, subscription.name, date)
-        }
+      val title = context.getString(R.string.reminder_billing_title, subscription.name)
+      val body = context.getString(R.string.reminder_billing_body, subscription.name, date)
 
       val notification =
         NotificationCompat
@@ -65,12 +61,6 @@ class ReminderNotifier
 
       manager.notify(notificationId(subscription.id, type), notification)
     }
-
-    private fun titleResource(type: ReminderType): Int =
-      when (type) {
-        ReminderType.BILLING -> R.string.reminder_billing_title
-        ReminderType.TRIAL_ENDING -> R.string.reminder_trial_title
-      }
 
     private fun contentIntent(subscriptionId: UUID): PendingIntent {
       val intent =

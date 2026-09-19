@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "f31cffc83dd5d8ce43fd813bd8c53bb0",
+    "identityHash": "d57f9ff085c693c1378b8948390408ae",
     "entities": [
       {
         "tableName": "subscriptions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `icon_id` TEXT NOT NULL, `start_date` TEXT NOT NULL, `billing_cycle` TEXT NOT NULL, `free_trial_months` INTEGER, `status` TEXT NOT NULL, `end_date` TEXT, `reminder_days_before` INTEGER, `trial_reminder_enabled` INTEGER NOT NULL, `payment_method_id` TEXT, `notes` TEXT, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`payment_method_id`) REFERENCES `payment_methods`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `icon_id` TEXT NOT NULL, `start_date` TEXT NOT NULL, `billing_cycle` TEXT NOT NULL, `status` TEXT NOT NULL, `end_date` TEXT, `reminder_days_before` INTEGER, `payment_method_id` TEXT, `notes` TEXT, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`payment_method_id`) REFERENCES `payment_methods`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -39,11 +39,6 @@
             "notNull": true
           },
           {
-            "fieldPath": "freeTrialMonths",
-            "columnName": "free_trial_months",
-            "affinity": "INTEGER"
-          },
-          {
             "fieldPath": "status",
             "columnName": "status",
             "affinity": "TEXT",
@@ -58,12 +53,6 @@
             "fieldPath": "reminderDaysBefore",
             "columnName": "reminder_days_before",
             "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "trialReminderEnabled",
-            "columnName": "trial_reminder_enabled",
-            "affinity": "INTEGER",
-            "notNull": true
           },
           {
             "fieldPath": "paymentMethodId",
@@ -307,7 +296,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f31cffc83dd5d8ce43fd813bd8c53bb0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd57f9ff085c693c1378b8948390408ae')"
     ]
   }
 }

@@ -33,23 +33,6 @@ class ReminderPlannerTest {
   }
 
   @Test
-  fun billingPlan_skipsTrialEndChargeWhenTrialReminderEnabled() {
-    val laterNow = Instant.parse("2024-03-15T09:00:00Z")
-    val subscription =
-      subscription(
-        freeTrialMonths = 3,
-        trialReminderEnabled = true,
-        reminderDaysBefore = 5,
-      )
-
-    val billing = ReminderPlanner.billingPlan(subscription, laterNow, zone)
-    val trial = ReminderPlanner.trialPlan(subscription, laterNow, zone)
-
-    assertEquals(LocalDate.of(2024, 5, 1), billing?.targetDate)
-    assertEquals(LocalDate.of(2024, 4, 1), trial?.targetDate)
-  }
-
-  @Test
   fun billingPlan_isNullWhenRemindersDisabled() {
     assertNull(ReminderPlanner.billingPlan(subscription(reminderDaysBefore = null), now, zone))
   }
@@ -60,56 +43,26 @@ class ReminderPlannerTest {
   }
 
   @Test
-  fun trialPlan_isNullWithoutTrialOrToggle() {
-    assertNull(ReminderPlanner.trialPlan(subscription(trialReminderEnabled = false), now, zone))
-    assertNull(ReminderPlanner.trialPlan(subscription(freeTrialMonths = null, trialReminderEnabled = true), now, zone))
-  }
+  fun plans_includesBillingPlan() {
+    val types = ReminderPlanner.plans(subscription(), now, zone).map { it.type }
 
-  @Test
-  fun trialPlan_isNullWhenTriggerHasPassed() {
-    val subscription =
-      subscription(
-        freeTrialMonths = 3,
-        trialReminderEnabled = true,
-        reminderDaysBefore = 5,
-      )
-
-    assertNull(ReminderPlanner.trialPlan(subscription, now, zone))
-  }
-
-  @Test
-  fun plans_includesBillingAndTrialWhenBothDue() {
-    val laterNow = Instant.parse("2024-03-15T09:00:00Z")
-    val subscription =
-      subscription(
-        freeTrialMonths = 3,
-        trialReminderEnabled = true,
-        reminderDaysBefore = 5,
-      )
-
-    val types = ReminderPlanner.plans(subscription, laterNow, zone).map { it.type }
-
-    assertEquals(listOf(ReminderType.BILLING, ReminderType.TRIAL_ENDING), types)
+    assertEquals(listOf(ReminderType.BILLING), types)
   }
 
   private fun subscription(
     startDate: LocalDate = LocalDate.of(2024, 1, 1),
     billingCycle: BillingCycle = BillingCycle.MONTHLY,
-    freeTrialMonths: Int? = null,
     status: SubscriptionStatus = SubscriptionStatus.ACTIVE,
     reminderDaysBefore: Int? = 3,
-    trialReminderEnabled: Boolean = false,
   ) = Subscription(
     id = UUID.fromString("00000000-0000-0000-0000-000000000001"),
     name = "Netflix",
     iconId = "netflix",
     startDate = startDate,
     billingCycle = billingCycle,
-    freeTrialMonths = freeTrialMonths,
     status = status,
     endDate = null,
     reminderDaysBefore = reminderDaysBefore,
-    trialReminderEnabled = trialReminderEnabled,
     paymentMethodId = null,
     notes = null,
     createdAt = Instant.EPOCH,

@@ -32,7 +32,7 @@ class ReminderWorker
       val input = parseInput()
       val subscription = input?.let { subscriptionRepository.getSubscription(it.subscriptionId) }
       if (input != null && subscription != null && subscription.status == SubscriptionStatus.ACTIVE) {
-        if (isStillDue(subscription, input.type, input.targetDate)) {
+        if (isStillDue(subscription, input.targetDate)) {
           notifier.show(subscription, input.type, input.targetDate)
         }
         scheduler.enqueueNext(subscription)
@@ -42,19 +42,10 @@ class ReminderWorker
 
     private fun isStillDue(
       subscription: Subscription,
-      type: ReminderType,
       targetDate: LocalDate,
     ): Boolean =
-      when (type) {
-        ReminderType.BILLING -> {
-          subscription.reminderDaysBefore != null &&
-            BillingSchedule.nextBillingDate(subscription, LocalDate.now(clock)) == targetDate
-        }
-
-        ReminderType.TRIAL_ENDING -> {
-          subscription.trialReminderEnabled && BillingSchedule.billingStartDate(subscription) == targetDate
-        }
-      }
+      subscription.reminderDaysBefore != null &&
+        BillingSchedule.nextBillingDate(subscription, LocalDate.now(clock)) == targetDate
 
     private fun parseInput(): ReminderInput? =
       inputData.getString(KEY_SUBSCRIPTION_ID)?.let(::parseUuid)?.let { subscriptionId ->

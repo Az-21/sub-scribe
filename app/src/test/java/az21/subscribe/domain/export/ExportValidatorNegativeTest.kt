@@ -60,14 +60,6 @@ class ExportValidatorNegativeTest {
   }
 
   @Test
-  fun dropsSubscriptionWithNegativeFreeTrialMonths() {
-    val result = validate(subscriptions = listOf(validSubscription().copy(freeTrialMonths = -1)))
-
-    assertTrue(result.document.subscriptions.isEmpty())
-    assertSkipped(result)
-  }
-
-  @Test
   fun dropsSubscriptionWithNegativeReminderDays() {
     val result = validate(subscriptions = listOf(validSubscription().copy(reminderDaysBefore = -1)))
 
@@ -90,7 +82,6 @@ class ExportValidatorNegativeTest {
         subscriptions =
           listOf(
             validSubscription().copy(
-              freeTrialMonths = null,
               endDate = null,
               reminderDaysBefore = null,
               paymentMethodId = null,

@@ -7,7 +7,7 @@ import java.time.ZoneId
 /**
  * A single reminder that should fire at [triggerAt] and mentions [targetDate].
  *
- * [targetDate] is the charge date for a billing reminder or the trial end date for a trial reminder.
+ * [targetDate] is the charge date for a billing reminder.
  */
 data class ReminderPlan(
   val type: ReminderType,

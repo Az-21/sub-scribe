@@ -7,10 +7,8 @@
   <string name="form_billing_cycle">Billing cycle</string>
   <string name="form_cycle_monthly">Monthly</string>
   <string name="form_cycle_annual">Annual</string>
-  <string name="form_free_trial_months">Free trial months</string>
   <string name="form_price">Price</string>
   <string name="form_reminder_days">Reminder days before billing</string>
-  <string name="form_trial_reminder">Remind me before the trial ends</string>
   <string name="form_tags">Tags</string>
   <string name="form_payment_method">Payment method</string>
   <string name="form_payment_method_none">None</string>
@@ -20,5 +18,4 @@
   <string name="form_error_name">Enter a name.</string>
   <string name="form_error_price">Enter a valid non-negative price.</string>
   <string name="form_error_number">Enter a whole number.</string>
-  <string name="form_error_trial_reminder_days">Set reminder days to use the trial reminder.</string>
 </resources>

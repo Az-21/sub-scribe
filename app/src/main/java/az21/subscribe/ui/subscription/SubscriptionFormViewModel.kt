@@ -92,10 +92,8 @@ class SubscriptionFormViewModel
           iconId = subscription.iconId,
           startDate = subscription.startDate,
           billingCycle = subscription.billingCycle,
-          freeTrialMonths = subscription.freeTrialMonths?.toString().orEmpty(),
           price = price?.stripTrailingZeros()?.toPlainString().orEmpty(),
           reminderDaysBefore = subscription.reminderDaysBefore?.toString().orEmpty(),
-          trialReminderEnabled = subscription.trialReminderEnabled,
           selectedTagIds = subscriptionRepository.observeTagIds(id).first().toSet(),
           paymentMethodId = subscription.paymentMethodId,
           notes = subscription.notes.orEmpty(),
@@ -118,15 +116,6 @@ class SubscriptionFormViewModel
       update { it.copy(billingCycle = cycle) }
     }
 
-    fun onFreeTrialMonthsChange(value: String) {
-      update {
-        it.copy(
-          freeTrialMonths = value.filter(Char::isDigit),
-          errors = it.errors.copy(freeTrialMonths = false),
-        )
-      }
-    }
-
     fun onPriceChange(value: String) {
       update { it.copy(price = value, errors = it.errors.copy(price = false)) }
     }
@@ -135,10 +124,6 @@ class SubscriptionFormViewModel
       update {
         it.copy(reminderDaysBefore = value.filter(Char::isDigit), errors = it.errors.copy(reminderDays = false))
       }
-    }
-
-    fun onTrialReminderChange(enabled: Boolean) {
-      update { it.copy(trialReminderEnabled = enabled) }
     }
 
     fun onToggleTag(tagId: UUID) {
@@ -164,9 +149,7 @@ class SubscriptionFormViewModel
         FormErrors(
           name = state.name.isBlank(),
           price = price == null,
-          freeTrialMonths = state.freeTrialMonths.isNotBlank() && state.freeTrialMonths.toIntOrNull() == null,
           reminderDays = state.reminderDaysBefore.isNotBlank() && reminderDays == null,
-          trialReminder = state.trialReminderEnabled && reminderDays == null,
         )
       if (errors.hasErrors || price == null) {
         form.value = state.copy(errors = errors)
@@ -179,7 +162,6 @@ class SubscriptionFormViewModel
       state: SubscriptionFormUiState,
       price: BigDecimal,
     ) {
-      val trialMonths = state.freeTrialMonths.toIntOrNull()
       val reminderDays = state.reminderDaysBefore.toIntOrNull()
       val notes = state.notes.ifBlank { null }
       val id = editingId
@@ -192,9 +174,7 @@ class SubscriptionFormViewModel
               iconId = state.iconId,
               startDate = state.startDate,
               billingCycle = state.billingCycle,
-              freeTrialMonths = trialMonths,
               reminderDaysBefore = reminderDays,
-              trialReminderEnabled = state.trialReminderEnabled,
               paymentMethodId = state.paymentMethodId,
               notes = notes,
             ),
@@ -215,9 +195,7 @@ class SubscriptionFormViewModel
               iconId = state.iconId,
               startDate = state.startDate ?: existing.startDate,
               billingCycle = state.billingCycle,
-              freeTrialMonths = trialMonths,
               reminderDaysBefore = reminderDays,
-              trialReminderEnabled = state.trialReminderEnabled,
               paymentMethodId = state.paymentMethodId,
               notes = notes,
             )

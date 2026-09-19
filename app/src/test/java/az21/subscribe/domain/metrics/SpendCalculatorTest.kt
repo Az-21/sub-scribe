@@ -108,19 +108,6 @@ class SpendCalculatorTest {
   }
 
   @Test
-  fun freeTrialDelaysFirstCharge() {
-    val subscription =
-      subscription(startDate = LocalDate.of(2024, 1, 15), freeTrialMonths = 2)
-    val timeline = mapOf(subscription.id to listOf(price(subscription.id, "10.00", LocalDate.of(2024, 1, 15))))
-
-    val result = SpendCalculator.yearly(listOf(subscription), timeline, 2024)
-
-    assertEquals(BigDecimal("100.00"), result.trueAnnualSpend)
-    assertEquals(BigDecimal.ZERO, result.monthly[Month.JANUARY.value - 1].trueMonthlySpend)
-    assertEquals(BigDecimal("10.00"), result.monthly[Month.MARCH.value - 1].trueMonthlySpend)
-  }
-
-  @Test
   fun noSubscriptions_returnsZeroes() {
     val result = SpendCalculator.yearly(emptyList(), emptyMap(), 2024)
 
@@ -141,7 +128,6 @@ class SpendCalculatorTest {
   private fun subscription(
     startDate: LocalDate,
     billingCycle: BillingCycle = BillingCycle.MONTHLY,
-    freeTrialMonths: Int? = null,
     status: SubscriptionStatus = SubscriptionStatus.ACTIVE,
     endDate: LocalDate? = null,
   ): Subscription =
@@ -151,11 +137,9 @@ class SpendCalculatorTest {
       iconId = "test",
       startDate = startDate,
       billingCycle = billingCycle,
-      freeTrialMonths = freeTrialMonths,
       status = status,
       endDate = endDate,
       reminderDaysBefore = null,
-      trialReminderEnabled = false,
       paymentMethodId = null,
       notes = null,
       createdAt = Instant.EPOCH,

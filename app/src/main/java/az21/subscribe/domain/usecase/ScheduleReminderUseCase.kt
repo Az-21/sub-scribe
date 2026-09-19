@@ -7,8 +7,8 @@ import java.util.UUID
 import javax.inject.Inject
 
 /**
- * Recomputes a subscription's billing and trial reminders and schedules them, replacing anything
- * previously queued for it. Call whenever dates, cycle, or reminder settings change.
+ * Recomputes a subscription's billing reminders and schedules them, replacing anything previously
+ * queued for it. Call whenever dates, cycle, or reminder settings change.
  */
 class ScheduleReminderUseCase
   @Inject

@@ -24,11 +24,9 @@ class MapperTest {
         iconId = "spotify",
         startDate = LocalDate.of(2022, 3, 1),
         billingCycle = BillingCycle.ANNUAL,
-        freeTrialMonths = 1,
         status = SubscriptionStatus.ACTIVE,
         endDate = null,
         reminderDaysBefore = 3,
-        trialReminderEnabled = true,
         paymentMethodId = UUID.randomUUID(),
         notes = "Family plan",
         createdAt = Instant.parse("2022-03-01T00:00:00Z"),
@@ -75,11 +73,9 @@ class MapperTest {
         iconId = "bare",
         startDate = LocalDate.of(2024, 1, 1),
         billingCycle = BillingCycle.MONTHLY,
-        freeTrialMonths = null,
         status = SubscriptionStatus.ACTIVE,
         endDate = null,
         reminderDaysBefore = null,
-        trialReminderEnabled = false,
         paymentMethodId = null,
         notes = null,
         createdAt = Instant.EPOCH,
@@ -89,7 +85,6 @@ class MapperTest {
     val mapped = subscription.toEntity().toDomain()
 
     assertEquals(subscription, mapped)
-    assertEquals(null, mapped.freeTrialMonths)
     assertEquals(null, mapped.endDate)
     assertEquals(null, mapped.reminderDaysBefore)
     assertEquals(null, mapped.paymentMethodId)
@@ -105,11 +100,9 @@ class MapperTest {
         iconId = "icloud",
         startDate = LocalDate.of(2023, 1, 1),
         billingCycle = BillingCycle.MONTHLY,
-        freeTrialMonths = null,
         status = SubscriptionStatus.CANCELLED,
         endDate = LocalDate.of(2023, 6, 1),
         reminderDaysBefore = null,
-        trialReminderEnabled = false,
         paymentMethodId = null,
         notes = null,
         createdAt = Instant.EPOCH,

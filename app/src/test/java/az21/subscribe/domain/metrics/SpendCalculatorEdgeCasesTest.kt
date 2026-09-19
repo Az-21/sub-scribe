@@ -178,7 +178,6 @@ class SpendCalculatorEdgeCasesTest {
   private fun subscription(
     startDate: LocalDate,
     billingCycle: BillingCycle = BillingCycle.MONTHLY,
-    freeTrialMonths: Int? = null,
     status: SubscriptionStatus = SubscriptionStatus.ACTIVE,
     endDate: LocalDate? = null,
   ): Subscription =
@@ -188,11 +187,9 @@ class SpendCalculatorEdgeCasesTest {
       iconId = "test",
       startDate = startDate,
       billingCycle = billingCycle,
-      freeTrialMonths = freeTrialMonths,
       status = status,
       endDate = endDate,
       reminderDaysBefore = null,
-      trialReminderEnabled = false,
       paymentMethodId = null,
       notes = null,
       createdAt = Instant.EPOCH,

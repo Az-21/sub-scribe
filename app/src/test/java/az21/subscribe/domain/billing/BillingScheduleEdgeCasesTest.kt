@@ -14,20 +14,6 @@ import java.util.UUID
 /** Boundary and negative cases for [BillingSchedule], complementing the happy-path suite. */
 class BillingScheduleEdgeCasesTest {
   @Test
-  fun billingStartDate_zeroFreeTrialMonths_isStartDate() {
-    val subscription = subscription(startDate = LocalDate.of(2024, 1, 15), freeTrialMonths = 0)
-
-    assertEquals(LocalDate.of(2024, 1, 15), BillingSchedule.billingStartDate(subscription))
-  }
-
-  @Test
-  fun billingStartDate_monthEndClampsToLastValidDay() {
-    val subscription = subscription(startDate = LocalDate.of(2024, 1, 31), freeTrialMonths = 1)
-
-    assertEquals(LocalDate.of(2024, 2, 29), BillingSchedule.billingStartDate(subscription))
-  }
-
-  @Test
   fun advance_monthEndClampsThenDrifts() {
     assertEquals(LocalDate.of(2024, 2, 29), BillingSchedule.advance(LocalDate.of(2024, 1, 31), BillingCycle.MONTHLY))
     assertEquals(LocalDate.of(2024, 3, 29), BillingSchedule.advance(LocalDate.of(2024, 2, 29), BillingCycle.MONTHLY))
@@ -90,16 +76,6 @@ class BillingScheduleEdgeCasesTest {
   }
 
   @Test
-  fun billingDatesBetween_honoursFreeTrialOffset() {
-    val subscription = subscription(startDate = LocalDate.of(2024, 1, 15), freeTrialMonths = 2)
-
-    assertEquals(
-      listOf(LocalDate.of(2024, 3, 15), LocalDate.of(2024, 4, 15)),
-      BillingSchedule.billingDatesBetween(subscription, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 4, 30)),
-    )
-  }
-
-  @Test
   fun nextBillingDate_inactiveIsNullEvenBeforeBillingStart() {
     val cancelled = subscription(startDate = LocalDate.of(2024, 6, 15), status = SubscriptionStatus.CANCELLED)
 
@@ -109,7 +85,6 @@ class BillingScheduleEdgeCasesTest {
   private fun subscription(
     startDate: LocalDate,
     billingCycle: BillingCycle = BillingCycle.MONTHLY,
-    freeTrialMonths: Int? = null,
     status: SubscriptionStatus = SubscriptionStatus.ACTIVE,
   ): Subscription =
     Subscription(
@@ -118,11 +93,9 @@ class BillingScheduleEdgeCasesTest {
       iconId = "test",
       startDate = startDate,
       billingCycle = billingCycle,
-      freeTrialMonths = freeTrialMonths,
       status = status,
       endDate = null,
       reminderDaysBefore = null,
-      trialReminderEnabled = false,
       paymentMethodId = null,
       notes = null,
       createdAt = Instant.EPOCH,

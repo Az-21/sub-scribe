@@ -14,15 +14,8 @@ class BillingScheduleTest {
   private val start = LocalDate.of(2024, 1, 15)
 
   @Test
-  fun billingStartDate_addsFreeTrialMonths() {
-    val subscription = subscription(startDate = start, freeTrialMonths = 3)
-
-    assertEquals(LocalDate.of(2024, 4, 15), BillingSchedule.billingStartDate(subscription))
-  }
-
-  @Test
-  fun billingStartDate_withoutFreeTrial_isStartDate() {
-    val subscription = subscription(startDate = start, freeTrialMonths = null)
+  fun billingStartDate_isStartDate() {
+    val subscription = subscription(startDate = start)
 
     assertEquals(start, BillingSchedule.billingStartDate(subscription))
   }
@@ -45,16 +38,6 @@ class BillingScheduleTest {
     assertEquals(
       LocalDate.of(2025, 1, 15),
       BillingSchedule.nextBillingDate(subscription, LocalDate.of(2024, 6, 1)),
-    )
-  }
-
-  @Test
-  fun nextBillingDate_includesFreeTrialOffset() {
-    val subscription = subscription(startDate = start, freeTrialMonths = 2, billingCycle = BillingCycle.MONTHLY)
-
-    assertEquals(
-      LocalDate.of(2024, 3, 15),
-      BillingSchedule.nextBillingDate(subscription, LocalDate.of(2024, 2, 1)),
     )
   }
 
@@ -101,7 +84,6 @@ class BillingScheduleTest {
   private fun subscription(
     startDate: LocalDate = start,
     billingCycle: BillingCycle = BillingCycle.MONTHLY,
-    freeTrialMonths: Int? = null,
     status: SubscriptionStatus = SubscriptionStatus.ACTIVE,
   ): Subscription =
     Subscription(
@@ -110,11 +92,9 @@ class BillingScheduleTest {
       iconId = "test",
       startDate = startDate,
       billingCycle = billingCycle,
-      freeTrialMonths = freeTrialMonths,
       status = status,
       endDate = null,
       reminderDaysBefore = null,
-      trialReminderEnabled = false,
       paymentMethodId = null,
       notes = null,
       createdAt = Instant.EPOCH,

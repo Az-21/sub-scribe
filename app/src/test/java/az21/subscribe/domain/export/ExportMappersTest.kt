@@ -107,11 +107,9 @@ class ExportMappersTest {
         iconId = "test",
         startDate = LocalDate.of(2024, 1, 1),
         billingCycle = BillingCycle.MONTHLY,
-        freeTrialMonths = null,
         status = SubscriptionStatus.ACTIVE,
         endDate = null,
         reminderDaysBefore = null,
-        trialReminderEnabled = false,
         paymentMethodId = null,
         notes = null,
         createdAt = Instant.parse("2024-01-01T00:00:00Z"),
@@ -120,7 +118,6 @@ class ExportMappersTest {
 
     val export = subscription.toExport()
 
-    assertNull(export.freeTrialMonths)
     assertNull(export.endDate)
     assertNull(export.reminderDaysBefore)
     assertNull(export.paymentMethodId)

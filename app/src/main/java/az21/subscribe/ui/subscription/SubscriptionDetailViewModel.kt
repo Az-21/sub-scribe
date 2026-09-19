@@ -2,7 +2,6 @@ package az21.subscribe.ui.subscription
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import az21.subscribe.domain.billing.BillingSchedule
 import az21.subscribe.domain.metrics.SpendCalculator
 import az21.subscribe.domain.model.Currency
 import az21.subscribe.domain.model.PriceHistory
@@ -142,10 +141,6 @@ class SubscriptionDetailViewModel
         subscription = subscription,
         currentPrice = subscription?.let { SpendCalculator.resolvePrice(timeline, today) },
         nextBillingDate = subscription?.let { getNextBillingDate(it, today) },
-        trialEndDate =
-          subscription
-            ?.takeIf { (it.freeTrialMonths ?: 0) > 0 }
-            ?.let { BillingSchedule.billingStartDate(it) },
         timeline = items,
         tags = tags,
         paymentMethodLabel = paymentMethodLabel,

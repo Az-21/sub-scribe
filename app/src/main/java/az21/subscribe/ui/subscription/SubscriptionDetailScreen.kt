@@ -266,15 +266,6 @@ private fun DetailInfo(uiState: SubscriptionDetailUiState) {
           },
         ),
     )
-    subscription.freeTrialMonths?.takeIf { it > 0 }?.let { months ->
-      InfoRow(
-        label = stringResource(R.string.detail_free_trial),
-        value = pluralStringResource(R.plurals.detail_free_trial_months, months, months),
-      )
-    }
-    uiState.trialEndDate?.let { date ->
-      InfoRow(label = stringResource(R.string.detail_trial_end), value = date.format(dateFormatter))
-    }
     subscription.reminderDaysBefore?.let { days ->
       InfoRow(
         label = stringResource(R.string.detail_reminder),

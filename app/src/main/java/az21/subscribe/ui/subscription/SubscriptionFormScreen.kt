@@ -38,7 +38,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDropdownMenuItem
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -85,9 +84,7 @@ fun SubscriptionFormScreen(
 
   LaunchedEffect(subscriptionId) { viewModel.initialize(subscriptionId) }
   LaunchedEffect(uiState.saved) { if (uiState.saved) onSaved() }
-  RequestNotificationPermissionWhenEnabled(
-    enabled = uiState.reminderDaysBefore.isNotBlank() || uiState.trialReminderEnabled,
-  )
+  RequestNotificationPermissionWhenEnabled(enabled = uiState.reminderDaysBefore.isNotBlank())
 
   SubscriptionFormContent(
     uiState = uiState,
@@ -96,10 +93,8 @@ fun SubscriptionFormScreen(
     onIconChange = viewModel::onIconChange,
     onStartDateChange = viewModel::onStartDateChange,
     onBillingCycleChange = viewModel::onBillingCycleChange,
-    onFreeTrialMonthsChange = viewModel::onFreeTrialMonthsChange,
     onPriceChange = viewModel::onPriceChange,
     onReminderDaysChange = viewModel::onReminderDaysChange,
-    onTrialReminderChange = viewModel::onTrialReminderChange,
     onToggleTag = viewModel::onToggleTag,
     onPaymentMethodChange = viewModel::onPaymentMethodChange,
     onNotesChange = viewModel::onNotesChange,
@@ -139,10 +134,8 @@ fun SubscriptionFormContent(
   onIconChange: (String) -> Unit,
   onStartDateChange: (LocalDate?) -> Unit,
   onBillingCycleChange: (BillingCycle) -> Unit,
-  onFreeTrialMonthsChange: (String) -> Unit,
   onPriceChange: (String) -> Unit,
   onReminderDaysChange: (String) -> Unit,
-  onTrialReminderChange: (Boolean) -> Unit,
   onToggleTag: (UUID) -> Unit,
   onPaymentMethodChange: (UUID?) -> Unit,
   onNotesChange: (String) -> Unit,
@@ -182,10 +175,8 @@ fun SubscriptionFormContent(
         onOpenDatePicker = { showDatePicker = true },
         onClearStartDate = { onStartDateChange(null) },
         onBillingCycleChange = onBillingCycleChange,
-        onFreeTrialMonthsChange = onFreeTrialMonthsChange,
         onPriceChange = onPriceChange,
         onReminderDaysChange = onReminderDaysChange,
-        onTrialReminderChange = onTrialReminderChange,
         onToggleTag = onToggleTag,
         onPaymentMethodChange = onPaymentMethodChange,
         onNotesChange = onNotesChange,
@@ -246,10 +237,8 @@ private fun FormFields(
   onOpenDatePicker: () -> Unit,
   onClearStartDate: () -> Unit,
   onBillingCycleChange: (BillingCycle) -> Unit,
-  onFreeTrialMonthsChange: (String) -> Unit,
   onPriceChange: (String) -> Unit,
   onReminderDaysChange: (String) -> Unit,
-  onTrialReminderChange: (Boolean) -> Unit,
   onToggleTag: (UUID) -> Unit,
   onPaymentMethodChange: (UUID?) -> Unit,
   onNotesChange: (String) -> Unit,
@@ -274,14 +263,6 @@ private fun FormFields(
     )
     BillingCycleField(cycle = uiState.billingCycle, onBillingCycleChange = onBillingCycleChange)
     FormTextField(
-      value = uiState.freeTrialMonths,
-      onValueChange = onFreeTrialMonthsChange,
-      label = stringResource(R.string.form_free_trial_months),
-      keyboardType = KeyboardType.Number,
-      isError = uiState.errors.freeTrialMonths,
-      errorText = stringResource(R.string.form_error_number),
-    )
-    FormTextField(
       value = uiState.price,
       onValueChange = onPriceChange,
       label = stringResource(R.string.form_price),
@@ -299,7 +280,6 @@ private fun FormFields(
     )
     AssociationFields(
       uiState = uiState,
-      onTrialReminderChange = onTrialReminderChange,
       onToggleTag = onToggleTag,
       onPaymentMethodChange = onPaymentMethodChange,
       onNotesChange = onNotesChange,
@@ -310,16 +290,10 @@ private fun FormFields(
 @Composable
 private fun AssociationFields(
   uiState: SubscriptionFormUiState,
-  onTrialReminderChange: (Boolean) -> Unit,
   onToggleTag: (UUID) -> Unit,
   onPaymentMethodChange: (UUID?) -> Unit,
   onNotesChange: (String) -> Unit,
 ) {
-  TrialReminderRow(
-    checked = uiState.trialReminderEnabled,
-    onCheckedChange = onTrialReminderChange,
-    isError = uiState.errors.trialReminder,
-  )
   TagSelector(
     tags = uiState.availableTags,
     selectedTagIds = uiState.selectedTagIds,
@@ -364,31 +338,6 @@ private fun FormTextField(
     singleLine = minLines == 1,
     minLines = minLines,
   )
-}
-
-@Composable
-private fun TrialReminderRow(
-  checked: Boolean,
-  onCheckedChange: (Boolean) -> Unit,
-  isError: Boolean = false,
-) {
-  Column(modifier = Modifier.fillMaxWidth()) {
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Text(stringResource(R.string.form_trial_reminder), style = MaterialTheme.typography.bodyLarge)
-      Switch(checked = checked, onCheckedChange = onCheckedChange)
-    }
-    if (isError) {
-      Text(
-        text = stringResource(R.string.form_error_trial_reminder_days),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.error,
-      )
-    }
-  }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -546,10 +495,8 @@ private fun SubscriptionFormPreview() {
       onIconChange = {},
       onStartDateChange = {},
       onBillingCycleChange = {},
-      onFreeTrialMonthsChange = {},
       onPriceChange = {},
       onReminderDaysChange = {},
-      onTrialReminderChange = {},
       onToggleTag = {},
       onPaymentMethodChange = {},
       onNotesChange = {},

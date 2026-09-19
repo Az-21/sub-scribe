@@ -22,7 +22,6 @@ data class SubscriptionDetailUiState(
   val subscription: Subscription? = null,
   val currentPrice: BigDecimal? = null,
   val nextBillingDate: LocalDate? = null,
-  val trialEndDate: LocalDate? = null,
   val timeline: List<PriceHistoryItem> = emptyList(),
   val tags: List<Tag> = emptyList(),
   val paymentMethodLabel: String? = null,

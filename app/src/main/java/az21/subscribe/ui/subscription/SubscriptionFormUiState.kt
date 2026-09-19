@@ -10,12 +10,10 @@ import java.util.UUID
 data class FormErrors(
   val name: Boolean = false,
   val price: Boolean = false,
-  val freeTrialMonths: Boolean = false,
   val reminderDays: Boolean = false,
-  val trialReminder: Boolean = false,
 ) {
   val hasErrors: Boolean
-    get() = name || price || freeTrialMonths || reminderDays || trialReminder
+    get() = name || price || reminderDays
 }
 
 /**
@@ -29,10 +27,8 @@ data class SubscriptionFormUiState(
   val iconId: String = "",
   val startDate: LocalDate? = null,
   val billingCycle: BillingCycle = BillingCycle.MONTHLY,
-  val freeTrialMonths: String = "",
   val price: String = "",
   val reminderDaysBefore: String = "",
-  val trialReminderEnabled: Boolean = false,
   val selectedTagIds: Set<UUID> = emptySet(),
   val paymentMethodId: UUID? = null,
   val notes: String = "",

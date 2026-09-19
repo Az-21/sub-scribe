@@ -8,13 +8,12 @@ import java.time.LocalDate
 /**
  * Pure helpers for working out when a subscription is actually charged.
  *
- * The first charge lands at [Subscription.startDate] plus any free-trial months. Cancelled and
- * archived subscriptions have no next billing date.
+ * The first charge lands at [Subscription.startDate]. Cancelled and archived subscriptions have no
+ * next billing date.
  */
 object BillingSchedule {
-  /** The date of the first real charge, after any free trial. */
-  fun billingStartDate(subscription: Subscription): LocalDate =
-    subscription.startDate.plusMonths((subscription.freeTrialMonths ?: 0).toLong())
+  /** The date of the first real charge. */
+  fun billingStartDate(subscription: Subscription): LocalDate = subscription.startDate
 
   /**
    * The earliest charge date on or after [from], or null when the subscription is no longer active.

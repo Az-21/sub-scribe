@@ -79,7 +79,6 @@ object ExportValidator {
         entry.startDate.isDate() &&
         entry.billingCycle.isEnum<BillingCycle>() &&
         entry.status.isEnum<SubscriptionStatus>() &&
-        entry.freeTrialMonths.isNonNegativeOrNull() &&
         entry.endDate.isDateOrNull() &&
         entry.reminderDaysBefore.isNonNegativeOrNull() &&
         entry.createdAt.isInstant() &&

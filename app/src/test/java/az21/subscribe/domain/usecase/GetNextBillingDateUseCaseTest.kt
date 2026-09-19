@@ -31,14 +31,6 @@ class GetNextBillingDateUseCaseTest {
   }
 
   @Test
-  fun accountsForFreeTrial() {
-    val subscription =
-      subscription(startDate = LocalDate.of(2024, 1, 15), freeTrialMonths = 2)
-
-    assertEquals(LocalDate.of(2024, 3, 15), useCase(subscription, LocalDate.of(2024, 1, 1)))
-  }
-
-  @Test
   fun returnsNullWhenCancelled() {
     assertNull(useCase(subscription(status = SubscriptionStatus.CANCELLED)))
   }
@@ -50,7 +42,6 @@ class GetNextBillingDateUseCaseTest {
 
   private fun subscription(
     startDate: LocalDate = LocalDate.of(2024, 1, 15),
-    freeTrialMonths: Int? = null,
     status: SubscriptionStatus = SubscriptionStatus.ACTIVE,
   ): Subscription =
     Subscription(
@@ -59,11 +50,9 @@ class GetNextBillingDateUseCaseTest {
       iconId = "test",
       startDate = startDate,
       billingCycle = BillingCycle.MONTHLY,
-      freeTrialMonths = freeTrialMonths,
       status = status,
       endDate = null,
       reminderDaysBefore = null,
-      trialReminderEnabled = false,
       paymentMethodId = null,
       notes = null,
       createdAt = Instant.EPOCH,

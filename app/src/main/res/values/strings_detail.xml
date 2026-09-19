@@ -4,12 +4,6 @@
   <string name="detail_current_price">Current price</string>
   <string name="detail_start_date">Start date</string>
   <string name="detail_billing_cycle">Billing cycle</string>
-  <string name="detail_free_trial">Free trial</string>
-  <plurals name="detail_free_trial_months">
-    <item quantity="one">%1$d month</item>
-    <item quantity="other">%1$d months</item>
-  </plurals>
-  <string name="detail_trial_end">Trial ends</string>
   <string name="detail_reminder">Reminder</string>
   <plurals name="detail_reminder_days">
     <item quantity="one">%1$d day before</item>
