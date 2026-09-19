@@ -4,10 +4,12 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import az21.subscribe.ui.archive.ArchiveScreen
 import az21.subscribe.ui.calendar.CalendarScreen
@@ -49,6 +51,11 @@ fun SubScribeNavHost(
     backStack = backStack,
     modifier = modifier,
     onBack = popOrFinish,
+    entryDecorators =
+      listOf(
+        rememberSaveableStateHolderNavEntryDecorator(),
+        rememberViewModelStoreNavEntryDecorator(),
+      ),
     entryProvider = subScribeEntryProvider(backStack, navigateTopLevel, popBackStack),
   )
 }
