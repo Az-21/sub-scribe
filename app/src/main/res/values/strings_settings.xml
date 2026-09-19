@@ -5,6 +5,7 @@
   <string name="settings_theme_source_system">System / wallpaper</string>
   <string name="settings_theme_source_manual">Manual color</string>
   <string name="settings_theme_color">Theme color</string>
+  <string name="settings_theme_color_custom">Custom color…</string>
   <string name="settings_theme_variant">Theme style</string>
   <string name="settings_theme_mode">Appearance</string>
   <string name="settings_theme_mode_system">System default</string>
@@ -19,5 +20,10 @@
   <string name="variant_neutral">Neutral</string>
   <string name="variant_vibrant">Vibrant</string>
   <string name="variant_expressive">Expressive</string>
-  <string name="variant_monochrome">Monochrome</string>
+  <string name="color_picker_title">Pick a theme color</string>
+  <string name="color_picker_hue">Hue</string>
+  <string name="color_picker_saturation">Saturation</string>
+  <string name="color_picker_brightness">Brightness</string>
+  <string name="color_picker_confirm">Use color</string>
+  <string name="color_picker_cancel">Cancel</string>
 </resources>

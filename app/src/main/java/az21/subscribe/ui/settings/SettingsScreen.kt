@@ -49,10 +49,12 @@ import az21.subscribe.domain.model.Currency
 import az21.subscribe.domain.model.ThemeMode
 import az21.subscribe.domain.model.ThemeSeedSource
 import az21.subscribe.domain.model.ThemeVariant
+import az21.subscribe.ui.common.ColorPickerDialog
 import az21.subscribe.ui.common.PresetColors
 import az21.subscribe.ui.navigation.SettingsRoute
 import az21.subscribe.ui.navigation.SubScribeBottomBar
-import az21.subscribe.ui.theme.SubScribeTheme
+import az21.subscribe.ui.theme.AppTheme
+import az21.subscribe.ui.theme.FallbackSeedColor
 
 @Composable
 fun SettingsScreen(
@@ -229,7 +231,8 @@ private fun SeedColorSetting(
   selected: Int?,
   onSeedColorChange: (Int?) -> Unit,
 ) {
-  Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+  var showPicker by remember { mutableStateOf(false) }
+  Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
     SettingTitle(stringResource(R.string.settings_theme_color))
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
       PresetColors.forEach { color ->
@@ -246,6 +249,29 @@ private fun SeedColorSetting(
         )
       }
     }
+    OutlinedButton(onClick = { showPicker = true }) {
+      Box(
+        modifier =
+          Modifier
+            .size(20.dp)
+            .background(Color(selected ?: FallbackSeedColor), CircleShape)
+            .border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = CircleShape),
+      )
+      Text(
+        text = stringResource(R.string.settings_theme_color_custom),
+        modifier = Modifier.padding(start = 8.dp),
+      )
+    }
+  }
+  if (showPicker) {
+    ColorPickerDialog(
+      initialColor = selected ?: FallbackSeedColor,
+      onConfirm = { color ->
+        onSeedColorChange(color)
+        showPicker = false
+      },
+      onDismiss = { showPicker = false },
+    )
   }
 }
 
@@ -292,7 +318,6 @@ private fun ThemeVariant.labelRes(): Int =
     ThemeVariant.NEUTRAL -> R.string.variant_neutral
     ThemeVariant.VIBRANT -> R.string.variant_vibrant
     ThemeVariant.EXPRESSIVE -> R.string.variant_expressive
-    ThemeVariant.MONOCHROME -> R.string.variant_monochrome
   }
 
 private fun ThemeMode.labelRes(): Int =
@@ -305,7 +330,7 @@ private fun ThemeMode.labelRes(): Int =
 @Preview(showBackground = true)
 @Composable
 private fun SettingsContentPreview() {
-  SubScribeTheme {
+  AppTheme {
     SettingsContent(
       uiState = SettingsUiState(isLoading = false),
       onCurrencyChange = {},

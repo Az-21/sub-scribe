@@ -43,7 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import az21.subscribe.R
 import az21.subscribe.domain.model.Tag
 import az21.subscribe.ui.common.PresetColors
-import az21.subscribe.ui.theme.SubScribeTheme
+import az21.subscribe.ui.theme.AppTheme
 
 @Composable
 fun TagsScreen(
@@ -272,7 +272,7 @@ private fun ColorSwatch(
 @Preview(showBackground = true)
 @Composable
 private fun TagsContentPreview() {
-  SubScribeTheme {
+  AppTheme {
     TagsContent(
       uiState = TagsUiState(isLoading = false),
       onBack = {},

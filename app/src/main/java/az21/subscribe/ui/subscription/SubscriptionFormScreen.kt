@@ -54,7 +54,7 @@ import az21.subscribe.domain.model.PaymentMethod
 import az21.subscribe.domain.model.Tag
 import az21.subscribe.ui.common.SubscriptionDatePickerDialog
 import az21.subscribe.ui.common.SubscriptionIcon
-import az21.subscribe.ui.theme.SubScribeTheme
+import az21.subscribe.ui.theme.AppTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -464,7 +464,7 @@ private fun PaymentMethodField(
 @Preview(showBackground = true)
 @Composable
 private fun SubscriptionFormPreview() {
-  SubScribeTheme {
+  AppTheme {
     SubscriptionFormContent(
       uiState = SubscriptionFormUiState(),
       onBack = {},

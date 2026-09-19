@@ -37,7 +37,7 @@ import az21.subscribe.ui.common.SubscriptionIcon
 import az21.subscribe.ui.common.formatMoney
 import az21.subscribe.ui.navigation.CalendarRoute
 import az21.subscribe.ui.navigation.SubScribeBottomBar
-import az21.subscribe.ui.theme.SubScribeTheme
+import az21.subscribe.ui.theme.AppTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -243,7 +243,7 @@ private fun SelectedDayCharges(uiState: CalendarUiState) {
 @Preview(showBackground = true)
 @Composable
 private fun CalendarContentPreview() {
-  SubScribeTheme {
+  AppTheme {
     CalendarContent(
       uiState = CalendarUiState(year = 2024, month = java.time.Month.MAY, isLoading = false),
       onPreviousMonth = {},

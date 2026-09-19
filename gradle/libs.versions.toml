@@ -15,6 +15,7 @@ datastore = "1.2.1"
 coroutines = "1.11.0"
 serialization = "1.11.0"
 simpleIcons = "2.0.0"
+materialKolor = "5.0.1"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
@@ -63,6 +64,8 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 
 simple-icons = { group = "com.github.joaocsousa", name = "simple-icons", version.ref = "simpleIcons" }
+
+material-kolor-utilities = { group = "com.materialkolor", name = "material-color-utilities", version.ref = "materialKolor" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

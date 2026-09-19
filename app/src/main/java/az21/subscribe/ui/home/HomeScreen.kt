@@ -54,7 +54,7 @@ import az21.subscribe.ui.common.SubscriptionSummary
 import az21.subscribe.ui.common.formatMoney
 import az21.subscribe.ui.navigation.HomeRoute
 import az21.subscribe.ui.navigation.SubScribeBottomBar
-import az21.subscribe.ui.theme.SubScribeTheme
+import az21.subscribe.ui.theme.AppTheme
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.UUID
@@ -374,7 +374,7 @@ private enum class StatusFilter(
 @Preview(showBackground = true)
 @Composable
 private fun HomeContentPreview() {
-  SubScribeTheme {
+  AppTheme {
     HomeContent(
       uiState = HomeUiState(isLoading = false, items = emptyList(), hasSubscriptions = false),
       onQueryChange = {},

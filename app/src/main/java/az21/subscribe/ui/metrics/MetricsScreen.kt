@@ -36,7 +36,7 @@ import az21.subscribe.domain.model.Currency
 import az21.subscribe.ui.common.formatMoney
 import az21.subscribe.ui.navigation.MetricsRoute
 import az21.subscribe.ui.navigation.SubScribeBottomBar
-import az21.subscribe.ui.theme.SubScribeTheme
+import az21.subscribe.ui.theme.AppTheme
 import java.math.BigDecimal
 import java.time.Month
 import java.time.format.TextStyle
@@ -263,7 +263,7 @@ private fun SelectedMonthDetail(uiState: MetricsUiState) {
 @Preview(showBackground = true)
 @Composable
 private fun MetricsContentPreview() {
-  SubScribeTheme {
+  AppTheme {
     MetricsContent(
       uiState =
         MetricsUiState(

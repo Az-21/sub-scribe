@@ -40,7 +40,7 @@ import az21.subscribe.ui.common.SubscriptionSummary
 import az21.subscribe.ui.common.formatMoney
 import az21.subscribe.ui.navigation.ArchiveRoute
 import az21.subscribe.ui.navigation.SubScribeBottomBar
-import az21.subscribe.ui.theme.SubScribeTheme
+import az21.subscribe.ui.theme.AppTheme
 import java.util.UUID
 
 @Composable
@@ -182,7 +182,7 @@ private fun ArchiveRow(
 @Preview(showBackground = true)
 @Composable
 private fun ArchiveContentPreview() {
-  SubScribeTheme {
+  AppTheme {
     ArchiveContent(
       uiState = ArchiveUiState(isLoading = false),
       onOpenSubscription = {},

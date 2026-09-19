@@ -86,6 +86,10 @@ dependencies {
   // Simple Icons (full set embedded)
   implementation(libs.simple.icons)
 
+  // MaterialKolor's Material Color Utilities: generates Material 3 Expressive color schemes
+  // (2025 color spec) from a seed color.
+  implementation(libs.material.kolor.utilities)
+
   testImplementation(libs.androidx.room.testing)
   testImplementation(libs.junit)
   testImplementation(libs.kotlinx.coroutines.test)

@@ -20,13 +20,12 @@ enum class ThemeSeedSource {
   MANUAL,
 }
 
-/** Material 3 Expressive color scheme variants. */
+/** Material 3 Expressive color scheme variants supported by the 2025 color spec. */
 enum class ThemeVariant {
   TONAL_SPOT,
   NEUTRAL,
   VIBRANT,
   EXPRESSIVE,
-  MONOCHROME,
 }
 
 /** Light/dark preference, defaulting to the system setting. */

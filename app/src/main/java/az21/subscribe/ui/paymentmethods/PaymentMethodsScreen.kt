@@ -36,7 +36,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import az21.subscribe.R
 import az21.subscribe.domain.model.PaymentMethod
-import az21.subscribe.ui.theme.SubScribeTheme
+import az21.subscribe.ui.theme.AppTheme
 
 @Composable
 fun PaymentMethodsScreen(
@@ -233,7 +233,7 @@ private fun PaymentMethodEditorDialog(
 @Preview(showBackground = true)
 @Composable
 private fun PaymentMethodsContentPreview() {
-  SubScribeTheme {
+  AppTheme {
     PaymentMethodsContent(
       uiState = PaymentMethodsUiState(isLoading = false),
       onBack = {},

@@ -6,6 +6,7 @@ import az21.subscribe.MainDispatcherRule
 import az21.subscribe.data.fake.FakeSettingsRepository
 import az21.subscribe.domain.model.Currency
 import az21.subscribe.domain.model.ThemeMode
+import az21.subscribe.domain.model.ThemeSeedSource
 import az21.subscribe.domain.model.ThemeVariant
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -19,6 +20,7 @@ class SettingsViewModelTest {
   val mainDispatcherRule = MainDispatcherRule()
 
   private val settingsRepository = FakeSettingsRepository()
+  private val customColor = 0xFF123456.toInt()
 
   @Test
   fun exposesPersistedSettings() =
@@ -64,6 +66,29 @@ class SettingsViewModelTest {
         }
         assertEquals(ThemeVariant.VIBRANT, state.settings.themeVariant)
         assertEquals(ThemeMode.DARK, state.settings.themeMode)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun setThemeSeedSourceAndColor_persistSelections() =
+    runTest(mainDispatcherRule.testDispatcher) {
+      val viewModel = SettingsViewModel(settingsRepository)
+
+      viewModel.uiState.test {
+        filterLoaded()
+        viewModel.setThemeSeedSource(ThemeSeedSource.MANUAL)
+        viewModel.setThemeSeedColor(customColor)
+
+        var state = awaitItem()
+        while (
+          state.settings.themeSeedSource != ThemeSeedSource.MANUAL ||
+          state.settings.themeSeedColor != customColor
+        ) {
+          state = awaitItem()
+        }
+        assertEquals(ThemeSeedSource.MANUAL, state.settings.themeSeedSource)
+        assertEquals(customColor, state.settings.themeSeedColor)
         cancelAndIgnoreRemainingEvents()
       }
     }

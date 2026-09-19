@@ -46,7 +46,7 @@ import az21.subscribe.domain.model.SubscriptionStatus
 import az21.subscribe.ui.common.DeleteSubscriptionDialog
 import az21.subscribe.ui.common.SubscriptionIcon
 import az21.subscribe.ui.common.formatMoney
-import az21.subscribe.ui.theme.SubScribeTheme
+import az21.subscribe.ui.theme.AppTheme
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -415,7 +415,7 @@ private fun formatDelta(
 @Preview(showBackground = true)
 @Composable
 private fun SubscriptionDetailPreview() {
-  SubScribeTheme {
+  AppTheme {
     SubscriptionDetailContent(
       uiState = SubscriptionDetailUiState(isLoading = false),
       onBack = {},

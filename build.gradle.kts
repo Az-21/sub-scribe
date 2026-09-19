@@ -46,7 +46,7 @@ tasks.register<JavaExec>("ktlintFormat") {
 
 spotless {
   format("xml") {
-    target("**/src/**/*.xml")
+    target("*/src/**/*.xml")
     targetExclude("**/build/**")
     eclipseWtp(EclipseWtpFormatterStep.XML).configFile("config/spotless/xml.prefs")
     trimTrailingWhitespace()
