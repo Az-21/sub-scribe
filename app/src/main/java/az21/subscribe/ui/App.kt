@@ -1,5 +1,7 @@
 package az21.subscribe.ui
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -20,10 +22,11 @@ fun SubScribeApp(
   val settings by viewModel.settings.collectAsStateWithLifecycle()
   val deepLinkSubscriptionId by pendingSubscriptionId.collectAsStateWithLifecycle()
   AppTheme(settings = settings) {
-    SubScribeNavHost(
-      modifier = modifier,
-      deepLinkSubscriptionId = deepLinkSubscriptionId,
-      onDeepLinkConsumed = onDeepLinkConsumed,
-    )
+    Surface(modifier = modifier, color = MaterialTheme.colorScheme.background) {
+      SubScribeNavHost(
+        deepLinkSubscriptionId = deepLinkSubscriptionId,
+        onDeepLinkConsumed = onDeepLinkConsumed,
+      )
+    }
   }
 }
