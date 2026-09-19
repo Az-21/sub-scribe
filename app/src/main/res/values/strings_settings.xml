@@ -24,6 +24,7 @@
   <string name="color_picker_hue">Hue</string>
   <string name="color_picker_saturation">Saturation</string>
   <string name="color_picker_brightness">Brightness</string>
-  <string name="color_picker_confirm">Use color</string>
+  <string name="color_picker_hex">Hex</string>
+  <string name="color_picker_confirm">Select</string>
   <string name="color_picker_cancel">Cancel</string>
 </resources>
